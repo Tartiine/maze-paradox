@@ -9,7 +9,9 @@
                 "-g",
                 "-o",
                 "game",
-                "main.cpp",
+                "src/main.cpp",
+                "src/Game.cpp",
+                "-I./include",
                 "-I${env:SFML_DIR}\\include",
                 "-L${env:SFML_DIR}\\lib",
                 "-lsfml-graphics",
@@ -17,19 +19,34 @@
                 "-lsfml-system",
                 "-lsfml-audio"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
             "presentation": {
                 "echo": true,
                 "reveal": "always",
                 "focus": false,
                 "panel": "dedicated"
             },
-            "problemMatcher": [
-                "$gcc"
-            ]
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Run SFML project",
+            "type": "shell",
+            "command": "./game",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build and Run SFML project",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": ["Build SFML project", "Run SFML project"]
         }
     ]
 }
