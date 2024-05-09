@@ -2,20 +2,27 @@
 #define GAME_H
 
 #include <SFML/Graphics.hpp>
+#include "Player.h"
 
 class Game {
 public:
     Game(); 
+    virtual ~Game();
 
-    void update();          
+    void updatePlayer();
+    void update();      
+    void renderPlayer();    
     void render();        
     const sf::RenderWindow& getWindow() const; 
 
 private:
     sf::RenderWindow window;    
     sf::Event ev;
+
+    Player* player;
     
     void initWindow(); 
+    void initPlayer(); 
 };
 
 #endif // GAME_H
