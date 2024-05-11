@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+# Unwanted files
+.vscode/c_cpp_properties.json
