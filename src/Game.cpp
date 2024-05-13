@@ -54,7 +54,7 @@ const sf::RenderWindow & Game::getWindow() const {
 
 void Game::initWindow(){
     this->window.create(sf::VideoMode(800, 600), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
-    this->window.setFramerateLimit(144);  //TODO: uniformiser la vitesse de deplacement (pas de variation en fonction des fps)
+    this->window.setFramerateLimit(60);  //TODO: uniformiser la vitesse de deplacement (pas de variation en fonction des fps)
 }
 
 void Game::initPlayer(){

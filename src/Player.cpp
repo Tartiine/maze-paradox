@@ -6,6 +6,7 @@ using namespace std;
 Player::Player(){
     this->initTexture();
     this->initSprite();
+    this->initAnimations();
 }
 
 Player::~Player(){
@@ -30,21 +31,22 @@ void Player::updateMovement(){
 }
 
 
-void Player::updateAnimations(float deltaTime)
-{
-    bool facingRight = this->sprite.getScale().x > 0; 
+void Player::updateAnimations(float deltaTime) {
+    //bool facingRight = this->sprite.getScale().x > 0; 
 
     int animationRow = 0; 
     switch(currentState) {
         case State::Walking: animationRow = 2; break; 
-        case State::Jumping: animationRow = 5; break;
+        case State::Jumping: animationRow = 5; break; 
         case State::Crouching: animationRow = 7; break;
-        default: animationRow = 0; break; 
+        default: animationRow = 0; break;
     }
 
-    animations[currentState].update(animationRow, deltaTime, facingRight);
+
+    animations[currentState].update(animationRow, deltaTime, true);
     this->sprite.setTextureRect(animations[currentState].uvRect);
 }
+
 void Player::update(float deltaTime) {
     this->updateMovement(); 
     if(currentState != State::Normal) {
@@ -73,8 +75,8 @@ void Player::initSprite(){
 }
 
 void Player::initAnimations() {
-    animations[Idle] = Animation(&textureSheet, sf::Vector2u(4, 0), 0.3f);       // 4 frames, 0.3 seconds per frame
-    animations[Walking] = Animation(&textureSheet, sf::Vector2u(8, 2), 0.1f);    // 8 frames, 0.1 seconds per frame
-    animations[Jumping] = Animation(&textureSheet, sf::Vector2u(5, 1), 0.15f);   // 5 frames, 0.15 seconds per frame
-    animations[Crouching] = Animation(&textureSheet, sf::Vector2u(3, 1), 0.2f);  // 3 frames, 0.2 seconds per frame
+    animations[Idle] = Animation(&textureSheet, sf::Vector2u(4, 1), 0.3f, sf::Vector2u(32,32));       // 4 frames, 0.3 seconds per frame
+    animations[Walking] = Animation(&textureSheet, sf::Vector2u(8, 2), 0.1f, sf::Vector2u(32,32));    // 8 frames, 0.1 seconds per frame
+    animations[Jumping] = Animation(&textureSheet, sf::Vector2u(5, 1), 0.15f, sf::Vector2u(32,32));   // 5 frames, 0.15 seconds per frame
+    animations[Crouching] = Animation(&textureSheet, sf::Vector2u(3, 1), 0.2f, sf::Vector2u(32,32));  // 3 frames, 0.2 seconds per frame
 }
