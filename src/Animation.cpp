@@ -1,13 +1,16 @@
 #include "Animation.h"
+#include <iostream>
 
-Animation::Animation(sf::Texture* texture, sf::Vector2u imageCount, float switchTime) {
+using namespace std;
+
+Animation::Animation(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2u frameSize) {
     this->imageCount = imageCount;
     this->switchTime = switchTime;
     totalTime = 0.0f;
     currentImage.x = 0;
 
-    uvRect.width = texture->getSize().x / float(imageCount.x);
-    uvRect.height = texture->getSize().y / float(imageCount.y);
+    uvRect.width = frameSize.x;
+    uvRect.height = frameSize.y;
 }
 
 Animation::~Animation() {}
@@ -16,6 +19,11 @@ void Animation::update(int row, float deltaTime, bool faceRight) {
     currentImage.y = row;
     totalTime += deltaTime;
 
+    std::cout << "Current Frame: " << currentImage.x << ", Row: " << currentImage.y
+              << ", Total Frames: " << imageCount.x << ", Total Rows: " << imageCount.y
+              << ", UVRect: " << uvRect.left << ", " << uvRect.top << ", " << uvRect.width << ", " << uvRect.height
+              << std::endl;
+              
     if (totalTime >= switchTime) {
         totalTime -= switchTime;
         currentImage.x++;
