@@ -30,4 +30,7 @@
 *.exe
 *.out
 *.app
+
+# Unwated files
 .vscode/settings.json
+.vscode/c_cpp_properties.json

@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "Player.h"
+#include "Platform.h"
 
 class Game {
 public:
@@ -11,8 +12,12 @@ public:
 
     void updatePlayer(float deltaTime);
     void update(float deltaTime);      
-    void renderPlayer();    
+    
+    void renderPlayer();
+    void renderPlatform();    
+    
     void render();        
+    
     const sf::RenderWindow& getWindow() const; 
 
 private:
@@ -20,8 +25,10 @@ private:
     sf::Event ev;
 
     Player* player;
+    Platform* platform;
     
-    void initWindow(); 
+    void initWindow();
+    void initPlatform(); 
     void initPlayer(); 
 };
 

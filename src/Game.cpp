@@ -2,11 +2,13 @@
 
 Game::Game() {
     this->initWindow();
+    this->initPlatform();
     this->initPlayer();
 }
 
 Game::~Game(){
     delete this->player;
+    delete this->platform;
 }
 
 void Game::updatePlayer(float deltaTime){
@@ -32,10 +34,15 @@ void Game::renderPlayer(){
     this->player->render(this->window);
 }
 
+void Game::renderPlatform(){
+    this->platform->render(this->window);
+}
+
 void Game::render() {
     this->window.clear(sf::Color::Blue);  //Maybe clear with a black color ?
 
     // Drawing components
+    this->renderPlatform();
     this->renderPlayer();
 
     this->window.display();  
@@ -52,4 +59,8 @@ void Game::initWindow(){
 
 void Game::initPlayer(){
     this->player = new Player();
+}
+
+void Game::initPlatform(){
+    this->platform = new Platform();
 }
