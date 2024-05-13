@@ -9,8 +9,8 @@ public:
     Game(); 
     virtual ~Game();
 
-    void updatePlayer();
-    void update();      
+    void updatePlayer(float deltaTime);
+    void update(float deltaTime);      
     void renderPlayer();    
     void render();        
     const sf::RenderWindow& getWindow() const; 

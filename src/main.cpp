@@ -2,9 +2,11 @@
 
 int main() {
     Game game;
+    sf::Clock clock;
 
     while (game.getWindow().isOpen()) {
-        game.update();
+        float deltaTime = clock.restart().asSeconds();
+        game.update(deltaTime);
         game.render();
     }
 
