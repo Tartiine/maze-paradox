@@ -39,8 +39,6 @@ These instructions will get you a copy of the project up and running on your loc
 
 2. **Build and Run:**
    - Use the shortcut `Ctrl+Shift+B` to run the build task. This will compile and run the project and link SFML automatically.
-   - Run the compiled executable.
-
 
 ## 🛠️ Built With
 
