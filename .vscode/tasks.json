@@ -14,7 +14,7 @@
                 "src/Player.cpp",
                 "src/Animation.cpp",
                 "src/Platform.cpp",
-                "src/Entity.cpp",
+                //"src/Entity.cpp",
                 "-I./include",
                 "-I${env:SFML_DIR}\\include",
                 "-L${env:SFML_DIR}\\lib",

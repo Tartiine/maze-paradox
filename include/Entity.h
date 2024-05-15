@@ -1,6 +1,8 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include <SFML/Graphics.hpp>
+
 class Entity {
     public:
         // Constructors & Destructor
@@ -10,12 +12,12 @@ class Entity {
     private:
         float posX;
         float posY;
+        sf::Vector2f velocity;
+        float maxVelocity;
+        float minVelocity;
+        float acceleration;
+        float deceleration;
 
-        float velX;
-        float velY;
-
-        float accX;
-        float accY;
 };
 
 #endif // ENTITY_H
