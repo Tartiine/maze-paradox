@@ -35,10 +35,23 @@ void Player::updateMovement(float deltaTime)
         this->move(0.f, 5.f);
         this->currentState = State::Crouching;
     }*/
-    float jumpHeight = 0.5f;
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z) /*&& this->isOnGround*/) { // Jump
-        this->velocity.y = -sqrtf(2.0f * 981.0f * jumpHeight); //Formule cinématique du mouvement (v = -sqrt(2gh))
-        this->currentState = State::Jumping;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) { // Jump
+        if (!this->keyPressed && this->canJump) {
+            this->velocity.y = -sqrtf(2.0f * this->gravity * this->jumpHeight);
+            this->currentState = State::Jumping;
+            this->keyPressed = true;
+            this->canJump = false;
+            this->airTime = 0.0f;
+        }
+    } else {
+        this->keyPressed = false; 
+    }
+
+    if (this->currentState == State::Jumping) {
+        this->airTime += deltaTime;
+        if (this->airTime > this->maxAirTime) {
+            this->currentState = State::Falling; 
+        }
     }
 }
 
@@ -59,11 +72,13 @@ void Player::updateAnimations(float deltaTime) {
 }
 
 void Player::update(float deltaTime) {
-    std::cout << "DeltaTime: " << deltaTime << std::endl;
     this->updateMovement(deltaTime);
 
     if(this->sprite.getPosition().y > 200.f) {
-        this->sprite.setPosition(this->sprite.getPosition().x, 200.f);
+        this->sprite.setPosition(this->sprite.getPosition().x, 200.f); //TODO: Delete when collision detection added
+        if (!this->keyPressed) { 
+            this->canJump = true;
+        }
     }
 
     if (currentState != State::Normal) {
@@ -80,7 +95,7 @@ void Player::render(sf::RenderTarget & target){
 
 void Player::updatePhysics() {
     //Gravity
-    this->velocity.y += 1.0 * this->gravity;
+    this->velocity.y += 1.0 * this->gravity; //TODO: apply only when falling
     if(abs(this->velocity.x) > this->maxVelocityY) {
         this->velocity.y = this->maxVelocityY * ((this->velocity.y < 0.f) ? -1.f : 1.f);
     }
@@ -119,6 +134,13 @@ void Player::initPhysics() {
     this->minVelocity = 1.f;
     this->acceleration = 120.f;
     this->deceleration = 0.9f;
-    this->gravity = 4.f;
+    this->gravity = 2.f;
     this->maxVelocityY = 15.f;
+    this->jumpHeight = 100.f;
+    this->jumpVelocity = 0.0f;
+    this->airTime = 0.5f;
+    /*
+    this->airControl = 200.0f; 
+    this->airBrake = 0.5f;
+    */ 
 }

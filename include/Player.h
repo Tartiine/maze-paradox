@@ -12,7 +12,8 @@ public:
         Idle,
         Walking,
         Jumping,
-        Crouching
+        Crouching,
+        Falling
     };
 
     Player();
@@ -44,6 +45,14 @@ private:
     float deceleration;
     float gravity;
     float maxVelocityY;
+    float jumpHeight;
+    bool canJump = true;
+    bool keyPressed = false;
+    float jumpVelocity;  
+    float maxAirTime;
+    float airTime;
+    float airControl;    
+    float airBrake; 
 
 };
 
