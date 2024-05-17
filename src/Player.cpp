@@ -39,23 +39,15 @@ void Player::updateMovement(float deltaTime)
         this->move(0.f, 5.f);
         this->currentState = State::Crouching;
     }*/
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) { // Jump
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) { // Jump
         if (!this->keyPressed && this->canJump) {
             this->velocity.y = -sqrtf(2.0f * this->gravity * this->jumpHeight);
             this->currentState = State::Jumping;
             this->keyPressed = true;
             this->canJump = false;
-            this->airTime = 0.0f;
         }
     } else {
         this->keyPressed = false; 
-    }
-
-    if (this->currentState == State::Jumping) {
-        this->airTime += deltaTime;
-        if (this->airTime > this->maxAirTime) {
-            this->currentState = State::Falling; 
-        }
     }
 }
 
@@ -174,7 +166,6 @@ void Player::initPhysics() {
     this->maxVelocityY = 15.f;
     this->jumpHeight = 100.f;
     this->jumpVelocity = 0.0f;
-    this->airTime = 0.5f;
     /*
     this->airControl = 200.0f; 
     this->airBrake = 0.5f;
