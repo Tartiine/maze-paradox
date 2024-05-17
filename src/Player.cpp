@@ -14,6 +14,10 @@ Player::Player(){
 Player::~Player(){
 }
 
+void Player::moveCollision(float x, float y) {
+    this->sprite.move(x, y);
+}
+
 void Player::move(const float dir_x, const float dir_y, float deltaTime){
         this->velocity.x += dir_x * this->acceleration * deltaTime;
         this->velocity.y += dir_y * this->acceleration * deltaTime;
@@ -75,7 +79,6 @@ void Player::update(float deltaTime) {
     this->updateMovement(deltaTime);
 
     if(this->sprite.getPosition().y > 200.f) {
-        this->sprite.setPosition(this->sprite.getPosition().x, 200.f); //TODO: Delete when collision detection added
         if (!this->keyPressed) { 
             this->canJump = true;
         }
@@ -113,6 +116,39 @@ void Player::initTexture(){
         cout << "Error loading player sprite sheet" << endl;
     }
 
+}
+
+bool Player::isColliding(const sf::FloatRect &other) const {
+    return this->sprite.getGlobalBounds().intersects(other);
+}
+
+void Player::resolveCollision(const sf::FloatRect &other) {
+    sf::FloatRect playerBounds = this->sprite.getGlobalBounds();
+    
+    float overlapLeft = (playerBounds.left + playerBounds.width) - other.left;
+    float overlapRight = (other.left + other.width) - playerBounds.left;
+    float overlapTop = (playerBounds.top + playerBounds.height) - other.top;
+    float overlapBottom = (other.top + other.height) - playerBounds.top;
+
+    bool fromLeft = fabs(overlapLeft) < fabs(overlapRight);
+    bool fromTop = fabs(overlapTop) < fabs(overlapBottom);
+
+    float minOverlapX = fromLeft ? overlapLeft : overlapRight;
+    float minOverlapY = fromTop ? overlapTop : overlapBottom;
+
+    if (fabs(minOverlapX) < fabs(minOverlapY)) {
+        if (fromLeft) {
+            this->moveCollision(-minOverlapX, 0);
+        } else {
+            this->moveCollision(minOverlapX, 0);
+        }
+    } else {
+        if (fromTop) {
+            this->moveCollision(0, -minOverlapY);
+        } else {
+            this->moveCollision(0, minOverlapY);
+        }
+    }
 }
 
 void Player::initSprite(){

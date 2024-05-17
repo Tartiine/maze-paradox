@@ -22,6 +22,10 @@ void Platform::setPosition(float x, float y) {
     this->sprite.setPosition(x, y);
 }
 
+sf::FloatRect Platform::getBounds() const {
+    return this->sprite.getGlobalBounds();
+}
+
 void Platform::initTexture() {
     if (!this->textureSheet.loadFromFile("resources/sprites/platforms.png")){
         cout << "Error loading platform sprite sheet" << endl;

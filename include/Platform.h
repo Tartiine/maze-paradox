@@ -10,6 +10,7 @@ class Platform{
         virtual ~Platform();
 
         void setPosition(float x, float y);
+        sf::FloatRect getBounds() const;
 
         void render(sf::RenderTarget & target);
 

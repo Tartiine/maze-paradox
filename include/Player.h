@@ -19,12 +19,17 @@ public:
     Player();
     virtual ~Player();
 
+    void moveCollision(float x, float y);
+
     void move(const float dir_x, const float dir_y, float deltaTime);
     void updateMovement(float deltaTime);
     void updateAnimations(float deltaTime);
     void update(float deltaTime);
     void render(sf::RenderTarget& target);
     void updatePhysics();
+
+    bool isColliding(const sf::FloatRect &other) const;
+    void resolveCollision(const sf::FloatRect &other);
 
 private:
     sf::Sprite sprite;

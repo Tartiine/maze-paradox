@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <iostream>
 
 Game::Game() {
     this->initWindow();
@@ -11,9 +12,17 @@ Game::~Game(){
     this->platforms.clear();
 }
 
+void Game::collisionPlayer() {
+    for (auto platform : this->platforms) {
+        sf::FloatRect bounds = platform->getBounds();
+        if (this->player->isColliding(bounds)) {
+            player->resolveCollision(bounds);
+        }
+    }
+}
+
 void Game::updatePlayer(float deltaTime){
     this->player->update(deltaTime);
-
 }
 
 void Game::update(float deltaTime) {
@@ -25,7 +34,7 @@ void Game::update(float deltaTime) {
             this->window.close();
         }
     }
-
+    this->collisionPlayer();
     this->updatePlayer(deltaTime);
 }
 

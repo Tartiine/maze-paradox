@@ -10,6 +10,8 @@ public:
     Game(); 
     virtual ~Game();
 
+    void collisionPlayer();
+
     void updatePlayer(float deltaTime);
     void update(float deltaTime);      
     
