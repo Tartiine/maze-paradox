@@ -18,8 +18,8 @@ public:
     Player();
     virtual ~Player();
 
-    void move(const float dir_x, const float dir_y);
-    void updateMovement();
+    void move(const float dir_x, const float dir_y, float deltaTime);
+    void updateMovement(float deltaTime);
     void updateAnimations(float deltaTime);
     void update(float deltaTime);
     void render(sf::RenderTarget& target);
@@ -42,6 +42,8 @@ private:
     float minVelocity;
     float acceleration;
     float deceleration;
+    float gravity;
+    float maxVelocityY;
 
 };
 
