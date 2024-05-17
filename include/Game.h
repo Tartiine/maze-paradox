@@ -14,7 +14,7 @@ public:
     void update(float deltaTime);      
     
     void renderPlayer();
-    void renderPlatform();    
+    void renderPlatforms();    
     
     void render();        
     
@@ -25,10 +25,10 @@ private:
     sf::Event ev;
 
     Player* player;
-    Platform* platform;
+    std::vector<Platform*> platforms;
     
     void initWindow();
-    void initPlatform(); 
+    void initPlatforms(); 
     void initPlayer(); 
 };
 

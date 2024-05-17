@@ -8,8 +8,18 @@ Platform::Platform() {
     this->initSprite();
 }
 
+Platform::Platform(float x, float y) {
+    this->initTexture();
+    this->initSprite();
+    this->setPosition(x, y);
+}
+
 Platform::~Platform() {
 
+}
+
+void Platform::setPosition(float x, float y) {
+    this->sprite.setPosition(x, y);
 }
 
 void Platform::initTexture() {
@@ -23,7 +33,7 @@ void Platform::initSprite(){
     this->sprite.setTextureRect(sf::IntRect(0,0,16,16));
 
     this->sprite.setScale(3.0f,3.0f);
-    this->sprite.setPosition(400, 300);
+    this->sprite.setPosition(0, 0);
 
 }
 

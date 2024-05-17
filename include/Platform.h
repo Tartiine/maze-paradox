@@ -6,7 +6,10 @@
 class Platform{
     public:
         Platform();
+        Platform(float x, float y);
         virtual ~Platform();
+
+        void setPosition(float x, float y);
 
         void render(sf::RenderTarget & target);
 

@@ -2,13 +2,13 @@
 
 Game::Game() {
     this->initWindow();
-    this->initPlatform();
+    this->initPlatforms();
     this->initPlayer();
 }
 
 Game::~Game(){
     delete this->player;
-    delete this->platform;
+    this->platforms.clear();
 }
 
 void Game::updatePlayer(float deltaTime){
@@ -34,15 +34,17 @@ void Game::renderPlayer(){
     this->player->render(this->window);
 }
 
-void Game::renderPlatform(){
-    this->platform->render(this->window);
+void Game::renderPlatforms(){
+    for (auto platform : this->platforms) {
+        platform->render(this->window);
+    }
 }
 
 void Game::render() {
     this->window.clear(sf::Color::Blue);  //Maybe clear with a black color ?
 
     // Drawing components
-    this->renderPlatform();
+    this->renderPlatforms();
     this->renderPlayer();
 
     this->window.display();  
@@ -61,6 +63,21 @@ void Game::initPlayer(){
     this->player = new Player();
 }
 
-void Game::initPlatform(){
-    this->platform = new Platform();
+void Game::initPlatforms(){
+    platforms.push_back(new Platform(0, 300));
+    platforms.push_back(new Platform(48, 300));
+    platforms.push_back(new Platform(48*2, 300));
+    platforms.push_back(new Platform(48*3, 300));
+    platforms.push_back(new Platform(48*4, 300));
+    platforms.push_back(new Platform(48*5, 300));
+    platforms.push_back(new Platform(48*6, 300));
+    platforms.push_back(new Platform(48*7, 300));
+    platforms.push_back(new Platform(48*8, 300));
+    platforms.push_back(new Platform(48*9, 300));
+    platforms.push_back(new Platform(48*10, 300));
+    platforms.push_back(new Platform(48*11, 300));
+    platforms.push_back(new Platform(48*12, 300));
+    platforms.push_back(new Platform(48*13, 300));
+    platforms.push_back(new Platform(48*14, 300));
+    platforms.push_back(new Platform(48*15, 300));
 }
