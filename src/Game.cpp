@@ -14,7 +14,7 @@ Game::~Game(){
 
 void Game::collisionPlayer() {
     for (const auto& platform : this->platforms) {
-        sf::FloatRect bounds = platform->getBounds();
+        sf::FloatRect bounds = platform->getHitbox();
         if (this->player->isColliding(bounds)) {
             player->resolveCollision(bounds);
         }
@@ -76,7 +76,7 @@ void Game::initPlayer(){
 void Game::initPlatforms(){
     platforms.push_back(new Platform(0, 300));
     platforms.push_back(new Platform(48, 300));
-    platforms.push_back(new Platform(48*2, 300));
+    platforms.push_back(new Platform(48*2, 300));   
     platforms.push_back(new Platform(48*3, 300));
     platforms.push_back(new Platform(48*4, 300));
     platforms.push_back(new Platform(48*5, 300));

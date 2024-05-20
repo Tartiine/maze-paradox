@@ -2,15 +2,18 @@
 #define PLATFORM_H
 
 #include <SFML/Graphics.hpp>
+#include "Collision.h"
 
-class Platform{
+class Platform : public Collision {
     public:
         Platform();
         Platform(float x, float y);
         virtual ~Platform();
 
+        sf::FloatRect getHitbox() const override;
+        void moveCollision(float x, float y) override;
+
         void setPosition(float x, float y);
-        sf::FloatRect getBounds() const;
 
         void render(sf::RenderTarget & target);
 

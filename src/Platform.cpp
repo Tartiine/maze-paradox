@@ -18,12 +18,26 @@ Platform::~Platform() {
 
 }
 
-void Platform::setPosition(float x, float y) {
-    this->sprite.setPosition(x, y);
+sf::FloatRect Platform::getHitbox() const {
+    sf::Vector2<sf::Vector2f> offset(sf::Vector2f(0, 0), sf::Vector2f(0, 21));
+    sf::FloatRect bounds = this->sprite.getGlobalBounds();
+    
+    sf::FloatRect hitbox(
+        bounds.left + offset.x.x,
+        bounds.top + offset.y.x,
+        bounds.width - (offset.x.x + offset.x.y),
+        bounds.height - (offset.y.x + offset.y.y)
+    );
+
+    return hitbox;
 }
 
-sf::FloatRect Platform::getBounds() const {
-    return this->sprite.getGlobalBounds();
+void Platform::moveCollision(float x, float y) {
+    this->setPosition(x,y);
+}
+
+void Platform::setPosition(float x, float y) {
+    this->sprite.setPosition(x, y);
 }
 
 void Platform::initTexture() {

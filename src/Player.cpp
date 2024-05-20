@@ -14,6 +14,20 @@ Player::Player(){
 Player::~Player(){
 }
 
+sf::FloatRect Player::getHitbox() const {
+    sf::Vector2<sf::Vector2f> offset(sf::Vector2f(30, 30), sf::Vector2f(30, 12));
+    sf::FloatRect bounds = this->sprite.getGlobalBounds();
+    
+    sf::FloatRect hitbox(
+        bounds.left + offset.x.x,
+        bounds.top + offset.y.x,
+        bounds.width - (offset.x.x + offset.x.y),
+        bounds.height - (offset.y.x + offset.y.y)
+    );
+
+    return hitbox;
+}
+
 void Player::moveCollision(float x, float y) {
     this->sprite.move(x, y);
 }
@@ -110,53 +124,6 @@ void Player::initTexture(){
         cout << "Error loading player sprite sheet" << endl;
     }
 
-}
-
-bool Player::isColliding(const sf::FloatRect &other) const {
-    float adjustmentFactor = 10.f; //Fais pas gaffe c'est une solution pansement en attendant
-
-    sf::FloatRect globalBounds = this->sprite.getGlobalBounds();
-
-    sf::FloatRect adjustedGlobalBounds(
-        globalBounds.left + adjustmentFactor,
-        globalBounds.top + adjustmentFactor,
-        globalBounds.width - 2 * adjustmentFactor,
-        globalBounds.height - 2 * adjustmentFactor
-    );
-
-    return adjustedGlobalBounds.intersects(other); //TODO: Utiliser le getHitbox a la place
-}
-
-
-void Player::resolveCollision(const sf::FloatRect &other) {
-    sf::FloatRect playerBounds = this->sprite.getGlobalBounds();
-    
-    float overlapLeft = (playerBounds.left + playerBounds.width) - other.left;
-    float overlapRight = (other.left + other.width) - playerBounds.left;
-    float overlapTop = (playerBounds.top + playerBounds.height) - other.top;
-    float overlapBottom = (other.top + other.height) - playerBounds.top;
-
-    bool fromLeft = fabs(overlapLeft) < fabs(overlapRight);
-    bool fromTop = fabs(overlapTop) < fabs(overlapBottom);
-
-    float minOverlapX = fromLeft ? overlapLeft : overlapRight;
-    float minOverlapY = fromTop ? overlapTop : overlapBottom;
-
-    float adjustmentFactor = 10.f;
-
-    if (fabs(minOverlapX) < fabs(minOverlapY)) {
-        if (fromLeft) {
-            this->moveCollision(-minOverlapX + adjustmentFactor, 0);
-        } else {
-            this->moveCollision(minOverlapX - adjustmentFactor, 0);
-        }
-    } else {
-        if (fromTop) {
-            this->moveCollision(0, -minOverlapY + adjustmentFactor);
-        } else {
-            this->moveCollision(0, minOverlapY - adjustmentFactor);
-        }
-    }
 }
 
 //TODO: Collisions with windows borders

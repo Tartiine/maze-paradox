@@ -4,8 +4,9 @@
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
 #include "Animation.h"
+#include "Collision.h"
 
-class Player {
+class Player : public Collision {
 public:
     enum State {
         Normal,
@@ -19,7 +20,8 @@ public:
     Player();
     virtual ~Player();
 
-    void moveCollision(float x, float y);
+    sf::FloatRect getHitbox() const override;
+    void moveCollision(float x, float y) override;
 
     void move(const float dir_x, const float dir_y, float deltaTime);
     void updateMovement(float deltaTime);
@@ -28,8 +30,6 @@ public:
     void render(sf::RenderTarget& target);
     void updatePhysics();
 
-    bool isColliding(const sf::FloatRect &other) const;
-    void resolveCollision(const sf::FloatRect &other);
     //sf::FloatRect getHitbox() const; //TODO: QQUE CHOSE COMME CA
 
 private:
