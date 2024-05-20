@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "Player.h"
-#include "Platform.h"
+#include "Obstacle.h"
 
 class Game {
 public:
@@ -16,21 +16,21 @@ public:
     void update(float deltaTime);      
     
     void renderPlayer();
-    void renderPlatforms();    
+    void renderObstacles();
     
     void render();        
     
-    const sf::RenderWindow& getWindow() const; 
+    const sf::RenderWindow& getWindow() const;
 
 private:
     sf::RenderWindow window;    
     sf::Event ev;
 
     Player* player;
-    std::vector<Platform*> platforms;
+    std::vector<Obstacle*> obstacles;
     
     void initWindow();
-    void initPlatforms(); 
+    void initObstacles(); 
     void initPlayer(); 
 };
 
