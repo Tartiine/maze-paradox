@@ -2,9 +2,9 @@
 #define PLATFORM_H
 
 #include <SFML/Graphics.hpp>
-#include "Collision.h"
+#include "Obstacle.h"
 
-class Platform : public Collision {
+class Platform : public Obstacle {
     public:
         Platform();
         Platform(float x, float y);
@@ -13,16 +13,9 @@ class Platform : public Collision {
         sf::FloatRect getHitbox() const override;
         void moveCollision(float x, float y) override;
 
-        void setPosition(float x, float y);
-
-        void render(sf::RenderTarget & target);
-
     private:
-        sf::Sprite sprite;
-        sf::Texture textureSheet;
-
-        void initTexture();
-        void initSprite();
+        void initTexture() override;
+        void initSprite() override;
 };
 
 #endif // PLATFORM_H

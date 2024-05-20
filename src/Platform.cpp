@@ -36,10 +36,6 @@ void Platform::moveCollision(float x, float y) {
     this->setPosition(x,y);
 }
 
-void Platform::setPosition(float x, float y) {
-    this->sprite.setPosition(x, y);
-}
-
 void Platform::initTexture() {
     if (!this->textureSheet.loadFromFile("resources/sprites/platforms.png")){
         cout << "Error loading platform sprite sheet" << endl;
@@ -53,8 +49,4 @@ void Platform::initSprite(){
     this->sprite.setScale(3.0f,3.0f);
     this->sprite.setPosition(0, 0);
 
-}
-
-void Platform::render(sf::RenderTarget & target){
-    target.draw(this->sprite);
 }

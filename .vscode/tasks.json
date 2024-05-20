@@ -15,6 +15,7 @@
                 "src/Animation.cpp",
                 "src/Platform.cpp",
                 "src/Collision.cpp",
+                "src/Obstacle.cpp",
                 "-I./include",
                 "-I${env:SFML_DIR}\\include",
                 "-L${env:SFML_DIR}\\lib",
