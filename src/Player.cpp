@@ -25,7 +25,7 @@ void Player::move(const float dir_x, const float dir_y, float deltaTime){
             this->velocity.x = this->maxVelocity * ((this->velocity.x < 0.f) ? -1.f : 1.f);
         }
 }
-
+//TODO: Can't jump while walking
 void Player::updateMovement(float deltaTime)
 {
     this->currentState = State::Normal;
@@ -70,7 +70,7 @@ void Player::updateAnimations(float deltaTime) {
 void Player::update(float deltaTime) {
     this->updateMovement(deltaTime);
 
-    if(this->sprite.getPosition().y > 200.f) {
+    if(this->sprite.getPosition().y > 200.f) { //TODO: Modify to when the sprite is on the ground (collision from the botton)
         if (!this->keyPressed) { 
             this->canJump = true;
         }
@@ -90,7 +90,9 @@ void Player::render(sf::RenderTarget & target){
 
 void Player::updatePhysics() {
     //Gravity
-    this->velocity.y += 1.0 * this->gravity; //TODO: apply only when falling
+    if(canJump == false) {
+        this->velocity.y += 1.0 * this->gravity; //TODO: apply only when falling (modify with onGround)
+    }
     if(abs(this->velocity.x) > this->maxVelocityY) {
         this->velocity.y = this->maxVelocityY * ((this->velocity.y < 0.f) ? -1.f : 1.f);
     }
@@ -111,8 +113,20 @@ void Player::initTexture(){
 }
 
 bool Player::isColliding(const sf::FloatRect &other) const {
-    return this->sprite.getGlobalBounds().intersects(other);
+    float adjustmentFactor = 10.f; //Fais pas gaffe c'est une solution pansement en attendant
+
+    sf::FloatRect globalBounds = this->sprite.getGlobalBounds();
+
+    sf::FloatRect adjustedGlobalBounds(
+        globalBounds.left + adjustmentFactor,
+        globalBounds.top + adjustmentFactor,
+        globalBounds.width - 2 * adjustmentFactor,
+        globalBounds.height - 2 * adjustmentFactor
+    );
+
+    return adjustedGlobalBounds.intersects(other); //TODO: Utiliser le getHitbox a la place
 }
+
 
 void Player::resolveCollision(const sf::FloatRect &other) {
     sf::FloatRect playerBounds = this->sprite.getGlobalBounds();
@@ -128,26 +142,30 @@ void Player::resolveCollision(const sf::FloatRect &other) {
     float minOverlapX = fromLeft ? overlapLeft : overlapRight;
     float minOverlapY = fromTop ? overlapTop : overlapBottom;
 
+    float adjustmentFactor = 10.f;
+
     if (fabs(minOverlapX) < fabs(minOverlapY)) {
         if (fromLeft) {
-            this->moveCollision(-minOverlapX, 0);
+            this->moveCollision(-minOverlapX + adjustmentFactor, 0);
         } else {
-            this->moveCollision(minOverlapX, 0);
+            this->moveCollision(minOverlapX - adjustmentFactor, 0);
         }
     } else {
         if (fromTop) {
-            this->moveCollision(0, -minOverlapY);
+            this->moveCollision(0, -minOverlapY + adjustmentFactor);
         } else {
-            this->moveCollision(0, minOverlapY);
+            this->moveCollision(0, minOverlapY - adjustmentFactor);
         }
     }
 }
 
+//TODO: Collisions with windows borders
 void Player::initSprite(){
     this->sprite.setTexture(this->textureSheet);
     this->sprite.setTextureRect(sf::IntRect(0,0,32,32));
 
     this->sprite.setScale(3.0f,3.0f);
+    this->sprite.setPosition(10.f, 210.f);
 }
 
 void Player::initAnimations() {

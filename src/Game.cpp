@@ -13,7 +13,7 @@ Game::~Game(){
 }
 
 void Game::collisionPlayer() {
-    for (auto platform : this->platforms) {
+    for (const auto& platform : this->platforms) {
         sf::FloatRect bounds = platform->getBounds();
         if (this->player->isColliding(bounds)) {
             player->resolveCollision(bounds);
@@ -34,8 +34,9 @@ void Game::update(float deltaTime) {
             this->window.close();
         }
     }
-    this->collisionPlayer();
+
     this->updatePlayer(deltaTime);
+    this->collisionPlayer();
 }
 
 
