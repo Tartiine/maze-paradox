@@ -120,7 +120,6 @@ void Player::initTexture(){
 
 }
 
-//TODO: Collisions with window borders
 void Player::initSprite(){
     this->sprite.setTexture(this->textureSheet);
     this->sprite.setTextureRect(sf::IntRect(0,0,32,32));

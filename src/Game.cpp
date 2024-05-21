@@ -15,6 +15,7 @@ Game::~Game(){
 }
 
 void Game::collisionPlayer() {
+    this->player->checkWindowBorders(this->window); 
     for (const auto& platform : this->obstacles) {
         sf::FloatRect bounds = platform->getHitbox();
         if (this->player->isColliding(bounds)) {
@@ -39,6 +40,7 @@ void Game::update(float deltaTime) {
 
     this->updatePlayer(deltaTime);
     this->collisionPlayer();
+
 }
 
 
@@ -77,10 +79,10 @@ void Game::initPlayer(){
 
 void Game::initObstacles(){
     for (int i = 1; i < 15; ++i) {
-        obstacles.push_back(new Ground(48*i, 400));
+        obstacles.push_back(new Ground(48*i, 550));
     }
 
-    obstacles.push_back(new Platform(200, 300));
-    obstacles.push_back(new Platform(400, 300));
-    obstacles.push_back(new Platform(600, 300));  
+    obstacles.push_back(new Platform(200, 500));
+    obstacles.push_back(new Platform(400, 500));
+    obstacles.push_back(new Platform(600, 500));  
 }

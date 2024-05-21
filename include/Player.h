@@ -30,7 +30,6 @@ public:
     void render(sf::RenderTarget& target);
     void updatePhysics();
 
-    //sf::FloatRect getHitbox() const; //TODO: QQUE CHOSE COMME CA
 
 private:
     sf::Sprite sprite;
@@ -58,10 +57,6 @@ private:
     float airBrake; 
     float adjustmentFactor = 10.f;
 
-    //sf::FloatRect hitboxOffset; //TODO: Definir un offest ou sinon directement dans le code (a voir)
-    /*ou sinon si t'a besoin de mettre des offsets que sur certains 
-    cotés tu peux ptet juste faire des float offsetX ou qque chose comme ca*/
-    //TODO: Faire la meme chose dans platform !!!
 };
 
 #endif // PLAYER_H
