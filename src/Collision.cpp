@@ -4,8 +4,7 @@
 using namespace std;
 
 bool Collision::isColliding(const sf::FloatRect &other) const {
-    sf::FloatRect hitbox = this->getHitbox();
-    return hitbox.intersects(other);
+    return this->getHitbox().intersects(other);
 }
 
 void Collision::resolveCollision(const sf::FloatRect &other) {
@@ -31,8 +30,9 @@ void Collision::resolveCollision(const sf::FloatRect &other) {
     } else {
         if (fromTop) {
             this->moveCollision(0, -minOverlapY);
+            isOnGround = true;
         } else {
-            this->moveCollision(0, minOverlapY);
+            this->moveCollision(0, minOverlapY); 
         }
     }
 }

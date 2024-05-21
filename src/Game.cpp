@@ -77,10 +77,10 @@ void Game::initPlayer(){
 
 void Game::initObstacles(){
     for (int i = 1; i < 15; ++i) {
-        obstacles.push_back(new Ground(48*i, 300));
+        obstacles.push_back(new Ground(48*i, 400));
     }
 
-    obstacles.push_back(new Platform(200, 200));
-    obstacles.push_back(new Platform(400, 200));
-    obstacles.push_back(new Platform(600, 200));  
+    obstacles.push_back(new Platform(200, 300));
+    obstacles.push_back(new Platform(400, 300));
+    obstacles.push_back(new Platform(600, 300));  
 }

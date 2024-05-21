@@ -52,7 +52,6 @@ private:
     float gravity;
     float maxVelocityY;
     float jumpHeight;
-    bool canJump = true;
     bool keyPressed = false;
     float jumpVelocity;  
     float airControl;    

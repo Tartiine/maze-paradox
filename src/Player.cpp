@@ -49,16 +49,11 @@ void Player::updateMovement(float deltaTime)
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)){ //Right
         this->move(5.f, 0.f, deltaTime);
         this->currentState = State::Walking;
-    } /*else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)){ //Down (Crouch)
-        this->move(0.f, 5.f);
-        this->currentState = State::Crouching;
-    }*/
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) { // Jump
-        if (!this->keyPressed && this->canJump) {
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) { // Jump
+        if (!this->keyPressed && this->isOnGround) {
             this->velocity.y = -sqrtf(2.0f * this->gravity * this->jumpHeight);
             this->currentState = State::Jumping;
             this->keyPressed = true;
-            this->canJump = false;
         }
     } else {
         this->keyPressed = false; 
@@ -84,17 +79,14 @@ void Player::updateAnimations(float deltaTime) {
 void Player::update(float deltaTime) {
     this->updateMovement(deltaTime);
 
-    if(this->sprite.getPosition().y > 200.f) { //TODO: Modify to when the sprite is on the ground (collision from the botton)
-        if (!this->keyPressed) { 
-            this->canJump = true;
-        }
-    }
-
     if (currentState != State::Normal) {
         this->updateAnimations(deltaTime); 
     }
 
     this->updatePhysics();
+
+    this->isOnGround = false;
+
 }
 
 
@@ -104,7 +96,7 @@ void Player::render(sf::RenderTarget & target){
 
 void Player::updatePhysics() {
     //Gravity
-    if(canJump == false) {
+    if(!isOnGround) {
         this->velocity.y += 1.0 * this->gravity; //TODO: apply only when falling (modify with onGround)
     }
     if(abs(this->velocity.x) > this->maxVelocityY) {
@@ -126,7 +118,7 @@ void Player::initTexture(){
 
 }
 
-//TODO: Collisions with windows borders
+//TODO: Collisions with window borders
 void Player::initSprite(){
     this->sprite.setTexture(this->textureSheet);
     this->sprite.setTextureRect(sf::IntRect(0,0,32,32));
