@@ -39,7 +39,7 @@ void Player::move(const float dir_x, const float dir_y, float deltaTime){
             this->velocity.x = this->maxVelocity * ((this->velocity.x < 0.f) ? -1.f : 1.f);
         }
 }
-//TODO: Can't jump while walking
+
 void Player::updateMovement(float deltaTime)
 {
     this->currentState = State::Normal;
@@ -49,7 +49,9 @@ void Player::updateMovement(float deltaTime)
     } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)){ //Right
         this->move(5.f, 0.f, deltaTime);
         this->currentState = State::Walking;
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) { // Jump
+    }
+    
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) { // Jump
         if (!this->keyPressed && this->isOnGround) {
             this->velocity.y = -sqrtf(2.0f * this->gravity * this->jumpHeight);
             this->currentState = State::Jumping;
@@ -97,7 +99,7 @@ void Player::render(sf::RenderTarget & target){
 void Player::updatePhysics() {
     //Gravity
     if(!isOnGround) {
-        this->velocity.y += 1.0 * this->gravity; //TODO: apply only when falling (modify with onGround)
+        this->velocity.y += 1.0 * this->gravity;
     }
     if(abs(this->velocity.x) > this->maxVelocityY) {
         this->velocity.y = this->maxVelocityY * ((this->velocity.y < 0.f) ? -1.f : 1.f);
