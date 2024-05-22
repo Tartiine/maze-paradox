@@ -4,24 +4,32 @@
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
 #include "Animation.h"
+#include "Collision.h"
 
-class Player{
+class Player : public Collision {
 public:
     enum State {
         Normal,
         Idle,
         Walking,
         Jumping,
-        Crouching
+        Crouching,
+        Falling
     };
 
     Player();
     virtual ~Player();
 
-    void updateMovement();
+    sf::FloatRect getHitbox() const override;
+    void moveCollision(float x, float y) override;
+
+    void move(const float dir_x, const float dir_y, float deltaTime);
+    void updateMovement(float deltaTime);
     void updateAnimations(float deltaTime);
     void update(float deltaTime);
     void render(sf::RenderTarget& target);
+    void updatePhysics();
+
 
 private:
     sf::Sprite sprite;
@@ -33,6 +41,22 @@ private:
     void initTexture();
     void initSprite();
     void initAnimations();
+    void initPhysics();
+
+    sf::Vector2f velocity;
+    float maxVelocity;
+    float minVelocity;
+    float acceleration;
+    float deceleration;
+    float gravity;
+    float maxVelocityY;
+    float jumpHeight;
+    bool keyPressed = false;
+    float jumpVelocity;  
+    float airControl;    
+    float airBrake; 
+    float adjustmentFactor = 10.f;
+
 };
 
 #endif // PLAYER_H

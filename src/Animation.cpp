@@ -18,11 +18,6 @@ Animation::~Animation() {}
 void Animation::update(int row, float deltaTime, bool faceRight) {
     currentImage.y = row;
     totalTime += deltaTime;
-
-    std::cout << "Current Frame: " << currentImage.x << ", Row: " << currentImage.y
-              << ", Total Frames: " << imageCount.x << ", Total Rows: " << imageCount.y
-              << ", UVRect: " << uvRect.left << ", " << uvRect.top << ", " << uvRect.width << ", " << uvRect.height
-              << std::endl;
               
     if (totalTime >= switchTime) {
         totalTime -= switchTime;

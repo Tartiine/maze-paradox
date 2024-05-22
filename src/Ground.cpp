@@ -1,25 +1,25 @@
-#include "Platform.h"
+#include "Ground.h"
 #include <iostream>
 
 using namespace std;
 
-Platform::Platform() {
+Ground::Ground() {
     this->initTexture();
     this->initSprite();
 }
 
-Platform::Platform(float x, float y) {
+Ground::Ground(float x, float y) {
     this->initTexture();
     this->initSprite();
     this->setPosition(x, y);
 }
 
-Platform::~Platform() {
+Ground::~Ground() {
 
 }
 
-sf::FloatRect Platform::getHitbox() const {
-    sf::Vector2<sf::Vector2f> offset(sf::Vector2f(0, 0), sf::Vector2f(0, 21));
+sf::FloatRect Ground::getHitbox() const {
+    sf::Vector2<sf::Vector2f> offset(sf::Vector2f(0, 0), sf::Vector2f(0, 0));
     sf::FloatRect bounds = this->sprite.getGlobalBounds();
     
     sf::FloatRect hitbox(
@@ -32,19 +32,19 @@ sf::FloatRect Platform::getHitbox() const {
     return hitbox;
 }
 
-void Platform::moveCollision(float x, float y) {
+void Ground::moveCollision(float x, float y) {
     this->setPosition(x,y);
 }
 
-void Platform::initTexture() {
-    if (!this->textureSheet.loadFromFile("resources/sprites/platforms.png")){
-        cout << "Error loading platform sprite sheet" << endl;
+void Ground::initTexture() {
+    if (!this->textureSheet.loadFromFile("resources/sprites/world_tileset.png")){
+        cout << "Error loading ground sprite sheet" << endl;
     }
 }
 
-void Platform::initSprite(){
+void Ground::initSprite(){
     this->sprite.setTexture(this->textureSheet);
-    this->sprite.setTextureRect(sf::IntRect(16,16,32,16));
+    this->sprite.setTextureRect(sf::IntRect(0,0,16,16));
 
     this->sprite.setScale(3.0f,3.0f);
     this->sprite.setPosition(0, 0);

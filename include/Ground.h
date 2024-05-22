@@ -1,14 +1,14 @@
-#ifndef PLATFORM_H
-#define PLATFORM_H
+#ifndef GROUND_H
+#define GROUND_H
 
 #include <SFML/Graphics.hpp>
 #include "Obstacle.h"
 
-class Platform : public Obstacle {
+class Ground : public Obstacle {
     public:
-        Platform();
-        Platform(float x, float y);
-        virtual ~Platform();
+        Ground();
+        Ground(float x, float y);
+        virtual ~Ground();
 
         sf::FloatRect getHitbox() const override;
         void moveCollision(float x, float y) override;
@@ -18,4 +18,4 @@ class Platform : public Obstacle {
         void initSprite() override;
 };
 
-#endif // PLATFORM_H
+#endif // GROUND_H

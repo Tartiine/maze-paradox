@@ -3,32 +3,34 @@
 
 #include <SFML/Graphics.hpp>
 #include "Player.h"
-#include "Platform.h"
+#include "Obstacle.h"
 
 class Game {
 public:
     Game(); 
     virtual ~Game();
 
+    void collisionPlayer();
+
     void updatePlayer(float deltaTime);
     void update(float deltaTime);      
     
     void renderPlayer();
-    void renderPlatform();    
+    void renderObstacles();
     
     void render();        
     
-    const sf::RenderWindow& getWindow() const; 
+    const sf::RenderWindow& getWindow() const;
 
 private:
     sf::RenderWindow window;    
     sf::Event ev;
 
     Player* player;
-    Platform* platform;
+    std::vector<Obstacle*> obstacles;
     
     void initWindow();
-    void initPlatform(); 
+    void initObstacles(); 
     void initPlayer(); 
 };
 

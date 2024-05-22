@@ -1,19 +1,31 @@
 #include "Game.h"
+#include "Platform.h"
+#include "Ground.h"
+#include <iostream>
 
 Game::Game() {
     this->initWindow();
-    this->initPlatform();
+    this->initObstacles();
     this->initPlayer();
 }
 
 Game::~Game(){
     delete this->player;
-    delete this->platform;
+    this->obstacles.clear();
+}
+
+void Game::collisionPlayer() {
+    this->player->checkWindowBorders(this->window); 
+    for (const auto& platform : this->obstacles) {
+        sf::FloatRect bounds = platform->getHitbox();
+        if (this->player->isColliding(bounds)) {
+            player->resolveCollision(bounds);
+        }
+    }
 }
 
 void Game::updatePlayer(float deltaTime){
     this->player->update(deltaTime);
-
 }
 
 void Game::update(float deltaTime) {
@@ -27,6 +39,8 @@ void Game::update(float deltaTime) {
     }
 
     this->updatePlayer(deltaTime);
+    this->collisionPlayer();
+
 }
 
 
@@ -34,15 +48,17 @@ void Game::renderPlayer(){
     this->player->render(this->window);
 }
 
-void Game::renderPlatform(){
-    this->platform->render(this->window);
+void Game::renderObstacles(){
+    for (auto obstacle : this->obstacles) {
+        obstacle->render(this->window);
+    }
 }
 
 void Game::render() {
     this->window.clear(sf::Color::Blue);  //Maybe clear with a black color ?
 
     // Drawing components
-    this->renderPlatform();
+    this->renderObstacles();
     this->renderPlayer();
 
     this->window.display();  
@@ -61,6 +77,12 @@ void Game::initPlayer(){
     this->player = new Player();
 }
 
-void Game::initPlatform(){
-    this->platform = new Platform();
+void Game::initObstacles(){
+    for (int i = 1; i < 15; ++i) {
+        obstacles.push_back(new Ground(48*i, 550));
+    }
+
+    obstacles.push_back(new Platform(200, 500));
+    obstacles.push_back(new Platform(400, 500));
+    obstacles.push_back(new Platform(600, 500));  
 }
