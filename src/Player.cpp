@@ -40,18 +40,25 @@ void Player::move(const float dir_x, const float dir_y, float deltaTime){
         }
 }
 
-void Player::updateMovement(float deltaTime)
-{
+void Player::updateMovement(float deltaTime) {
+    float DEAD_ZONE = 15.0f;
+
     this->currentState = State::Normal;
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)){ //Left
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q) ||
+        sf::Joystick::getAxisPosition(0, sf::Joystick::X) < -DEAD_ZONE ||
+        sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) < -DEAD_ZONE) { // Left
         this->move(-5.f, 0.f, deltaTime);
         this->currentState = State::Idle;
-    } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)){ //Right
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) ||
+               sf::Joystick::getAxisPosition(0, sf::Joystick::X) > DEAD_ZONE ||
+               sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) > DEAD_ZONE) { // Right
         this->move(5.f, 0.f, deltaTime);
         this->currentState = State::Walking;
     }
-    
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) { // Jump
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z) ||
+        sf::Joystick::isButtonPressed(0, 0)) { // Jump
         if (!this->keyPressed && this->isOnGround) {
             this->velocity.y = -sqrtf(2.0f * this->gravity * this->jumpHeight);
             this->currentState = State::Jumping;
@@ -61,6 +68,7 @@ void Player::updateMovement(float deltaTime)
         this->keyPressed = false; 
     }
 }
+
 
 void Player::updateAnimations(float deltaTime) {
     bool facingRight = this->sprite.getScale().x > 0; 

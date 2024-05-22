@@ -25,6 +25,8 @@ public:
 
     void move(const float dir_x, const float dir_y, float deltaTime);
     void updateMovement(float deltaTime);
+    void handleKeyboardInput();
+    void handleJoystickInput();
     void updateAnimations(float deltaTime);
     void update(float deltaTime);
     void render(sf::RenderTarget& target);
@@ -34,7 +36,7 @@ public:
 private:
     sf::Sprite sprite;
     sf::Texture textureSheet;
-    State currentState;
+    State currentState = State::Normal;;
 
     std::unordered_map<State, Animation> animations;
 
