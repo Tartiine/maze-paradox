@@ -23,13 +23,19 @@ public:
     const sf::RenderWindow& getWindow() const;
 
 private:
-    sf::RenderWindow window;    
+    sf::RenderWindow window;
+    sf::RenderTexture renderTexture;
+
+    sf::Vector2i resolution {320, 180};
+    unsigned int scale = 3;
+    
     sf::Event ev;
 
     Player* player;
     std::vector<Obstacle*> obstacles;
-    
+
     void initWindow();
+    void initRenderTexture();
     void initObstacles(); 
     void initPlayer(); 
 };

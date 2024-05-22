@@ -18,7 +18,10 @@ public:
     };
 
     Player();
+    Player(float x, float y);
     virtual ~Player();
+
+    void setPosition(float x, float y);
 
     sf::FloatRect getHitbox() const override;
     void moveCollision(float x, float y) override;
@@ -56,7 +59,7 @@ private:
     float airControl;    
     float airBrake; 
     float adjustmentFactor = 10.f;
-
+    // TODO: Ajuster les valeurs à la nouvelle résolution
 };
 
 #endif // PLAYER_H

@@ -5,6 +5,7 @@
 
 Game::Game() {
     this->initWindow();
+    initRenderTexture();
     this->initObstacles();
     this->initPlayer();
 }
@@ -15,7 +16,8 @@ Game::~Game(){
 }
 
 void Game::collisionPlayer() {
-    this->player->checkWindowBorders(this->window); 
+    this->player->checkWindowBorders(this->renderTexture);
+
     for (const auto& platform : this->obstacles) {
         sf::FloatRect bounds = platform->getHitbox();
         if (this->player->isColliding(bounds)) {
@@ -45,22 +47,29 @@ void Game::update(float deltaTime) {
 
 
 void Game::renderPlayer(){
-    this->player->render(this->window);
+    this->player->render(this->renderTexture);
 }
 
 void Game::renderObstacles(){
     for (auto obstacle : this->obstacles) {
-        obstacle->render(this->window);
+        obstacle->render(this->renderTexture);
     }
 }
 
 void Game::render() {
-    this->window.clear(sf::Color::Blue);  //Maybe clear with a black color ?
+    this->renderTexture.clear(sf::Color::Blue);  //Maybe clear with a black color ?
 
     // Drawing components
     this->renderObstacles();
     this->renderPlayer();
 
+    renderTexture.display();
+
+    sf::Sprite renderSprite(renderTexture.getTexture());
+    renderSprite.setScale(this->scale, this->scale);
+    
+    this->window.clear();
+    this->window.draw(renderSprite);
     this->window.display();  
 }
 
@@ -69,20 +78,20 @@ const sf::RenderWindow & Game::getWindow() const {
 }
 
 void Game::initWindow(){
-    this->window.create(sf::VideoMode(800, 600), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
+    this->window.create(sf::VideoMode(this->resolution.x * this->scale, this->resolution.y * this->scale), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
     this->window.setFramerateLimit(60);  //TODO: uniformiser la vitesse de deplacement (pas de variation en fonction des fps)
 }
 
+void Game::initRenderTexture() {
+    this->renderTexture.create(this->resolution.x, this->resolution.y);
+}
+
 void Game::initPlayer(){
-    this->player = new Player();
+    this->player = new Player(64, 0);
 }
 
 void Game::initObstacles(){
-    for (int i = 1; i < 15; ++i) {
-        obstacles.push_back(new Ground(48*i, 550));
+    for (int i = 2; i < 18; ++i) {
+        obstacles.push_back(new Ground(16*i, 164));
     }
-
-    obstacles.push_back(new Platform(200, 500));
-    obstacles.push_back(new Platform(400, 500));
-    obstacles.push_back(new Platform(600, 500));  
 }

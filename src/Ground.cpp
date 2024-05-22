@@ -45,8 +45,6 @@ void Ground::initTexture() {
 void Ground::initSprite(){
     this->sprite.setTexture(this->textureSheet);
     this->sprite.setTextureRect(sf::IntRect(0,0,16,16));
-
-    this->sprite.setScale(3.0f,3.0f);
     this->sprite.setPosition(0, 0);
 
 }
