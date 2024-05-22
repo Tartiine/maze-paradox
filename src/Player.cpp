@@ -51,7 +51,7 @@ void Player::updateMovement(float deltaTime)
         this->currentState = State::Walking;
     }
     
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)) { // Jump
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) { // Jump
         if (!this->keyPressed && this->isOnGround) {
             this->velocity.y = -sqrtf(2.0f * this->gravity * this->jumpHeight);
             this->currentState = State::Jumping;
