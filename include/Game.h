@@ -28,7 +28,6 @@ private:
     std::vector<Obstacle*> obstacles;
     
     void checkGamepad();
-    void showGamepadMessage();
 
     void initWindow();
     void initObstacles(); 

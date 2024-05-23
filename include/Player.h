@@ -9,7 +9,6 @@
 class Player : public Collision {
 public:
     enum State {
-        Normal,
         Idle,
         Walking,
         Jumping,
@@ -25,18 +24,15 @@ public:
 
     void move(const float dir_x, const float dir_y, float deltaTime);
     void updateMovement(float deltaTime);
-    void handleKeyboardInput();
-    void handleJoystickInput();
     void updateAnimations(float deltaTime);
     void update(float deltaTime);
     void render(sf::RenderTarget& target);
     void updatePhysics();
 
-
 private:
     sf::Sprite sprite;
     sf::Texture textureSheet;
-    State currentState = State::Normal;;
+    State currentState = State::Idle;
 
     std::unordered_map<State, Animation> animations;
 
@@ -58,7 +54,10 @@ private:
     float airControl;    
     float airBrake; 
     float adjustmentFactor = 10.f;
+    bool facingRight = false;
 
 };
+
+//TODO: Add getters and setters
 
 #endif // PLAYER_H

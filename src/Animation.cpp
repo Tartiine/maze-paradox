@@ -15,7 +15,7 @@ Animation::Animation(sf::Texture* texture, sf::Vector2u imageCount, float switch
 
 Animation::~Animation() {}
 
-void Animation::update(int row, float deltaTime, bool faceRight) {
+void Animation::update(int row, float deltaTime) {
     currentImage.y = row;
     totalTime += deltaTime;
               
@@ -31,9 +31,4 @@ void Animation::update(int row, float deltaTime, bool faceRight) {
     uvRect.left = currentImage.x * uvRect.width;
     uvRect.top = currentImage.y * uvRect.height;
 
-    if (faceRight) {
-        uvRect.width = abs(uvRect.width);
-    } else {
-        uvRect.width = -abs(uvRect.width);
-    }
 }
