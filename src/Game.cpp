@@ -3,14 +3,19 @@
 #include "Ground.h"
 #include <iostream>
 
-Game::Game() {
+Game::Game() : showGamepadMessageFlag(true) {
     this->initWindow();
     this->initObstacles();
     this->initPlayer();
+
+    checkGamepad();
 }
 
-Game::~Game(){
+Game::~Game() {
     delete this->player;
+    for (auto obstacle : this->obstacles) {
+        delete obstacle;
+    }
     this->obstacles.clear();
 }
 
@@ -24,7 +29,7 @@ void Game::collisionPlayer() {
     }
 }
 
-void Game::updatePlayer(float deltaTime){
+void Game::updatePlayer(float deltaTime) {
     this->player->update(deltaTime);
 }
 
@@ -40,46 +45,74 @@ void Game::update(float deltaTime) {
 
     this->updatePlayer(deltaTime);
     this->collisionPlayer();
-
 }
 
-
-void Game::renderPlayer(){
+void Game::renderPlayer() {
     this->player->render(this->window);
 }
 
-void Game::renderObstacles(){
+void Game::renderObstacles() {
     for (auto obstacle : this->obstacles) {
         obstacle->render(this->window);
     }
 }
 
 void Game::render() {
-    this->window.clear(sf::Color::Blue);  //Maybe clear with a black color ?
+    this->window.clear(sf::Color::Blue);  // Maybe clear with a black color?
 
     // Drawing components
     this->renderObstacles();
     this->renderPlayer();
 
-    this->window.display();  
+    // Display gamepad message for the first 3 seconds
+    if (showGamepadMessageFlag && messageClock.getElapsedTime().asSeconds() < 3) {
+        this->window.draw(triangle);
+    } else {
+        showGamepadMessageFlag = false;
+    }
+
+    this->window.display();
 }
 
-const sf::RenderWindow & Game::getWindow() const {
+const sf::RenderWindow& Game::getWindow() const {
     return this->window;
 }
 
-void Game::initWindow(){
-    this->window.create(sf::VideoMode(800, 600), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
-    this->window.setFramerateLimit(60);  //TODO: uniformiser la vitesse de deplacement (pas de variation en fonction des fps)
+void Game::checkGamepad() {
+    bool gamepadConnected = false;
+    for (unsigned int i = 0; i < sf::Joystick::Count; ++i) {
+        if (sf::Joystick::isConnected(i)) {
+            gamepadConnected = true;
+            break;
+        }
+    }
+    createTriangle(gamepadConnected);
 }
 
-void Game::initPlayer(){
+void Game::createTriangle(bool gamepadConnected) {
+    triangle.setPointCount(3);
+    triangle.setPoint(0, sf::Vector2f(75.f, 10.f));
+    triangle.setPoint(1, sf::Vector2f(100.f, 60.f));
+    triangle.setPoint(2, sf::Vector2f(50.f, 60.f));
+    if (gamepadConnected) {
+        triangle.setFillColor(sf::Color::Green);
+    } else {
+        triangle.setFillColor(sf::Color::Red);
+    }
+}
+
+void Game::initWindow() {
+    this->window.create(sf::VideoMode(800, 600), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
+    this->window.setFramerateLimit(60);  // TODO: Uniformize the movement speed (no variation based on FPS)
+}
+
+void Game::initPlayer() {
     this->player = new Player();
 }
 
-void Game::initObstacles(){
+void Game::initObstacles() {
     for (int i = 1; i < 15; ++i) {
-        obstacles.push_back(new Ground(48*i, 550));
+        obstacles.push_back(new Ground(48 * i, 550));
     }
 
     obstacles.push_back(new Platform(200, 500));
