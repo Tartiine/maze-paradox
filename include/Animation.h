@@ -10,7 +10,7 @@ public:
     Animation(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2u frameSize);
     ~Animation();
 
-    void update(int row, float deltaTime, bool faceRight);
+    void update(int row, float deltaTime);
 
     sf::IntRect uvRect;
 

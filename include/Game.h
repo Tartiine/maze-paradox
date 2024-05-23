@@ -11,13 +11,7 @@ public:
     virtual ~Game();
 
     void collisionPlayer();
-
-    void updatePlayer(float deltaTime);
     void update(float deltaTime);      
-    
-    void renderPlayer();
-    void renderObstacles();
-    
     void render();        
     
     const sf::RenderWindow& getWindow() const;
@@ -30,14 +24,25 @@ private:
     unsigned int scale = 3;
     
     sf::Event ev;
-
     Player* player;
+    sf::ConvexShape triangle;
+
+    bool showGamepadMessageFlag;
+    sf::Clock messageClock;
+
     std::vector<Obstacle*> obstacles;
+    
+    void checkGamepad();
 
     void initWindow();
     void initRenderTexture();
     void initObstacles(); 
     void initPlayer(); 
+    void renderPlayer();
+    void renderObstacles();
+    void updatePlayer(float deltaTime);
+    void createTriangle(bool gamepadConnected);
+    
 };
 
 #endif // GAME_H

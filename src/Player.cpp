@@ -50,20 +50,36 @@ void Player::move(const float dir_x, const float dir_y, float deltaTime){
         if(abs(this->velocity.x) > this->maxVelocity) {
             this->velocity.x = this->maxVelocity * ((this->velocity.x < 0.f) ? -1.f : 1.f);
         }
+
+        if (dir_x < 0.f) { 
+            this->sprite.setScale(-abs(this->sprite.getScale().x), this->sprite.getScale().y); 
+            this->sprite.setOrigin(this->sprite.getLocalBounds().width, 0); 
+        } else if (dir_x > 0.f) { 
+            this->sprite.setScale(abs(this->sprite.getScale().x), this->sprite.getScale().y); 
+            this->sprite.setOrigin(0, 0);
+        }
+
 }
 
-void Player::updateMovement(float deltaTime)
-{
-    this->currentState = State::Normal;
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)){ //Left
+void Player::updateMovement(float deltaTime) {
+    float DEAD_ZONE = 15.0f;
+
+    this->currentState = State::Idle;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q) ||
+        sf::Joystick::getAxisPosition(0, sf::Joystick::X) < -DEAD_ZONE ||
+        sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) < -DEAD_ZONE) { // Left
         this->move(-5.f, 0.f, deltaTime);
-        this->currentState = State::Idle;
-    } else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)){ //Right
+        this->currentState = State::Walking;
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) ||
+               sf::Joystick::getAxisPosition(0, sf::Joystick::X) > DEAD_ZONE ||
+               sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) > DEAD_ZONE) { // Right
         this->move(5.f, 0.f, deltaTime);
         this->currentState = State::Walking;
     }
-    
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) { // Jump
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z) ||
+        sf::Joystick::isButtonPressed(0, 0) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) { // Jump
         if (!this->keyPressed && this->isOnGround) {
             this->velocity.y = -sqrtf(2.0f * this->gravity * this->jumpHeight);
             this->currentState = State::Jumping;
@@ -74,9 +90,8 @@ void Player::updateMovement(float deltaTime)
     }
 }
 
+//TODO: Fix facingRight
 void Player::updateAnimations(float deltaTime) {
-    bool facingRight = this->sprite.getScale().x > 0; 
-
     int animationRow = 0; 
     switch(currentState) {
         case State::Walking: animationRow = 2; break; 
@@ -85,17 +100,14 @@ void Player::updateAnimations(float deltaTime) {
         default: animationRow = 0; break;
     }
 
-
-    animations[currentState].update(animationRow, deltaTime, facingRight); //TODO: Fix facingRight
+    animations[currentState].update(animationRow, deltaTime); 
     this->sprite.setTextureRect(animations[currentState].uvRect);
 }
 
 void Player::update(float deltaTime) {
     this->updateMovement(deltaTime);
 
-    if (currentState != State::Normal) {
-        this->updateAnimations(deltaTime); 
-    }
+    this->updateAnimations(deltaTime); 
 
     this->updatePhysics();
 
@@ -139,7 +151,7 @@ void Player::initSprite(){
 }
 
 void Player::initAnimations() {
-    animations[Idle] = Animation(&textureSheet, sf::Vector2u(4, 1), 0.3f, sf::Vector2u(32,32));       
+    animations[Idle] = Animation(&textureSheet, sf::Vector2u(4, 1), 0.15f, sf::Vector2u(32,32));       
     animations[Walking] = Animation(&textureSheet, sf::Vector2u(8, 2), 0.09f, sf::Vector2u(32,32));    
     animations[Jumping] = Animation(&textureSheet, sf::Vector2u(5, 1), 0.15f, sf::Vector2u(32,32));   
     animations[Crouching] = Animation(&textureSheet, sf::Vector2u(3, 1), 0.2f, sf::Vector2u(32,32));  
