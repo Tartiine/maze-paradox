@@ -46,9 +46,15 @@ void Game::update(float deltaTime) {
             this->window.close();
             if (this->isFullscreenOn) {
                 this->initWindow();
+                window.setMouseCursorVisible(true);
             } else {
                 this->initWindowFullscreen();
+                window.setMouseCursorVisible(false);
             }
+        } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::G) {
+            scale = (scale % 3) + 1;
+            this->window.close();
+            this->initWindow();
         }
     }
 
