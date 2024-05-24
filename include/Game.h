@@ -32,9 +32,12 @@ private:
 
     std::vector<Obstacle*> obstacles;
     
+    bool isFullscreenOn;
+
     void checkGamepad();
 
     void initWindow();
+    void initWindowFullscreen();
     void initRenderTexture();
     void initObstacles(); 
     void initPlayer(); 

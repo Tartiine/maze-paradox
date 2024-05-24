@@ -42,6 +42,13 @@ void Game::update(float deltaTime) {
             this->window.close();
         } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
             this->window.close();
+        } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F) {
+            this->window.close();
+            if (this->isFullscreenOn) {
+                this->initWindow();
+            } else {
+                this->initWindowFullscreen();
+            }
         }
     }
 
@@ -113,6 +120,12 @@ void Game::createTriangle(bool gamepadConnected) {
 
 void Game::initWindow() {
     this->window.create(sf::VideoMode(this->resolution.x * this->scale, this->resolution.y * this->scale), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
+    this->isFullscreenOn = false;
+}
+
+void Game::initWindowFullscreen() {
+    this->window.create(sf::VideoMode::getFullscreenModes()[0], "SFML Platformer", sf::Style::Fullscreen);
+    this->isFullscreenOn = true;
 }
 
 void Game::initRenderTexture() {
