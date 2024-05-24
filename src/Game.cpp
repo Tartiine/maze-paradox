@@ -45,11 +45,12 @@ void Game::update(float deltaTime) {
         } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F) {
             this->window.close();
             if (this->isFullscreenOn) {
-                this->initWindow();
+                this->scale = 2;
                 window.setMouseCursorVisible(true);
+                this->initWindow();
             } else {
-                this->initWindowFullscreen();
                 window.setMouseCursorVisible(false);
+                this->initWindowFullscreen();  
             }
         } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::G) {
             scale = (scale % 3) + 1;
@@ -131,6 +132,7 @@ void Game::initWindow() {
 
 void Game::initWindowFullscreen() {
     this->window.create(sf::VideoMode::getFullscreenModes()[0], "SFML Platformer", sf::Style::Fullscreen);
+    this->scale = sf::VideoMode::getFullscreenModes()[0].width / this->resolution.x;
     this->isFullscreenOn = true;
 }
 
