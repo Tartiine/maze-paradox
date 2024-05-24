@@ -113,7 +113,6 @@ void Game::createTriangle(bool gamepadConnected) {
 
 void Game::initWindow() {
     this->window.create(sf::VideoMode(this->resolution.x * this->scale, this->resolution.y * this->scale), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
-    this->window.setFramerateLimit(60);  // TODO: Uniformize the movement speed (no variation based on FPS)
 }
 
 void Game::initRenderTexture() {
