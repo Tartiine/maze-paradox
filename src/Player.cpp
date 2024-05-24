@@ -78,7 +78,6 @@ void Player::updateMovement(float deltaTime) {
     }
 }
 
-//TODO: Fix facingRight
 void Player::updateAnimations(float deltaTime) {
     int animationRow = 0; 
     switch(currentState) {
@@ -112,12 +111,14 @@ void Player::updatePhysics() {
     //Gravity
     if(!isOnGround) {
         this->velocity.y += 1.0 * this->gravity;
+    }else{
+        this->velocity *= this->deceleration;
     }
+
     if(abs(this->velocity.x) > this->maxVelocityY) {
         this->velocity.y = this->maxVelocityY * ((this->velocity.y < 0.f) ? -1.f : 1.f);
     }
-
-    this->velocity *= this->deceleration;
+ 
     if(abs(this->velocity.x) < this->minVelocity)
         this->velocity.x = 0.f;
     if(abs(this->velocity.y) < this->minVelocity)
@@ -151,13 +152,15 @@ void Player::initPhysics() {
     this->maxVelocity = 7.f;
     this->minVelocity = 1.f;
     this->acceleration = 120.f;
-    this->deceleration = 0.9f;
+    this->deceleration = 0.7f;
     this->gravity = 2.f;
-    this->maxVelocityY = 15.f;
-    this->jumpHeight = 100.f;
+    this->maxVelocityY = 10.f;
+    this->jumpHeight = 120.f;
     this->jumpVelocity = 0.0f;
     /*
     this->airControl = 200.0f; 
     this->airBrake = 0.5f;
     */ 
 }
+
+//TODO: variable height jump

@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "Player.h"
 #include "Obstacle.h"
+#include "TileMap.h"
 
 class Game {
 public:
@@ -18,25 +19,22 @@ public:
 
 private:
     sf::RenderWindow window;    
-    sf::Event ev;
     Player* player;
-    sf::ConvexShape triangle;
-
-    bool showGamepadMessageFlag;
-    sf::Clock messageClock;
-
+    TileMap* tileMap;
     std::vector<Obstacle*> obstacles;
     
-    void checkGamepad();
+    sf::ConvexShape triangle;
+    bool showGamepadFlag;
+    sf::Clock infoClock;
 
     void initWindow();
     void initObstacles(); 
     void initPlayer(); 
     void renderPlayer();
-    void renderObstacles();
+    void renderObstacles(bool debug);
     void updatePlayer(float deltaTime);
     void createTriangle(bool gamepadConnected);
-    
+    void checkGamepad();
 };
 
 #endif // GAME_H
