@@ -33,6 +33,7 @@ private:
     std::vector<Obstacle*> obstacles;
     
     bool isFullscreenOn;
+    int fullscreenVerticalOffset; 
 
     void checkGamepad();
 

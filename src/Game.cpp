@@ -92,6 +92,7 @@ void Game::render() {
 
     sf::Sprite renderSprite(renderTexture.getTexture());
     renderSprite.setScale(this->scale, this->scale);
+    renderSprite.setPosition(0, this->fullscreenVerticalOffset);
     
     this->window.clear();
     this->window.draw(renderSprite);
@@ -128,12 +129,16 @@ void Game::createTriangle(bool gamepadConnected) {
 void Game::initWindow() {
     this->window.create(sf::VideoMode(this->resolution.x * this->scale, this->resolution.y * this->scale), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
     this->isFullscreenOn = false;
+    this->fullscreenVerticalOffset = 0;
 }
 
 void Game::initWindowFullscreen() {
-    this->window.create(sf::VideoMode::getFullscreenModes()[0], "SFML Platformer", sf::Style::Fullscreen);
-    this->scale = sf::VideoMode::getFullscreenModes()[0].width / this->resolution.x;
+    sf::VideoMode fullScreen = sf::VideoMode::getFullscreenModes()[0];
+
+    this->window.create(fullScreen, "SFML Platformer", sf::Style::Fullscreen);
+    this->scale = fullScreen.width / this->resolution.x;
     this->isFullscreenOn = true;
+    this->fullscreenVerticalOffset = (fullScreen.height - (this->resolution.y * this->scale)) / 2;
 }
 
 void Game::initRenderTexture() {
