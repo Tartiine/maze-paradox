@@ -121,11 +121,12 @@ void Game::initRenderTexture() {
 }
 
 void Game::initPlayer() {
-    this->player = new Player(64, 0);
+    this->player = new Player(64, 320);
 }
 
 void Game::initObstacles(){
-    for (int i = 2; i < 18; ++i) {
-        obstacles.push_back(new Ground(16*i, 164));
+    // 40 by 22.5 grid
+    for (int i = 2; i < 38; ++i) {
+        obstacles.push_back(new Ground(16*i, 344));
     }
 }

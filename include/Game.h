@@ -20,8 +20,8 @@ private:
     sf::RenderWindow window;
     sf::RenderTexture renderTexture;
 
-    sf::Vector2i resolution {320, 180};
-    unsigned int scale = 3;
+    sf::Vector2i resolution {640, 360};
+    unsigned int scale = 2;
     
     sf::Event ev;
     Player* player;
