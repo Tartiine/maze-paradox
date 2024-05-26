@@ -92,7 +92,7 @@ void Game::render() {
 
     sf::Sprite renderSprite(renderTexture.getTexture());
     renderSprite.setScale(this->scale, this->scale);
-    renderSprite.setPosition(0, this->fullscreenVerticalOffset);
+    renderSprite.setPosition(this->fullscreenHorizontalOffset, this->fullscreenVerticalOffset);
     
     this->window.clear();
     this->window.draw(renderSprite);
@@ -130,14 +130,16 @@ void Game::initWindow() {
     this->window.create(sf::VideoMode(this->resolution.x * this->scale, this->resolution.y * this->scale), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
     this->isFullscreenOn = false;
     this->fullscreenVerticalOffset = 0;
+    this->fullscreenVerticalOffset = 0;
 }
 
 void Game::initWindowFullscreen() {
     sf::VideoMode fullScreen = sf::VideoMode::getFullscreenModes()[0];
 
     this->window.create(fullScreen, "SFML Platformer", sf::Style::Fullscreen);
-    this->scale = fullScreen.width / this->resolution.x;
     this->isFullscreenOn = true;
+    this->scale = std::min(fullScreen.width / this->resolution.x, fullScreen.height / this->resolution.y);
+    this->fullscreenHorizontalOffset = (fullScreen.width - (this->resolution.x * this->scale)) / 2;
     this->fullscreenVerticalOffset = (fullScreen.height - (this->resolution.y * this->scale)) / 2;
 }
 
@@ -146,7 +148,7 @@ void Game::initRenderTexture() {
 }
 
 void Game::initPlayer() {
-    this->player = new Player(64, 320);
+    this->player = new Player(64, 0);
 }
 
 void Game::initObstacles(){
