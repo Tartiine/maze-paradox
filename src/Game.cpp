@@ -114,6 +114,9 @@ void Game::initPlayer() {
 }
 
 void Game::initObstacles() {
+    std::vector<std::vector<int>> tileMap1 = generator->generateTileMap(16, 12);
+    generator->saveTileMapToFile(tileMap1, "resources/generated_map1.txt");
+
     this->tileMap = new TileMap(16, 12, 50.0f);  
-    this->tileMap->loadMap("resources/map.txt"); 
+    this->tileMap->loadMap("resources/generated_map1.txt"); 
 }

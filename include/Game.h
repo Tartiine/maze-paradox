@@ -5,6 +5,9 @@
 #include "Player.h"
 #include "Obstacle.h"
 #include "TileMap.h"
+#include "TileMapGenerator.h"
+#include <vector>
+#include <memory>
 
 class Game {
 public:
@@ -21,6 +24,7 @@ private:
     sf::RenderWindow window;    
     Player* player;
     TileMap* tileMap;
+    TileMapGenerator* generator;
     std::vector<Obstacle*> obstacles;
     
     sf::ConvexShape triangle;
@@ -29,7 +33,7 @@ private:
 
     void initWindow();
     void initObstacles(); 
-    void initPlayer(); 
+    void initPlayer();   
     void renderPlayer();
     void renderObstacles(bool debug);
     void updatePlayer(float deltaTime);

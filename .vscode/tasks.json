@@ -18,6 +18,7 @@
                 "src/Obstacle.cpp",
                 "src/Ground.cpp",
                 "src/TileMap.cpp",
+                "src/TileMapGenerator.cpp",
                 "-I./include",
                 "-I${env:SFML_DIR}\\include",
                 "-L${env:SFML_DIR}\\lib",
