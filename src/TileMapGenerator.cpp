@@ -6,17 +6,22 @@
 
 using namespace std;
 
+TileMapGenerator::TileMapGenerator() {
+
+}
+
 vector<vector<int>> TileMapGenerator::generateTileMap(unsigned width, unsigned height) {
     vector<vector<int>> tileMap(height, vector<int>(width, 0));
-
+    
     srand(static_cast<unsigned>(time(0)));
+
     for (unsigned i = 0; i < height; ++i) {
         for (unsigned j = 0; j < width; ++j) {
             int tileType = rand() % 3;
             tileMap[i][j] = tileType;
             if (tileType == 1){
-                tileMap[i+1][j] = tileType;
-                i++;
+                tileMap[i][j+1] = tileType;
+                j++;
             }
         }
     }
@@ -29,7 +34,7 @@ vector<vector<int>> TileMapGenerator::generateTileMap(unsigned width, unsigned h
 }
 
 void TileMapGenerator::saveTileMapToFile(const vector<vector<int>>& tileMap, const string& filename) {
-    ofstream outFile(filename);
+    ofstream outFile(filename, ios::out | ios::trunc);
     if (!outFile.is_open()) {
         cerr << "Failed to open file for writing: " << filename << endl;
         return;

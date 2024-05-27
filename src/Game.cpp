@@ -14,6 +14,7 @@ Game::Game() : showGamepadFlag(true) {
 Game::~Game() {
     delete this->player;
     delete this->tileMap;
+    delete this->generator;
     for (auto obstacle : this->obstacles) {
         delete obstacle;
     }
@@ -114,8 +115,10 @@ void Game::initPlayer() {
 }
 
 void Game::initObstacles() {
-    std::vector<std::vector<int>> tileMap1 = generator->generateTileMap(16, 12);
-    generator->saveTileMapToFile(tileMap1, "resources/generated_map1.txt");
+    this->generator = new TileMapGenerator();
+
+    std::vector<std::vector<int>> tileMap1 = this->generator->generateTileMap(16, 12);
+    this->generator->saveTileMapToFile(tileMap1, "resources/generated_map1.txt");
 
     this->tileMap = new TileMap(16, 12, 50.0f);  
     this->tileMap->loadMap("resources/generated_map1.txt"); 
