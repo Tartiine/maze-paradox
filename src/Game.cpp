@@ -148,7 +148,7 @@ void Game::initRenderTexture() {
 }
 
 void Game::initPlayer() {
-    this->player = new Player(64, 0);
+    this->player = new Player(64, 300);
 }
 
 void Game::initObstacles(){
