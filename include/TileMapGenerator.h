@@ -12,6 +12,9 @@ public:
 
     vector<vector<int>> generateTileMap(unsigned width, unsigned height);
     void saveTileMapToFile(const vector<vector<int>>& tileMap, const string& filename);
+
+private : 
+    float degreesToRadians(float degrees);
 };
 
 #endif // TILEMAPGENERATOR_H
