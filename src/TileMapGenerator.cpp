@@ -51,41 +51,38 @@ vector<vector<int>> TileMapGenerator::generateTileMap(unsigned width, unsigned h
 
     vector<pair<int, int>> tilePositions;
 
-    for (unsigned i = 0; i < height; ++i) {
+    for (unsigned i = 0; i < height-1; ++i) {
         for (unsigned j = 0; j < width && tileCount < maxTiles; ++j) {
             bool canPlace = true;
             bool mustPlace = false;
             for (const auto& pos : tilePositions) {
                 float dist = distance(j, i, pos.first, pos.second); 
-                if (dist < minDist) {
+                if (dist < minDist) {   
                     canPlace = false;
                     break;
-                } else if (dist >= maxDist) { 
+                } else if (dist >= maxDist && dist <= maxDist + 1.f) { 
                     auto dir = direction(pos.first, pos.second, j, i); 
                     float angle = atan2(dir.second, dir.first);
 
-                    if (angle < -M_PI) {
-                        angle += 2 * M_PI;
-                    } else if (angle > M_PI) {
-                        angle -= 2 * M_PI;
-                    }
-
-                    if (angle >= -M_PI / 3 && angle <= -M_PI / 6) {
-                        vector<pair<int, int>> polygon = {{j, i},
-                            {j + maxDist * cos(degreesToRadians(-170)), i + maxDist * sin(degreesToRadians(-170))},
-                            {j + maxDist * cos(degreesToRadians(-135)), i + maxDist * sin(degreesToRadians(-135))},
-                            {j + maxDist * cos(degreesToRadians(-45)), i + maxDist * sin(degreesToRadians(-45))},
-                            {j + maxDist * cos(degreesToRadians(-10)), i + maxDist * sin(degreesToRadians(-10))}
+                    if (angle >= 0.5 && angle <= 1) {
+                        vector<pair<int, int>> polygon = {
+                            {pos.first + maxDist * cos(degreesToRadians(170)), pos.second + maxDist * sin(degreesToRadians(170))},
+                            {pos.first + maxDist * cos(degreesToRadians(135)), pos.second + maxDist * sin(degreesToRadians(135))},
+                            {pos.first + maxDist * cos(degreesToRadians(45)), pos.second + maxDist * sin(degreesToRadians(45))},
+                            {pos.first + maxDist * cos(degreesToRadians(10)), pos.second + maxDist * sin(degreesToRadians(10))}
                         };
+                        
+                        mustPlace = true; 
                         for (const auto& tilePos : tilePositions) {
                             if (isPointInPolygon(tilePos.first, tilePos.second, polygon)) {
-                                //mustPlace = true;
+                                mustPlace = false; 
                                 break;
                             }
                         }
                     }
                 }
             }
+
             if (canPlace && i != 0) {
                 int tileType;
                 if(mustPlace){
@@ -93,11 +90,11 @@ vector<vector<int>> TileMapGenerator::generateTileMap(unsigned width, unsigned h
                 } else {
                     int randomValue = rand() % 100;  
                     if (randomValue < 7) {
-                        tileType = 2;  // 5% chance
+                        tileType = 2;  
                     } else if (randomValue < 30) {
-                        tileType = 1;  // 25% chance 
+                        tileType = 1;  
                     } else {
-                        tileType = 0;  // 60% chance 
+                        tileType = 0; 
                     }
                 }
                 if (tileType == 1 && j + 1 < width) {
@@ -107,7 +104,7 @@ vector<vector<int>> TileMapGenerator::generateTileMap(unsigned width, unsigned h
                     tilePositions.emplace_back(j + 1, i);
                     tileCount++;
                     j++; 
-                } else if (tileType == 2) {
+                } else if (tileType == 2 || tileType == 3) {
                     tileMap[i][j] = tileType;
                     tilePositions.emplace_back(j, i);
                     tileCount++;
@@ -115,7 +112,7 @@ vector<vector<int>> TileMapGenerator::generateTileMap(unsigned width, unsigned h
             }
         }
     }
-    // Always place ground tiles on the bottom of the screen
+
     for (unsigned j = 0; j < width; ++j) {
         tileMap[height - 1][j] = 2;
     } 
@@ -124,11 +121,9 @@ vector<vector<int>> TileMapGenerator::generateTileMap(unsigned width, unsigned h
 }
 
     /*TODO: Add more rules: 
-    - Maximum number of tiles per tileMap
-    - Max and min distance between tiles in diagonal, height and width, add obligatory tile when last chance for max dist !
+    - Add max platforms per line
     - No number 1 close to the borders
     */
-
 
 void TileMapGenerator::saveTileMapToFile(const vector<vector<int>>& tileMap, const string& filename) {
     ofstream outFile(filename, ios::out | ios::trunc);
