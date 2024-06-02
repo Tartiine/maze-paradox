@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Obstacle.h"
 #include "TileMap.h"
+#include "TileMapModel.h"
 
 class Game {
 public:
@@ -22,7 +23,8 @@ private:
     Player* player;
     TileMap* tileMap;
     std::vector<Obstacle*> obstacles;
-    
+    TileMapModel* tileMapModel;
+
     sf::ConvexShape triangle;
     bool showGamepadFlag;
     sf::Clock infoClock;
@@ -35,6 +37,7 @@ private:
     void updatePlayer(float deltaTime);
     void createTriangle(bool gamepadConnected);
     void checkGamepad();
+    void trainModel();
 };
 
 #endif // GAME_H

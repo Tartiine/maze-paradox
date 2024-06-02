@@ -18,13 +18,17 @@
                 "src/Obstacle.cpp",
                 "src/Ground.cpp",
                 "src/TileMap.cpp",
+                "src/TileMapModel.cpp",
                 "-I./include",
                 "-I${env:SFML_DIR}\\include",
+                "-I${env:FANN_DIR}\\src\\include",
                 "-L${env:SFML_DIR}\\lib",
+                "-L${env:FANN_DIR}\\build\\lib",
                 "-lsfml-graphics",
                 "-lsfml-window",
                 "-lsfml-system",
-                "-lsfml-audio"
+                "-lsfml-audio",
+                "-lfann"
             ],
             "presentation": {
                 "echo": true,
