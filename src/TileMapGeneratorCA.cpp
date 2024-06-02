@@ -1,14 +1,17 @@
 #include "TileMapGeneratorCA.h"
 
 TileMapGeneratorCA::TileMapGeneratorCA(unsigned int _col, unsigned int _row) : row(_row), col(_col), grid(row, vector<int>(col, 0)) {
+    this->seedRandom();
     this->initGrid();
 }
 
 TileMapGeneratorCA::~TileMapGeneratorCA() {}
 
-void TileMapGeneratorCA::initGrid() {
+void TileMapGeneratorCA::seedRandom() {
     srand(static_cast<unsigned>(time(0)));
+}
 
+void TileMapGeneratorCA::initGrid() {
     for (unsigned i = 0; i < row; ++i) {
         for (unsigned j = 0; j < col; ++j) {
             int type = (rand() % 2) * 2;
@@ -83,11 +86,7 @@ void TileMapGeneratorCA::update(unsigned int nbrOfGen) {
                 }
             }
         }
-
         grid = newGrid;
-        
-        string filename = "resources/temp" + to_string(gen) + ".txt";
-        saveTileMapToFile(filename);
     }
 }
 

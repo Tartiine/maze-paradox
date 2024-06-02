@@ -14,12 +14,15 @@ class TileMapGeneratorCA {
         TileMapGeneratorCA(unsigned int _col, unsigned int _row);
         ~TileMapGeneratorCA();
 
+        void seedRandom();
+
+        void initGrid();
+
         void update(unsigned int nbrOfGen);
 
         void saveTileMapToFile(const string &filename);
 
     private:
-        void initGrid();
         int countChain(int x, int y);
         int countStack(int x, int y);
 

@@ -6,6 +6,7 @@
 #include "Obstacle.h"
 #include "TileMap.h"
 #include "TileMapGenerator.h"
+#include "TileMapGeneratorCA.h"
 #include <vector>
 #include <memory>
 
