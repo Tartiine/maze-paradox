@@ -5,6 +5,7 @@
 #include <cmath>
 #include <utility>
 #include <iostream>
+#include <random>
 
 using namespace std;
 
@@ -18,7 +19,9 @@ float TileMapGenerator::degreesToRadians(float degrees) {
 vector<vector<int>> TileMapGenerator::generateTileMap(unsigned width, unsigned height) {
     vector<vector<int>> tileMap(height, vector<int>(width, 0));
     
-    srand(static_cast<unsigned>(time(0)));
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 99);
     const unsigned maxTiles = 20;
     const float minDist = 2.0f;
     const float maxDist = 3.0f;
@@ -86,15 +89,15 @@ vector<vector<int>> TileMapGenerator::generateTileMap(unsigned width, unsigned h
             if (canPlace && i != 0) {
                 int tileType;
                 if(mustPlace){
-                    tileType = rand() % 2 + 1; 
+                    tileType = dis(gen) % 2 + 1;
                 } else {
-                    int randomValue = rand() % 100;  
+                    int randomValue = dis(gen);
                     if (randomValue < 7) {
-                        tileType = 2;  
+                        tileType = 2;
                     } else if (randomValue < 30) {
-                        tileType = 1;  
+                        tileType = 1;
                     } else {
-                        tileType = 0; 
+                        tileType = 0;
                     }
                 }
                 if (tileType == 1 && j + 1 < width) {
