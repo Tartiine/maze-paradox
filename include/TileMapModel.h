@@ -13,12 +13,13 @@ public:
     TileMapModel(int input_size, int output_size);
     ~TileMapModel();
 
-    void loadTrainingData(const string &directory);
-    void train();
-    int predict(const vector<int> &tileMap);
+    void train(const string &directory);
+    void predict(const string &directory);
     void saveModel(const string &filename);
+    void loadModel(const string &filename);
 
 private:
+    void loadData(const string &directory);
     vector<int> readTileMap(const string &filename);
     vector<fann_type> convertToFANNInput(const vector<int> &tileMap);
     vector<int> convertFromFANNOutput(fann_type *output);

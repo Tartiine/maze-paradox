@@ -11,8 +11,8 @@ using namespace std;
 
 TileMapModel::TileMapModel(int input_size, int output_size) 
     : input_size(input_size), output_size(output_size) {
-    ann = fann_create_standard(3, input_size, 10, output_size);
-    cout << "Created neural network model." << endl;
+    //ann = fann_create_standard(3, input_size, 10, output_size);
+    //cout << "Created neural network model." << endl;
 }
 
 TileMapModel::~TileMapModel() {
@@ -25,6 +25,15 @@ void TileMapModel::saveModel(const string &filename) {
         cerr << "Error saving model to file: " << filename << endl;
     } else {
         cout << "Model saved successfully to '" << filename << "'" << endl;
+    }
+}
+
+void TileMapModel::loadModel(const string &filename) {
+    ann = fann_create_from_file(filename.c_str());
+    if (!ann) {
+        cerr << "Error loading model from file: " << filename << endl;
+    } else {
+        cout << "Model loaded successfully from '" << filename << "'" << endl;
     }
 }
 
@@ -49,9 +58,14 @@ vector<int> TileMapModel::readTileMap(const string &filename) {
 
 vector<fann_type> TileMapModel::convertToFANNInput(const vector<int> &tileMap) {
     vector<fann_type> fann_input(tileMap.begin(), tileMap.end());
+
+    fann_type min_val = *min_element(fann_input.begin(), fann_input.end());
+    fann_type max_val = *max_element(fann_input.begin(), fann_input.end());
+
     for (auto &val : fann_input) {
-        val = val / 2.0;
+        val = (val - min_val) / (max_val - min_val);
     }
+
     return fann_input;
 }
 
@@ -60,7 +74,7 @@ vector<int> TileMapModel::convertFromFANNOutput(fann_type *output) {
     return tileMap;
 }
 
-void TileMapModel::loadTrainingData(const string &directory) {
+void TileMapModel::loadData(const string &directory) {
     string scorefile = directory + "/scores.txt";
     for (const auto &entry : fs::directory_iterator(directory)) {
         if (entry.path().extension() == ".txt" && entry.path().filename() != "scores.txt") {
@@ -72,24 +86,40 @@ void TileMapModel::loadTrainingData(const string &directory) {
     while (scoreFile >> score) {
         scores.push_back(score);
     }
-    cout << "Loaded training data from " << directory << endl;
+    cout << "Loaded data from " << directory << endl;
 }
 
-void TileMapModel::train() {
+void TileMapModel::train(const string &directory) {
     cout << "Training model..." << endl;
     struct fann_train_data *train_data = fann_create_train(tileMaps.size(), input_size, 1);
     for (size_t i = 0; i < tileMaps.size(); ++i) {
         vector<fann_type> input = convertToFANNInput(tileMaps[i]);
         copy(input.begin(), input.end(), train_data->input[i]);
-        train_data->output[i][0] = scores[i] / 20.0; 
+        train_data->output[i][0] = scores[i] / 10.0; 
     }
-    fann_train_on_data(ann, train_data, 1000, 10, 0.01);
+    fann_train_on_data(ann, train_data, 1000, 200, 0.01);
     fann_destroy_train(train_data);
     cout << "Training complete." << endl;
 }
 
-int TileMapModel::predict(const vector<int> &tileMap) {
-    vector<fann_type> input = convertToFANNInput(tileMap);
-    fann_type *output = fann_run(ann, input.data());
-    return static_cast<int>(output[0] * 20);  
+void TileMapModel::predict(const string &directory) {
+    loadData(directory);
+
+    cout << "Testing model..." << endl;
+    int bestScore = 0;
+    int totalError = 0;
+    for (size_t i = 0; i < tileMaps.size(); ++i) {
+        vector<fann_type> input = convertToFANNInput(tileMaps[i]);
+        fann_type *output = fann_run(ann, input.data());
+        int predictedScore = static_cast<int>(output[0] * 10);
+        if (predictedScore > bestScore){
+            bestScore == predictedScore;
+        }
+        int actualScore = scores[i];
+        int error = abs(predictedScore - actualScore);
+        totalError += error;
+        cout << "Tile map " << i + 1 << ": Predicted score = " << predictedScore << ", Actual score = " << actualScore << ", Error = " << error << endl;
+    }
+    cout << "Average error = " << (double)totalError / tileMaps.size() << endl;
+    cout << "Testing complete." << endl;
 }

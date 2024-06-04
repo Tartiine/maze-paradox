@@ -10,7 +10,8 @@ Game::Game() : showGamepadFlag(true) {
     checkGamepad();
 
     //TEST IA
-    this->trainModel();
+    //this->trainModel();
+    this->testModel();
 }
 
 Game::~Game() {
@@ -95,11 +96,17 @@ void Game::checkGamepad() {
 }
 
 void Game::trainModel() {
-    std::string datasetDirectory = "resources/dataset_gp_rb";
+    std::string datasetDirectory = "resources/dataset_train_gp_rb";
     this->tileMapModel = new TileMapModel(16*12, 1);
-    this->tileMapModel->loadTrainingData(datasetDirectory);
-    this->tileMapModel->train();
+    this->tileMapModel->train(datasetDirectory);
     this->tileMapModel->saveModel("resources/trained_model_rb.net");
+}
+
+void Game::testModel() {
+    std::string datasetDirectory = "resources/dataset_test_gp_rb";
+    this->tileMapModel = new TileMapModel(16*12, 1);
+    this->tileMapModel->loadModel("resources/trained_model_rb.net");
+    this->tileMapModel->predict(datasetDirectory);
 }
 
 void Game::createTriangle(bool gamepadConnected) {
