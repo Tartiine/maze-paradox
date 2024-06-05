@@ -2,6 +2,7 @@
 #include "Platform.h"
 #include "Ground.h"
 #include <iostream>
+#include <sstream>
 
 Game::Game() : showGamepadFlag(true) {
     this->initWindow();
@@ -17,6 +18,7 @@ Game::Game() : showGamepadFlag(true) {
 Game::~Game() {
     delete this->player;
     delete this->tileMap;
+    delete this->generator;
     for (auto obstacle : this->obstacles) {
         delete obstacle;
     }
@@ -131,6 +133,15 @@ void Game::initPlayer() {
 }
 
 void Game::initObstacles() {
+    this->generator = new TileMapGenerator();
+    /*
+    for (int i = 0; i < 50; i++) {
+        std::vector<std::vector<int>> tileMap = this->generator->generateTileMap(16, 12);
+        std::stringstream filename;
+        filename << "resources/generated_map" << i << ".txt";
+        this->generator->saveTileMapToFile(tileMap, filename.str());
+    }*/
+
     this->tileMap = new TileMap(16, 12, 50.0f);  
-    this->tileMap->loadMap("resources/map.txt"); 
+    this->tileMap->loadMap("resources/generated_map4.txt"); 
 }
