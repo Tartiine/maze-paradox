@@ -3,9 +3,13 @@
 #include <sstream>
 #include <iostream>
 
-TileMap::TileMap(unsigned width, unsigned height, float tileSize)
-    : width(width), height(height), tileSize(tileSize) {
+TileMap::TileMap(unsigned width, unsigned height, float tileSize, const std::string& name)
+    : width(width), height(height), tileSize(tileSize), name(name) {
     initMap();
+}
+
+const std::string& TileMap::getName() const {
+    return name;
 }
 
 void TileMap::initMap() {

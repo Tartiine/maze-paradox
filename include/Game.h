@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Obstacle.h"
 #include "TileMap.h"
+#include "TileMapManager.h"
 
 class Game {
 public:
@@ -21,8 +22,12 @@ private:
     sf::RenderWindow window;    
     Player* player;
     TileMap* tileMap;
+    TileMapManager* tileMapManager;
     std::vector<Obstacle*> obstacles;
-    
+    std::vector<TileMap*> tileMaps;
+    int currentTileMapIndex;
+    float playerTilePosition;
+
     sf::ConvexShape triangle;
     bool showGamepadFlag;
     sf::Clock infoClock;
