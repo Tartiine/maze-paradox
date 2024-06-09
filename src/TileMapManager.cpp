@@ -34,7 +34,6 @@ void TileMapManager::loadTileMaps(const std::string &fileName) {
             std::cerr << "Failed to parse line: \"" << line << "\" in tile map order file: " << fileName << std::endl;
             continue;
         }
-        std::cout << "Parsed: " << mapFile << " " << x << " " << y << std::endl;
         tileMapOrder.push_back(TileMapInfo(mapFile, sf::Vector2f(x, y)));
     }
 
@@ -44,13 +43,13 @@ void TileMapManager::loadTileMaps(const std::string &fileName) {
         for (const auto& tileMapInfo : tileMapOrder) {
             loadTileMap(tileMapInfo);
         }
-        setCurrentTileMap(tileMaps[tileMapOrder.front().filename]);
+        currentTileMap = tileMaps[tileMapOrder.front().filename];
     }
 }
 
 void TileMapManager::loadTileMap(const TileMapInfo &info) { 
     if (tileMaps.find(info.filename) == tileMaps.end()) {
-        TileMap* tileMap = new TileMap(16, 12, 50.0f, info.filename);//FIXME: will there be a problem if two maps have the same name ???
+        TileMap* tileMap = new TileMap(16, 12, 50.0f, info.filename);
         tileMap->setPosition(info.position);
         tileMap->loadMap("resources/" + info.filename);
         tileMaps[info.filename] = tileMap;
@@ -70,59 +69,54 @@ TileMap* TileMapManager::getNextTileMap() {
     }
     return nullptr;
 }
-//TODO: update and render fonction -> camera follows the player only if he's in the last quarter of a tilemap, else the camera is fixed
 
-void TileMapManager::update(float deltaTime, Player *player) {
-    setPlayerX(player->getPosition().x);
+void TileMapManager::update(float deltaTime, Player *player,sf::RenderTarget &window) {
+    float playerX = player->getPosition().x;
     playerTilePosition = playerX / currentTileMap->getTileSize();
-    std::cout << "playerTilePosition: " << playerTilePosition << std::endl;
-
     nextTileMap = getNextTileMap();
-    if (nextTileMap != nullptr) {
-        std::cout << "nextTileMap is not nullptr" << std::endl;
-    } else {
-        std::cout << "nextTileMap is nullptr" << std::endl;
-    }
+    int nextMap = currentTileMap->getWidth() + (currentTileMap->getPosition().x / currentTileMap->getTileSize());
 
-    int endMap = (2 * currentTileMap->getWidth() + (currentTileMap->getPosition().x/currentTileMap->getTileSize())) / 3;
-    int nextMap = currentTileMap->getWidth() + (currentTileMap->getPosition().x/currentTileMap->getTileSize());
-    std::cout << "endMap: " << endMap << " nextMap: " << nextMap << std::endl;
-    if (playerTilePosition >= nextMap-1) {
-        std::cout << "NEXT MAP " << std::endl;
-        if (nextTileMap != nullptr) {
-            setCurrentTileMap(nextTileMap);
+    if (playerTilePosition >= nextMap - 1) {
+        if (nextTileMap) {
+            previousTileMap = currentTileMap;
+            currentTileMap = nextTileMap;
         }
     }
+
+    float relativePlayerX = playerX - currentTileMap->getPosition().x;
+
+    if ((relativePlayerX >= (3 * currentTileMap->getWidth() * currentTileMap->getTileSize()) / 4) || ((relativePlayerX <= (1 * currentTileMap->getWidth() * currentTileMap->getTileSize()) / 4 ) && previousTileMap)) {
+        float targetCameraX = playerX - (window.getSize().x / 2);
+        if (cameraX < targetCameraX) {
+            cameraX += 200.0f * deltaTime;
+            if (cameraX > targetCameraX) {
+                cameraX = targetCameraX;
+            }
+        }
+    } else {
+        float targetCameraX = currentTileMap->getPosition().x + (currentTileMap->getWidth() * currentTileMap->getTileSize()) / 2 - (window.getSize().x / 2);
+        if (cameraX < targetCameraX) {
+            cameraX += 400.0f * deltaTime;
+            if (cameraX > targetCameraX) {
+                cameraX = targetCameraX;
+            }
+        }
+    }
+
 }
 
 void TileMapManager::render(sf::RenderTarget &target, bool debug) {
-    if (playerTilePosition >= (3 * currentTileMap->getWidth() + (currentTileMap->getPosition().x/currentTileMap->getTileSize())) / 4) {
-        for(int i = 0; cameraX < playerX - (target.getSize().x / 2); i++) {
-            cameraX += 0.00001f;
-            sf::View cameraView(sf::FloatRect(cameraX, 0, target.getSize().x, target.getSize().y));
-            target.setView(cameraView);
-        }
-    } else {
-        cameraX = currentTileMap->getPosition().x + (currentTileMap->getWidth() * currentTileMap->getTileSize()) / 2 - (target.getSize().x / 2);
-            sf::View cameraView(sf::FloatRect(cameraX, 0, target.getSize().x, target.getSize().y));
-            target.setView(cameraView);
-    }
+    sf::View cameraView(sf::FloatRect(cameraX, 0, target.getSize().x, target.getSize().y));
+    target.setView(cameraView);
 
     currentTileMap->render(target, debug);
-    nextTileMap->render(target, debug);
+    if (nextTileMap) {
+        nextTileMap->render(target, debug);
+    }
+    if (previousTileMap) {
+        previousTileMap->render(target, debug);
+    }
 }
 
-//FIXME: smoother transition 
+//FIXME: Calculate collision with everything rendered not just currentTileMap
 //TODO: scroll in every direction
-
-float TileMapManager::getPlayerX() const {
-    return playerX;
-}
-
-void TileMapManager::setCurrentTileMap(TileMap *tileMap) {
-    currentTileMap = tileMap;
-}
-
-void TileMapManager::setPlayerX(float playerX) {
-    this->playerX = playerX;
-}

@@ -23,10 +23,7 @@ public:
     void loadTileMaps(const std::string &fileName);
     TileMap* getCurrentTileMap();
     TileMap* getNextTileMap();
-    float getPlayerX() const;
-    void setCurrentTileMap(TileMap* tileMap);
-    void setPlayerX(float playerX);
-    void update(float deltaTime, Player* player);
+    void update(float deltaTime, Player* player,sf::RenderTarget &target);
     void render(sf::RenderTarget &target, bool debug);
 
 private:
@@ -34,10 +31,9 @@ private:
     std::vector<TileMapInfo> tileMapOrder;
     TileMap* currentTileMap;
     TileMap* nextTileMap;
-    TileMap* previousTileMap;
+    TileMap* previousTileMap = nullptr;
     float playerTilePosition;
     float cameraX;
-    float playerX;
     void loadTileMap(const TileMapInfo &info);
 };
 

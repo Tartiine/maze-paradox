@@ -22,7 +22,7 @@ Game::~Game() {
 }
 
 void Game::collisionPlayer() {
-    //this->player->checkWindowBorders(this->window); //FIXME: not working with scrolling TileMapManager
+    this->player->checkWindowBorders(this->window); 
     for (unsigned i = 0; i < tileMapManager->getCurrentTileMap()->getHeight(); ++i) {
         for (unsigned j = 0; j < tileMapManager->getCurrentTileMap()->getWidth(); ++j) {
             auto& obstacle = tileMapManager->getCurrentTileMap()->getTile(i, j);
@@ -52,7 +52,7 @@ void Game::update(float deltaTime) {
 
     this->updatePlayer(deltaTime);
     this->collisionPlayer();
-    this->tileMapManager->update(deltaTime, this->player);
+    this->tileMapManager->update(deltaTime, this->player, this->window);
 }
 
 void Game::renderPlayer() {
