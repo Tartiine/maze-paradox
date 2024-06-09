@@ -3,7 +3,7 @@
 #include "Ground.h"
 #include <iostream>
 
-Game::Game() : showGamepadMessageFlag(true) {
+Game::Game() : showGamepadFlag(true) {
     this->initWindow();
     initRenderTexture();
     this->initObstacles();
@@ -14,6 +14,7 @@ Game::Game() : showGamepadMessageFlag(true) {
 
 Game::~Game() {
     delete this->player;
+    delete this->tileMap;
     for (auto obstacle : this->obstacles) {
         delete obstacle;
     }
@@ -23,10 +24,15 @@ Game::~Game() {
 void Game::collisionPlayer() {
     this->player->checkWindowBorders(this->renderTexture);
 
-    for (const auto& platform : this->obstacles) {
-        sf::FloatRect bounds = platform->getHitbox();
-        if (this->player->isColliding(bounds)) {
-            player->resolveCollision(bounds);
+    for (unsigned i = 0; i < tileMap->getHeight(); ++i) {
+        for (unsigned j = 0; j < tileMap->getWidth(); ++j) {
+            auto& obstacle = tileMap->getTile(i, j);
+            if (obstacle) {
+                sf::FloatRect bounds = obstacle->getHitbox();
+                if (this->player->isColliding(bounds)) {
+                    player->resolveCollision(bounds);
+                }
+            }
         }
     }
 }
@@ -68,24 +74,21 @@ void Game::renderPlayer(){
     this->player->render(this->renderTexture);
 }
 
-void Game::renderObstacles() {
-    for (auto obstacle : this->obstacles) {
-        obstacle->render(this->renderTexture);
-    }
+void Game::renderObstacles(bool debug) {
+    tileMap->render(this->renderTexture, debug); 
 }
 
 void Game::render() {
     this->renderTexture.clear(sf::Color::Blue);  //Maybe clear with a black color ?
 
     // Drawing components
-    this->renderObstacles();
+    this->renderObstacles(true);
     this->renderPlayer();
 
-    // Display gamepad message for the first 3 seconds
-    if (showGamepadMessageFlag && messageClock.getElapsedTime().asSeconds() < 3) {
+    if (showGamepadFlag && infoClock.getElapsedTime().asSeconds() < 3) {
         this->renderTexture.draw(triangle);
     } else {
-        showGamepadMessageFlag = false;
+        showGamepadFlag = false;
     }
 
     renderTexture.display();
@@ -151,9 +154,7 @@ void Game::initPlayer() {
     this->player = new Player(64, 300);
 }
 
-void Game::initObstacles(){
-    // 40 by 22.5 grid
-    for (int i = 2; i < 38; ++i) {
-        obstacles.push_back(new Ground(16*i, 344));
-    }
+void Game::initObstacles() {
+    this->tileMap = new TileMap(16, 12, 50.0f);  
+    this->tileMap->loadMap("resources/map.txt"); 
 }

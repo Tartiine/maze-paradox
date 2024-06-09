@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "Player.h"
 #include "Obstacle.h"
+#include "TileMap.h"
 
 class Game {
 public:
@@ -23,20 +24,17 @@ private:
     sf::Vector2i resolution {640, 360};
     unsigned int scale = 2;
     
-    sf::Event ev;
     Player* player;
-    sf::ConvexShape triangle;
-
-    bool showGamepadMessageFlag;
-    sf::Clock messageClock;
-
+    TileMap* tileMap;
     std::vector<Obstacle*> obstacles;
     
     bool isFullscreenOn;
     int fullscreenHorizontalOffset;
     int fullscreenVerticalOffset;
 
-    void checkGamepad();
+    sf::ConvexShape triangle;
+    bool showGamepadFlag;
+    sf::Clock infoClock;
 
     void initWindow();
     void initWindowFullscreen();
@@ -44,10 +42,10 @@ private:
     void initObstacles(); 
     void initPlayer(); 
     void renderPlayer();
-    void renderObstacles();
+    void renderObstacles(bool debug);
     void updatePlayer(float deltaTime);
     void createTriangle(bool gamepadConnected);
-    
+    void checkGamepad();
 };
 
 #endif // GAME_H
