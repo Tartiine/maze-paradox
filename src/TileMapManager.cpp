@@ -7,8 +7,7 @@
 #include <sstream>
 #include <iostream>
 
-TileMapManager::TileMapManager() : currentTileMap(nullptr), playerTilePosition(0.0f) {
-
+TileMapManager::TileMapManager() : currentTileMap(nullptr), nextTileMap(nullptr), previousTileMap(nullptr), cameraX(0.0f) {
 }
 
 TileMapManager::~TileMapManager() {
@@ -56,23 +55,37 @@ void TileMapManager::loadTileMap(const TileMapInfo &info) {
     }
 }
 
-TileMap* TileMapManager::getCurrentTileMap() {
-    return currentTileMap;
+std::vector<TileMap*> TileMapManager::getRenderedTileMaps() const {
+    std::vector<TileMap*> renderedTileMaps;
+    if (currentTileMap) {
+        renderedTileMaps.push_back(currentTileMap);
+    }
+    if (previousTileMap && previousTileMap != currentTileMap) { 
+        renderedTileMaps.push_back(previousTileMap);
+    }
+    return renderedTileMaps;
 }
 
-TileMap* TileMapManager::getNextTileMap() {
+
+TileMap* TileMapManager::getNextTileMap() { 
     auto it = std::find_if(tileMapOrder.begin(), tileMapOrder.end(), 
                         [this](const TileMapInfo& info) { return info.filename == currentTileMap->getName(); });
-    if (it != tileMapOrder.end()) {
-        int nextIndex = (std::distance(tileMapOrder.begin(), it) + 1) % tileMapOrder.size();
-        return tileMaps[tileMapOrder[nextIndex].filename];
+    if (it != tileMapOrder.end()) { 
+        int currentIndex = std::distance(tileMapOrder.begin(), it);
+        int nextIndex = currentIndex + 1;
+        if (nextIndex < tileMapOrder.size()) {
+            return tileMaps[tileMapOrder[nextIndex].filename];
+        } else {
+            return nullptr; 
+        }
     }
     return nullptr;
 }
 
+//TODO: implement in every direction
 void TileMapManager::update(float deltaTime, Player *player,sf::RenderTarget &window) {
     float playerX = player->getPosition().x;
-    playerTilePosition = playerX / currentTileMap->getTileSize();
+    float playerTilePosition = playerX / currentTileMap->getTileSize();
     nextTileMap = getNextTileMap();
     int nextMap = currentTileMap->getWidth() + (currentTileMap->getPosition().x / currentTileMap->getTileSize());
 
@@ -84,11 +97,10 @@ void TileMapManager::update(float deltaTime, Player *player,sf::RenderTarget &wi
     }
 
     float relativePlayerX = playerX - currentTileMap->getPosition().x;
-
-    if ((relativePlayerX >= (3 * currentTileMap->getWidth() * currentTileMap->getTileSize()) / 4) || ((relativePlayerX <= (1 * currentTileMap->getWidth() * currentTileMap->getTileSize()) / 4 ) && previousTileMap)) {
+    if (nextTileMap && (relativePlayerX >= (3 * currentTileMap->getWidth() * currentTileMap->getTileSize()) / 4 && nextTileMap) || ((relativePlayerX <= (1 * currentTileMap->getWidth() * currentTileMap->getTileSize()) / 4 ) && previousTileMap)) {
         float targetCameraX = playerX - (window.getSize().x / 2);
         if (cameraX < targetCameraX) {
-            cameraX += 200.0f * deltaTime;
+            cameraX += 300.0f * deltaTime;
             if (cameraX > targetCameraX) {
                 cameraX = targetCameraX;
             }
@@ -118,5 +130,4 @@ void TileMapManager::render(sf::RenderTarget &target, bool debug) {
     }
 }
 
-//FIXME: Calculate collision with everything rendered not just currentTileMap
-//TODO: scroll in every direction
+

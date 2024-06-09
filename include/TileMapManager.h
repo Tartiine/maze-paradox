@@ -21,7 +21,7 @@ public:
     TileMapManager();
     ~TileMapManager();
     void loadTileMaps(const std::string &fileName);
-    TileMap* getCurrentTileMap();
+    std::vector<TileMap*> getRenderedTileMaps() const;
     TileMap* getNextTileMap();
     void update(float deltaTime, Player* player,sf::RenderTarget &target);
     void render(sf::RenderTarget &target, bool debug);
@@ -31,8 +31,7 @@ private:
     std::vector<TileMapInfo> tileMapOrder;
     TileMap* currentTileMap;
     TileMap* nextTileMap;
-    TileMap* previousTileMap = nullptr;
-    float playerTilePosition;
+    TileMap* previousTileMap;
     float cameraX;
     void loadTileMap(const TileMapInfo &info);
 };

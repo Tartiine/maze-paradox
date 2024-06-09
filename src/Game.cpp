@@ -3,6 +3,7 @@
 #include "Ground.h"
 #include <iostream>
 #include "TileMapManager.h"
+#include "TileMap.h"
 
 Game::Game() : showGamepadFlag(true) {
     this->initWindow();
@@ -22,14 +23,19 @@ Game::~Game() {
 }
 
 void Game::collisionPlayer() {
-    this->player->checkWindowBorders(this->window); 
-    for (unsigned i = 0; i < tileMapManager->getCurrentTileMap()->getHeight(); ++i) {
-        for (unsigned j = 0; j < tileMapManager->getCurrentTileMap()->getWidth(); ++j) {
-            auto& obstacle = tileMapManager->getCurrentTileMap()->getTile(i, j);
-            if (obstacle) {
-                sf::FloatRect bounds = obstacle->getHitbox();
-                if (this->player->isColliding(bounds)) {
-                    player->resolveCollision(bounds);
+    this->player->checkWindowBorders(this->window);
+
+    std::vector<TileMap*> renderedTileMaps = tileMapManager->getRenderedTileMaps();
+
+    for (TileMap* tileMap : renderedTileMaps) {
+        for (unsigned i = 0; i < tileMap->getHeight(); ++i) {
+            for (unsigned j = 0; j < tileMap->getWidth(); ++j) {
+                auto& obstacle = tileMap->getTile(i, j);
+                if (obstacle) {
+                    sf::FloatRect bounds = obstacle->getHitbox();
+                    if (this->player->isColliding(bounds)) {
+                        player->resolveCollision(bounds);
+                    }
                 }
             }
         }
