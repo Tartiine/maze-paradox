@@ -21,8 +21,8 @@ public:
     TileMapManager();
     ~TileMapManager();
     void loadTileMaps(const std::string &fileName);
-    std::vector<TileMap*> getRenderedTileMaps() const;
-    TileMap* getNextTileMap();
+    std::vector<TileMap*> getRenderedTileMaps();
+    std::unordered_map<std::string, TileMap*> getNeighbourTileMaps();
     void update(float deltaTime, Player* player,sf::RenderTarget &target);
     void render(sf::RenderTarget &target, bool debug);
 
@@ -32,7 +32,7 @@ private:
     TileMap* currentTileMap;
     TileMap* nextTileMap;
     TileMap* previousTileMap;
-    float cameraX;
+    float cameraX, cameraY; //Maybe a vector ??
     void loadTileMap(const TileMapInfo &info);
 };
 
