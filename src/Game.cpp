@@ -5,7 +5,7 @@
 
 Game::Game() : showGamepadFlag(true) {
     this->initWindow();
-    initRenderTexture();
+    this->initRenderTexture();
     this->initObstacles();
     this->initPlayer();
 
@@ -82,7 +82,7 @@ void Game::render() {
     this->renderTexture.clear(sf::Color::Blue);  //Maybe clear with a black color ?
 
     // Drawing components
-    this->renderObstacles(true);
+    this->renderObstacles(false);
     this->renderPlayer();
 
     if (showGamepadFlag && infoClock.getElapsedTime().asSeconds() < 3) {
@@ -132,7 +132,7 @@ void Game::createTriangle(bool gamepadConnected) {
 void Game::initWindow() {
     this->window.create(sf::VideoMode(this->resolution.x * this->scale, this->resolution.y * this->scale), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
     this->isFullscreenOn = false;
-    this->fullscreenVerticalOffset = 0;
+    this->fullscreenHorizontalOffset = 0;
     this->fullscreenVerticalOffset = 0;
 }
 
@@ -155,6 +155,6 @@ void Game::initPlayer() {
 }
 
 void Game::initObstacles() {
-    this->tileMap = new TileMap(16, 12, 50.0f);  
+    this->tileMap = new TileMap(40, 23, 16.0f);  
     this->tileMap->loadMap("resources/map.txt"); 
 }
