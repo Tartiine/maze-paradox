@@ -18,16 +18,27 @@ public:
     const sf::RenderWindow& getWindow() const;
 
 private:
-    sf::RenderWindow window;    
+    sf::RenderWindow window;
+    sf::RenderTexture renderTexture;
+
+    sf::Vector2i resolution {640, 360};
+    unsigned int scale = 2;
+    
     Player* player;
     TileMap* tileMap;
     std::vector<Obstacle*> obstacles;
     
+    bool isFullscreenOn;
+    int fullscreenHorizontalOffset;
+    int fullscreenVerticalOffset;
+
     sf::ConvexShape triangle;
     bool showGamepadFlag;
     sf::Clock infoClock;
 
     void initWindow();
+    void initWindowFullscreen();
+    void initRenderTexture();
     void initObstacles(); 
     void initPlayer(); 
     void renderPlayer();

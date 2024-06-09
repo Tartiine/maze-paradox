@@ -11,11 +11,23 @@ Player::Player(){
     this->initPhysics();
 }
 
+Player::Player(float x, float y) {
+    this->initTexture();
+    this->initSprite();
+    this->initAnimations();
+    this->initPhysics();
+    this->setPosition(x,y);
+}
+
 Player::~Player(){
 }
 
+void Player::setPosition(float x, float y) {
+    this->sprite.setPosition(x, y);
+}
+
 sf::FloatRect Player::getHitbox() const {
-    sf::Vector2<sf::Vector2f> offset(sf::Vector2f(30, 30), sf::Vector2f(30, 12));
+    sf::Vector2<sf::Vector2f> offset(sf::Vector2f(9, 10), sf::Vector2f(10, 4));
     sf::FloatRect bounds = this->sprite.getGlobalBounds();
     
     sf::FloatRect hitbox(
@@ -136,9 +148,7 @@ void Player::initTexture(){
 void Player::initSprite(){
     this->sprite.setTexture(this->textureSheet);
     this->sprite.setTextureRect(sf::IntRect(0,0,32,32));
-
-    this->sprite.setScale(3.0f,3.0f);
-    this->sprite.setPosition(10.f, 210.f);
+    this->sprite.setPosition(0, 0);
 }
 
 void Player::initAnimations() {

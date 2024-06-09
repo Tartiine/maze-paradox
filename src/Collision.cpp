@@ -37,7 +37,7 @@ void Collision::resolveCollision(const sf::FloatRect &other) {
     }
 }
 
-void Collision::checkWindowBorders(const sf::RenderWindow& window) {
+void Collision::checkWindowBorders(const sf::RenderTexture &renderTexture) {
     sf::FloatRect hitbox = getHitbox();
     sf::Vector2f position = sf::Vector2f(hitbox.left, hitbox.top);
     sf::Vector2f size = sf::Vector2f(hitbox.width, hitbox.height);
@@ -46,17 +46,17 @@ void Collision::checkWindowBorders(const sf::RenderWindow& window) {
         position.x = 0;
         moveCollision(-hitbox.left, 0); 
     }
-    if (position.x + size.x > window.getSize().x) {
-        position.x = window.getSize().x - size.x;
-        moveCollision(window.getSize().x - (hitbox.left + hitbox.width), 0); 
+    if (position.x + size.x > renderTexture.getSize().x) {
+        position.x = renderTexture.getSize().x - size.x;
+        moveCollision(renderTexture.getSize().x - (hitbox.left + hitbox.width), 0); 
     }
     if (position.y < 0) {
         position.y = 0;
         moveCollision(0, -hitbox.top); 
     }
-    if (position.y + size.y > window.getSize().y) {
-        position.y = window.getSize().y - size.y;
-        moveCollision(0, window.getSize().y - (hitbox.top + hitbox.height)); 
+    if (position.y + size.y > renderTexture.getSize().y) {
+        position.y = renderTexture.getSize().y - size.y;
+        moveCollision(0, renderTexture.getSize().y - (hitbox.top + hitbox.height)); 
         isOnGround = true; 
     }
 }

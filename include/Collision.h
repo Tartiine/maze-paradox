@@ -11,7 +11,7 @@ class Collision {
 
         bool isColliding(const sf::FloatRect &other) const;
         void resolveCollision(const sf::FloatRect &other);
-        void checkWindowBorders(const sf::RenderWindow& window);
+        void checkWindowBorders(const sf::RenderTexture& window);
         
     protected :
         bool isOnGround = false;

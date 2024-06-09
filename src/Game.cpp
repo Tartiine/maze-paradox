@@ -5,6 +5,7 @@
 
 Game::Game() : showGamepadFlag(true) {
     this->initWindow();
+    this->initRenderTexture();
     this->initObstacles();
     this->initPlayer();
 
@@ -21,7 +22,8 @@ Game::~Game() {
 }
 
 void Game::collisionPlayer() {
-    this->player->checkWindowBorders(this->window); 
+    this->player->checkWindowBorders(this->renderTexture);
+
     for (unsigned i = 0; i < tileMap->getHeight(); ++i) {
         for (unsigned j = 0; j < tileMap->getWidth(); ++j) {
             auto& obstacle = tileMap->getTile(i, j);
@@ -46,6 +48,20 @@ void Game::update(float deltaTime) {
             this->window.close();
         } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
             this->window.close();
+        } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F) {
+            this->window.close();
+            if (this->isFullscreenOn) {
+                this->scale = 2;
+                window.setMouseCursorVisible(true);
+                this->initWindow();
+            } else {
+                window.setMouseCursorVisible(false);
+                this->initWindowFullscreen();  
+            }
+        } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::G) {
+            scale = (scale % 3) + 1;
+            this->window.close();
+            this->initWindow();
         }
     }
 
@@ -53,28 +69,37 @@ void Game::update(float deltaTime) {
     this->collisionPlayer();
 }
 
-void Game::renderPlayer() {
-    this->player->render(this->window);
+
+void Game::renderPlayer(){
+    this->player->render(this->renderTexture);
 }
 
 void Game::renderObstacles(bool debug) {
-    tileMap->render(this->window, debug); 
+    tileMap->render(this->renderTexture, debug); 
 }
 
 void Game::render() {
-    this->window.clear(sf::Color::Blue);  // Maybe clear with a black color?
+    this->renderTexture.clear(sf::Color::Blue);  //Maybe clear with a black color ?
 
     // Drawing components
-    this->renderObstacles(true);
+    this->renderObstacles(false);
     this->renderPlayer();
 
     if (showGamepadFlag && infoClock.getElapsedTime().asSeconds() < 3) {
-        this->window.draw(triangle);
+        this->renderTexture.draw(triangle);
     } else {
         showGamepadFlag = false;
     }
 
-    this->window.display();
+    renderTexture.display();
+
+    sf::Sprite renderSprite(renderTexture.getTexture());
+    renderSprite.setScale(this->scale, this->scale);
+    renderSprite.setPosition(this->fullscreenHorizontalOffset, this->fullscreenVerticalOffset);
+    
+    this->window.clear();
+    this->window.draw(renderSprite);
+    this->window.display();  
 }
 
 const sf::RenderWindow& Game::getWindow() const {
@@ -105,15 +130,31 @@ void Game::createTriangle(bool gamepadConnected) {
 }
 
 void Game::initWindow() {
-    this->window.create(sf::VideoMode(800, 600), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
-    this->window.setFramerateLimit(60);  // TODO: Uniformize the movement speed (no variation based on FPS)
+    this->window.create(sf::VideoMode(this->resolution.x * this->scale, this->resolution.y * this->scale), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
+    this->isFullscreenOn = false;
+    this->fullscreenHorizontalOffset = 0;
+    this->fullscreenVerticalOffset = 0;
+}
+
+void Game::initWindowFullscreen() {
+    sf::VideoMode fullScreen = sf::VideoMode::getFullscreenModes()[0];
+
+    this->window.create(fullScreen, "SFML Platformer", sf::Style::Fullscreen);
+    this->isFullscreenOn = true;
+    this->scale = std::min(fullScreen.width / this->resolution.x, fullScreen.height / this->resolution.y);
+    this->fullscreenHorizontalOffset = (fullScreen.width - (this->resolution.x * this->scale)) / 2;
+    this->fullscreenVerticalOffset = (fullScreen.height - (this->resolution.y * this->scale)) / 2;
+}
+
+void Game::initRenderTexture() {
+    this->renderTexture.create(this->resolution.x, this->resolution.y);
 }
 
 void Game::initPlayer() {
-    this->player = new Player();
+    this->player = new Player(64, 300);
 }
 
 void Game::initObstacles() {
-    this->tileMap = new TileMap(16, 12, 50.0f);  
+    this->tileMap = new TileMap(40, 23, 16.0f);  
     this->tileMap->loadMap("resources/map.txt"); 
 }
