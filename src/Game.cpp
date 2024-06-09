@@ -22,7 +22,7 @@ Game::~Game() {
 }
 
 void Game::collisionPlayer() {
-    this->player->checkWindowBorders(this->window);
+    //this->player->checkWindowBorders(this->window); //FIXME: not working with scrolling TileMapManager
     for (unsigned i = 0; i < tileMapManager->getCurrentTileMap()->getHeight(); ++i) {
         for (unsigned j = 0; j < tileMapManager->getCurrentTileMap()->getWidth(); ++j) {
             auto& obstacle = tileMapManager->getCurrentTileMap()->getTile(i, j);
@@ -38,15 +38,6 @@ void Game::collisionPlayer() {
 
 void Game::updatePlayer(float deltaTime) {
     this->player->update(deltaTime);
-    float playerX = this->player->getPosition().x;
-    playerTilePosition = playerX / tileMapManager->getCurrentTileMap()->getTileSize();
-    if (playerTilePosition >= tileMapManager->getCurrentTileMap()->getWidth()) {
-        TileMap* nextTileMap = tileMapManager->getNextTileMap();
-        if (nextTileMap) {
-            tileMapManager->setCurrentTileMap(nextTileMap);
-            playerTilePosition = 0.0f;
-        }
-    }
 }
 
 void Game::update(float deltaTime) {
@@ -76,7 +67,7 @@ void Game::render() {
     this->window.clear(sf::Color::Blue);
 
     // Drawing components
-    this->renderObstacles(true);
+    this->renderObstacles(false);
     this->renderPlayer();
 
     if (showGamepadFlag && infoClock.getElapsedTime().asSeconds() < 3) {
@@ -127,5 +118,4 @@ void Game::initPlayer() {
 void Game::initObstacles() {
     tileMapManager = new TileMapManager();
     tileMapManager->loadTileMaps("resources/tile_map_order.txt");
-    playerTilePosition = 0.0f;
 }

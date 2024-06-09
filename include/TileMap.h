@@ -18,6 +18,8 @@ public:
     unsigned getWidth() const { return width; }  
     unsigned getHeight() const { return height; }  
     unsigned getTileSize() const { return tileSize; }  
+    sf::Vector2f getPosition() const { return position; }
+    void setPosition(const sf::Vector2f& newPosition);
     const std::string& getName() const;
 
 private:
@@ -25,6 +27,7 @@ private:
     unsigned width;
     unsigned height;
     float tileSize;
+    sf::Vector2f position;
     std::string name;
 
     void initMap();
@@ -34,4 +37,4 @@ private:
 #endif // TILEMAP_H
 
 
-//TODO: Debug collision chute
+//TODO: Debug collisions
