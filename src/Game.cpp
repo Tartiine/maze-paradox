@@ -2,6 +2,8 @@
 #include "Platform.h"
 #include "Ground.h"
 #include <iostream>
+#include "TileMapManager.h"
+#include "TileMap.h"
 #include <sstream>
 
 Game::Game() : showGamepadFlag(true) {
@@ -17,7 +19,7 @@ Game::Game() : showGamepadFlag(true) {
 
 Game::~Game() {
     delete this->player;
-    delete this->tileMap;
+    delete this->tileMapManager;
     delete this->generator;
     for (auto obstacle : this->obstacles) {
         delete obstacle;
@@ -26,14 +28,19 @@ Game::~Game() {
 }
 
 void Game::collisionPlayer() {
-    this->player->checkWindowBorders(this->window); 
-    for (unsigned i = 0; i < tileMap->getHeight(); ++i) {
-        for (unsigned j = 0; j < tileMap->getWidth(); ++j) {
-            auto& obstacle = tileMap->getTile(i, j);
-            if (obstacle) {
-                sf::FloatRect bounds = obstacle->getHitbox();
-                if (this->player->isColliding(bounds)) {
-                    player->resolveCollision(bounds);
+    this->player->checkWindowBorders(this->window);
+
+    std::vector<TileMap*> renderedTileMaps = tileMapManager->getRenderedTileMaps();
+
+    for (TileMap* tileMap : renderedTileMaps) {
+        for (unsigned i = 0; i < tileMap->getHeight(); ++i) {
+            for (unsigned j = 0; j < tileMap->getWidth(); ++j) {
+                auto& obstacle = tileMap->getTile(i, j);
+                if (obstacle) {
+                    sf::FloatRect bounds = obstacle->getHitbox();
+                    if (this->player->isColliding(bounds)) {
+                        player->resolveCollision(bounds);
+                    }
                 }
             }
         }
@@ -56,6 +63,7 @@ void Game::update(float deltaTime) {
 
     this->updatePlayer(deltaTime);
     this->collisionPlayer();
+    this->tileMapManager->update(deltaTime, this->player, this->window);
 }
 
 void Game::renderPlayer() {
@@ -63,14 +71,14 @@ void Game::renderPlayer() {
 }
 
 void Game::renderObstacles(bool debug) {
-    tileMap->render(this->window, debug); 
+    tileMapManager->render(this->window, debug);
 }
 
 void Game::render() {
-    this->window.clear(sf::Color::Blue);  // Maybe clear with a black color?
+    this->window.clear(sf::Color::Blue);
 
     // Drawing components
-    this->renderObstacles(true);
+    this->renderObstacles(false);
     this->renderPlayer();
 
     if (showGamepadFlag && infoClock.getElapsedTime().asSeconds() < 3) {
@@ -125,7 +133,7 @@ void Game::createTriangle(bool gamepadConnected) {
 
 void Game::initWindow() {
     this->window.create(sf::VideoMode(800, 600), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
-    this->window.setFramerateLimit(60);  // TODO: Uniformize the movement speed (no variation based on FPS)
+    this->window.setFramerateLimit(60);
 }
 
 void Game::initPlayer() {
@@ -142,6 +150,6 @@ void Game::initObstacles() {
         this->generator->saveTileMapToFile(tileMap, filename.str());
     }*/
 
-    this->tileMap = new TileMap(16, 12, 50.0f);  
-    this->tileMap->loadMap("resources/generated_map4.txt"); 
+    tileMapManager = new TileMapManager();
+    tileMapManager->loadTileMaps("resources/tile_generated_map_order4.txt");
 }

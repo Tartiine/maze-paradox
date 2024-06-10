@@ -126,6 +126,10 @@ void Player::updatePhysics() {
     this->sprite.move(this->velocity);
 }
 
+sf::Vector2f Player::getPosition() const {
+    return sprite.getPosition();
+}
+
 void Player::initTexture(){
     if(!this->textureSheet.loadFromFile("resources/sprites/knight.png")){
         cout << "Error loading player sprite sheet" << endl;

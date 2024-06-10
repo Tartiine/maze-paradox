@@ -42,21 +42,28 @@ void Collision::checkWindowBorders(const sf::RenderWindow& window) {
     sf::Vector2f position = sf::Vector2f(hitbox.left, hitbox.top);
     sf::Vector2f size = sf::Vector2f(hitbox.width, hitbox.height);
 
-    if (position.x < 0) {
-        position.x = 0;
-        moveCollision(-hitbox.left, 0); 
+    sf::View view = window.getView();
+    sf::FloatRect viewBounds(view.getCenter() - view.getSize() / 2.f, view.getSize());
+
+    if (position.x < viewBounds.left) {
+        float adjustment = viewBounds.left - position.x;
+        moveCollision(adjustment, 0);
     }
-    if (position.x + size.x > window.getSize().x) {
-        position.x = window.getSize().x - size.x;
-        moveCollision(window.getSize().x - (hitbox.left + hitbox.width), 0); 
+    if (position.x + size.x > viewBounds.left + viewBounds.width) {
+        float adjustment = (viewBounds.left + viewBounds.width) - (position.x + size.x);
+        moveCollision(adjustment, 0);
     }
-    if (position.y < 0) {
-        position.y = 0;
-        moveCollision(0, -hitbox.top); 
+    if (position.y < viewBounds.top) {
+        float adjustment = viewBounds.top - position.y;
+        moveCollision(0, adjustment);
     }
-    if (position.y + size.y > window.getSize().y) {
-        position.y = window.getSize().y - size.y;
-        moveCollision(0, window.getSize().y - (hitbox.top + hitbox.height)); 
-        isOnGround = true; 
+    if (position.y + size.y > viewBounds.top + viewBounds.height) {
+        float adjustment = (viewBounds.top + viewBounds.height) - (position.y + size.y);
+        moveCollision(0, adjustment);
+        isOnGround = true;
     }
+
+    hitbox = getHitbox();
+    position = sf::Vector2f(hitbox.left, hitbox.top);
+
 }

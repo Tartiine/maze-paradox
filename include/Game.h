@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Obstacle.h"
 #include "TileMap.h"
+#include "TileMapManager.h"
 #include "TileMapGenerator.h"
 #include "TileMapGeneratorCA.h"
 #include <vector>
@@ -26,8 +27,13 @@ private:
     sf::RenderWindow window;    
     Player* player;
     TileMap* tileMap;
+    TileMapManager* tileMapManager;
     TileMapGenerator* generator;
     std::vector<Obstacle*> obstacles;
+    std::vector<TileMap*> tileMaps;
+    int currentTileMapIndex;
+    float playerTilePosition;
+
     TileMapModel* tileMapModel;
 
     sf::ConvexShape triangle;

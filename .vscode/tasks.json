@@ -21,6 +21,7 @@
                 "src/TileMapGenerator.cpp",
                 "src/TileMapGeneratorCA.cpp",
                 "src/TileMapModel.cpp",
+                "src/TileMapManager.cpp",
                 "-I./include",
                 "-I${env:SFML_DIR}\\include",
                 "-I${env:FANN_DIR}\\src\\include",

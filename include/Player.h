@@ -28,6 +28,7 @@ public:
     void update(float deltaTime);
     void render(sf::RenderTarget& target);
     void updatePhysics();
+    sf::Vector2f getPosition() const;
 
 private:
     sf::Sprite sprite;
