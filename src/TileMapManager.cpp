@@ -116,7 +116,7 @@ void TileMapManager::update(float deltaTime, Player *player, sf::RenderTarget &w
     std::unordered_map<std::string, TileMap*> neighbours = getNeighbourTileMaps();
 
     int nextMapX = currentTileMap->getWidth() + (currentTileMap->getPosition().x / currentTileMap->getTileSize());
-    int nextMapY = currentTileMap->getHeight() + (currentTileMap->getPosition().y / currentTileMap->getTileSize());
+    int nextMapY = 2 + currentTileMap->getHeight() + (currentTileMap->getPosition().y / currentTileMap->getTileSize());
     int previousMapX = 3*(currentTileMap->getPosition().x / currentTileMap->getTileSize())/4;
     int previousMapY = 3*(currentTileMap->getPosition().y / currentTileMap->getTileSize())/4;
     if (playerTilePositionX >= nextMapX - 1 && neighbours.find("right") != neighbours.end()) {
