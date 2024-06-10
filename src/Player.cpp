@@ -27,7 +27,7 @@ void Player::setPosition(float x, float y) {
 }
 
 sf::FloatRect Player::getHitbox() const {
-    sf::Vector2<sf::Vector2f> offset(sf::Vector2f(9, 10), sf::Vector2f(10, 4));
+    sf::Vector2<sf::Vector2f> offset(sf::Vector2f(9, 10), sf::Vector2f(12, 4)); // side - top/bottom
     sf::FloatRect bounds = this->sprite.getGlobalBounds();
     
     sf::FloatRect hitbox(
@@ -82,10 +82,14 @@ void Player::updateMovement(float deltaTime) {
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z) ||
         sf::Joystick::isButtonPressed(0, 0) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) { // Jump
-        if (this->isOnGround) {
+        this->jumpReleased++;
+        if (!this->pressingJump) {
             this->pressingJump = true;
             this->currentState = State::Jumping;
         }
+    } else {
+        this->pressingJump = false;
+        this->jumpReleased = 0;
     }
 }
 
@@ -108,11 +112,6 @@ void Player::update(float deltaTime) {
     this->updateAnimations(deltaTime); 
 
     this->updatePhysics(deltaTime);
-
-    this->pressingLeft = false;
-    this->pressingRight = false;
-    this->pressingJump = false;
-
 }
 
 
@@ -165,23 +164,27 @@ void Player::updatePhysics(float deltaTime) {
 
     this->velocity.y += gravity * deltaTime;
 
-    if (this->pressingJump && this->isOnGround) {
-        this->velocity.y = this->initialJumpVelocity;
-        this->isOnGround = false;
-    }
-
     if (this->velocity.y > this->maxFallingVelocity) {
         this->velocity.y = this->maxFallingVelocity;
     }
 
-    if (this->isOnGround) {
+    if (this->isOnGround || this->touchTop) {
         this->velocity.y = 0;
     }
 
-    std::cout << "Velocity: " << this->velocity.x << " - " << this->velocity.y << " | isOnGround: " << this->isOnGround << std::endl;
+    if (this->touchSide) {
+        this->velocity.x = 0;
+    }
 
+    if (this->pressingJump && this->isOnGround && this->jumpReleased < 3) {
+        this->velocity.y = this->initialJumpVelocity;
+    }
+
+    this->pressingLeft = false;
+    this->pressingRight = false;
+
+    
     this->sprite.move(this->velocity.x * deltaTime, this->velocity.y * deltaTime);
-
     
     /*
     //Gravity
@@ -227,26 +230,22 @@ void Player::initPhysics() {
     this->pressingLeft = false;
     this->pressingRight = false;
     this->pressingJump = false;
+    this->jumpReleased = 0;
     
 
     this->velocity = {0, 0};
     
-    this->maxRunningVelocity = 250.0f;
+    this->maxRunningVelocity = 220.0f;
     this->maxFallingVelocity = 1000.0f;
 
-    this->acceleration = 600.0f;
-    this->deceleration = 1200.0f;
+    this->acceleration = 800.0f;
+    this->deceleration = 2000.0f;
 
-    this->gravity = 500.0f;
+    this->gravity = 1500.0f;
     this->airBrake = 0.8f;
 
-    this->initialJumpVelocity = -200.0f;
+    this->initialJumpVelocity = -300.0f;
     this->variableJumpBoost = -5.0f;
-    
-    this->jumpHoldTime = 0.2f;
-    this->jumpKeyHeld = false;
-    this->jumpTime = 0.0f;
-
 
     /*
     this->maxVelocity = 7.f;

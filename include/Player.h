@@ -48,6 +48,7 @@ private:
     bool pressingLeft;
     bool pressingRight;
     bool pressingJump;
+    unsigned int jumpReleased;
 
 
     // Physics
@@ -64,10 +65,6 @@ private:
 
     float initialJumpVelocity;
     float variableJumpBoost;
-    
-    float jumpHoldTime;
-    bool jumpKeyHeld;
-    float jumpTime;
 
     /*
     float maxVelocity;
