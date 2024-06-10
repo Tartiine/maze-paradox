@@ -30,7 +30,7 @@ public:
     void updateAnimations(float deltaTime);
     void update(float deltaTime);
     void render(sf::RenderTarget& target);
-    void updatePhysics();
+    void updatePhysics(float deltaTime);
 
 private:
     sf::Sprite sprite;
@@ -44,7 +44,32 @@ private:
     void initAnimations();
     void initPhysics();
 
+    // Inputs
+    bool pressingLeft;
+    bool pressingRight;
+    bool pressingJump;
+
+
+    // Physics
     sf::Vector2f velocity;
+
+    float maxRunningVelocity;
+    float maxFallingVelocity;
+    
+    float acceleration; // on the ground
+    float deceleration;
+
+    float gravity;  // in the air
+    float airBrake;
+
+    float initialJumpVelocity;
+    float variableJumpBoost;
+    
+    float jumpHoldTime;
+    bool jumpKeyHeld;
+    float jumpTime;
+
+    /*
     float maxVelocity;
     float minVelocity;
     float acceleration;
@@ -58,6 +83,9 @@ private:
     float airBrake; 
     float adjustmentFactor = 10.f;
     bool facingRight = false;
+    */
+    
+    
     // TODO: Ajuster les valeurs à la nouvelle résolution
 };
 

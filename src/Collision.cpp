@@ -21,6 +21,8 @@ void Collision::resolveCollision(const sf::FloatRect &other) {
     float minOverlapX = fromLeft ? overlapLeft : overlapRight;
     float minOverlapY = fromTop ? overlapTop : overlapBottom;
 
+    this->isOnGround = false;
+
     if (fabs(minOverlapX) < fabs(minOverlapY)) {
         if (fromLeft) {
             this->moveCollision(-minOverlapX, 0);

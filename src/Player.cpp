@@ -45,6 +45,7 @@ void Player::moveCollision(float x, float y) {
 }
 
 void Player::move(const float dir_x, const float dir_y, float deltaTime){
+        /*
         this->velocity.x += dir_x * this->acceleration * deltaTime;
         this->velocity.y += dir_y * this->acceleration * deltaTime;
         if(abs(this->velocity.x) > this->maxVelocity) {
@@ -58,6 +59,7 @@ void Player::move(const float dir_x, const float dir_y, float deltaTime){
             this->sprite.setScale(abs(this->sprite.getScale().x), this->sprite.getScale().y); 
             this->sprite.setOrigin(0, 0);
         }
+        */
 
 }
 
@@ -69,24 +71,21 @@ void Player::updateMovement(float deltaTime) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q) ||
         sf::Joystick::getAxisPosition(0, sf::Joystick::X) < -DEAD_ZONE ||
         sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) < -DEAD_ZONE) { // Left
-        this->move(-5.f, 0.f, deltaTime);
+        this->pressingLeft = true;
         this->currentState = State::Walking;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) ||
                sf::Joystick::getAxisPosition(0, sf::Joystick::X) > DEAD_ZONE ||
                sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) > DEAD_ZONE) { // Right
-        this->move(5.f, 0.f, deltaTime);
+        this->pressingRight = true;
         this->currentState = State::Walking;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z) ||
         sf::Joystick::isButtonPressed(0, 0) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) { // Jump
-        if (!this->keyPressed && this->isOnGround) {
-            this->velocity.y = -sqrtf(2.0f * this->gravity * this->jumpHeight);
+        if (this->isOnGround) {
+            this->pressingJump = true;
             this->currentState = State::Jumping;
-            this->keyPressed = true;
         }
-    } else {
-        this->keyPressed = false; 
     }
 }
 
@@ -108,9 +107,11 @@ void Player::update(float deltaTime) {
 
     this->updateAnimations(deltaTime); 
 
-    this->updatePhysics();
+    this->updatePhysics(deltaTime);
 
-    this->isOnGround = false;
+    this->pressingLeft = false;
+    this->pressingRight = false;
+    this->pressingJump = false;
 
 }
 
@@ -119,7 +120,70 @@ void Player::render(sf::RenderTarget & target){
     target.draw(this->sprite);
 }
 
-void Player::updatePhysics() {
+void Player::updatePhysics(float deltaTime) {
+    if (this->pressingLeft) {
+        if (this->velocity.x <= 0) {
+            this->velocity.x -= this->acceleration * deltaTime;
+        } else {
+            this->velocity.x -= this->deceleration * deltaTime;
+        }
+
+        if (this->velocity.x < -this->maxRunningVelocity) {
+            this->velocity.x = -this->maxRunningVelocity;
+        }
+
+        this->sprite.setScale(-abs(this->sprite.getScale().x), this->sprite.getScale().y); 
+        this->sprite.setOrigin(this->sprite.getLocalBounds().width, 0);
+
+    } else if (this->pressingRight) {
+        if (this->velocity.x >= 0) {
+            this->velocity.x += this->acceleration * deltaTime;
+        } else {
+            this->velocity.x += this->deceleration * deltaTime;
+        }
+
+        if (this->velocity.x > this->maxRunningVelocity) {
+            this->velocity.x = this->maxRunningVelocity;
+        }
+
+        this->sprite.setScale(abs(this->sprite.getScale().x), this->sprite.getScale().y); 
+        this->sprite.setOrigin(0, 0);
+
+    } else {
+        if (this->velocity.x > 0) {
+            this->velocity.x -= this->deceleration * deltaTime;
+            if (this->velocity.x < 0) {
+                this->velocity.x = 0;
+            }
+        } else if (this->velocity.x < 0) {
+            this->velocity.x += this->deceleration * deltaTime;
+            if (this->velocity.x > 0) {
+                this->velocity.x = 0;
+            }
+        }
+    }
+
+    this->velocity.y += gravity * deltaTime;
+
+    if (this->pressingJump && this->isOnGround) {
+        this->velocity.y = this->initialJumpVelocity;
+        this->isOnGround = false;
+    }
+
+    if (this->velocity.y > this->maxFallingVelocity) {
+        this->velocity.y = this->maxFallingVelocity;
+    }
+
+    if (this->isOnGround) {
+        this->velocity.y = 0;
+    }
+
+    std::cout << "Velocity: " << this->velocity.x << " - " << this->velocity.y << " | isOnGround: " << this->isOnGround << std::endl;
+
+    this->sprite.move(this->velocity.x * deltaTime, this->velocity.y * deltaTime);
+
+    
+    /*
     //Gravity
     if(!isOnGround) {
         this->velocity.y += 1.0 * this->gravity;
@@ -136,6 +200,7 @@ void Player::updatePhysics() {
     if(abs(this->velocity.y) < this->minVelocity)
         this->velocity.y = 0.f;
     this->sprite.move(this->velocity);
+    */
 }
 
 void Player::initTexture(){
@@ -159,6 +224,31 @@ void Player::initAnimations() {
 }
 
 void Player::initPhysics() {
+    this->pressingLeft = false;
+    this->pressingRight = false;
+    this->pressingJump = false;
+    
+
+    this->velocity = {0, 0};
+    
+    this->maxRunningVelocity = 250.0f;
+    this->maxFallingVelocity = 1000.0f;
+
+    this->acceleration = 600.0f;
+    this->deceleration = 1200.0f;
+
+    this->gravity = 500.0f;
+    this->airBrake = 0.8f;
+
+    this->initialJumpVelocity = -200.0f;
+    this->variableJumpBoost = -5.0f;
+    
+    this->jumpHoldTime = 0.2f;
+    this->jumpKeyHeld = false;
+    this->jumpTime = 0.0f;
+
+
+    /*
     this->maxVelocity = 7.f;
     this->minVelocity = 1.f;
     this->acceleration = 120.f;
@@ -167,7 +257,11 @@ void Player::initPhysics() {
     this->maxVelocityY = 10.f;
     this->jumpHeight = 120.f;
     this->jumpVelocity = 0.0f;
-    /*
+    
+    this->pressingLeft = false;
+    this->pressingRight = false;
+    this->pressingJump = false;
+    
     this->airControl = 200.0f; 
     this->airBrake = 0.5f;
     */ 

@@ -131,6 +131,7 @@ void Game::createTriangle(bool gamepadConnected) {
 
 void Game::initWindow() {
     this->window.create(sf::VideoMode(this->resolution.x * this->scale, this->resolution.y * this->scale), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
+    this->window.setFramerateLimit(240);
     this->isFullscreenOn = false;
     this->fullscreenHorizontalOffset = 0;
     this->fullscreenVerticalOffset = 0;
@@ -140,6 +141,7 @@ void Game::initWindowFullscreen() {
     sf::VideoMode fullScreen = sf::VideoMode::getFullscreenModes()[0];
 
     this->window.create(fullScreen, "SFML Platformer", sf::Style::Fullscreen);
+    this->window.setFramerateLimit(240);
     this->isFullscreenOn = true;
     this->scale = std::min(fullScreen.width / this->resolution.x, fullScreen.height / this->resolution.y);
     this->fullscreenHorizontalOffset = (fullScreen.width - (this->resolution.x * this->scale)) / 2;
