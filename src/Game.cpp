@@ -136,8 +136,6 @@ void Game::initPlayer() {
 }
 
 void Game::initObstacles() {
-    tileMapManager = new TileMapManager();
-    tileMapManager->loadTileMaps("resources/tile_map_order.txt");
 }
 
 void Game::initMap() {
@@ -152,8 +150,9 @@ void Game::initMap() {
     delete nbGenerator;
     this->tileMapModel = new TileMapModel(16*12, 1);
     this->tileMapModel->testModel("resources/maps", "resources/trained_model_nb.net");
-    //TODO:generate the map order
-    
+    tileMapManager = new TileMapManager();
+    tileMapManager->generateTileMapOrder("resources/maps", "resources/tile_map_order.txt", 800, 600);
+    tileMapManager->loadTileMaps("resources/tile_map_order.txt");
 }
 
 /*

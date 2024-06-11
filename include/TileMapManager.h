@@ -25,6 +25,7 @@ public:
     std::unordered_map<std::string, TileMap*> getNeighbourTileMaps();
     void update(float deltaTime, Player* player,sf::RenderTarget &target);
     void render(sf::RenderTarget &target, bool debug);
+    void generateTileMapOrder(const std::string &directory, const std::string &outputFile, int tileWidth, int tileHeight);
 
 private:
     std::unordered_map<std::string, TileMap*> tileMaps;

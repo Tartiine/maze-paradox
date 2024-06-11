@@ -6,6 +6,11 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <filesystem>
+#include <algorithm>
+#include <random>
+
+namespace fs = std::filesystem;
 
 TileMapManager::TileMapManager() : currentTileMap(nullptr), nextTileMap(nullptr), previousTileMap(nullptr), cameraX(0.0f),cameraY(0.0f) {
 }
@@ -50,7 +55,7 @@ void TileMapManager::loadTileMap(const TileMapInfo &info) {
     if (tileMaps.find(info.filename) == tileMaps.end()) {
         TileMap* tileMap = new TileMap(16, 12, 50.0f, info.filename);
         tileMap->setPosition(info.position);
-        tileMap->loadMap("resources/" + info.filename);
+        tileMap->loadMap("resources/maps/" + info.filename);
         tileMaps[info.filename] = tileMap;
     }
 }
@@ -120,19 +125,15 @@ void TileMapManager::update(float deltaTime, Player *player, sf::RenderTarget &w
     int previousMapX = 3*(currentTileMap->getPosition().x / currentTileMap->getTileSize())/4;
     int previousMapY = 3*(currentTileMap->getPosition().y / currentTileMap->getTileSize())/4;
     if (playerTilePositionX >= nextMapX - 1 && neighbours.find("right") != neighbours.end()) {
-        std::cerr << "Switching to the right tile map" << std::endl;
         previousTileMap = currentTileMap;
         currentTileMap = neighbours["right"];
     } else if (playerTilePositionX <= previousMapX && neighbours.find("left") != neighbours.end()) {
-        std::cerr << "Switching to the left tile map" << std::endl;
         previousTileMap = currentTileMap;
         currentTileMap = neighbours["left"];
     } else if (playerTilePositionY >= nextMapY - 1 && neighbours.find("down") != neighbours.end()) {
-        std::cerr << "Switching to the down tile map" << std::endl;
         previousTileMap = currentTileMap;
         currentTileMap = neighbours["down"];
     } else if (playerTilePositionY <= previousMapY && neighbours.find("up") != neighbours.end()) {
-        std::cerr << "Switching to the up tile map" << std::endl;
         previousTileMap = currentTileMap;
         currentTileMap = neighbours["up"];
     }
@@ -210,4 +211,76 @@ void TileMapManager::render(sf::RenderTarget &target, bool debug) {
     }
 }
 
+void TileMapManager::generateTileMapOrder(const std::string &directory, const std::string &outputFile, int tileWidth, int tileHeight) {
+        std::vector<std::string> mapFiles;
+
+    for (const auto &entry : fs::directory_iterator(directory)) {
+        if (entry.path().extension() == ".txt" && entry.path().filename() != "scores.txt") {
+            mapFiles.push_back(entry.path().filename().string());
+        }
+    }
+
+    if (mapFiles.empty()) {
+        std::cerr << "No map files found in directory: " << directory << std::endl;
+        return;
+    }
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(mapFiles.begin() + 1, mapFiles.end(), g); 
+
+    std::vector<std::tuple<std::string, int, int>> orderedMaps;
+    orderedMaps.emplace_back(mapFiles[0], 0, 0); //TODO: Replace first map with map.txt file
+
+    int x = 0, y = 0;
+    int dx = 0, dy = -1; 
+    int steps = 1; 
+    int steps_taken = 0;
+    int segment_length = 1;
+    int segment_passed = 0;
+    int direction_changes = 0; 
+
+    for (size_t i = 1; i < mapFiles.size(); ++i) {
+        if (direction_changes % 2 == 0) {
+            steps = segment_length;
+        }
+
+        if (steps_taken == steps) {
+            if (dx == 0 && dy == -1) { // Up to right
+                dx = 1; dy = 0;
+            } else if (dx == 1 && dy == 0) { // Right to down
+                dx = 0; dy = 1;
+            } else if (dx == 0 && dy == 1) { // Down to left
+                dx = -1; dy = 0;
+            } else if (dx == -1 && dy == 0) { // Left to up
+                dx = 0; dy = -1;
+            }
+
+            steps_taken = 0;
+            direction_changes++;
+            if (direction_changes % 2 == 0) {
+                segment_length++;
+            }
+        }
+
+        x += dx * tileWidth;
+        y += dy * tileHeight;
+        orderedMaps.emplace_back(mapFiles[i], x, y);
+        steps_taken++;
+    }
+
+    std::ofstream outFile(outputFile);
+    if (!outFile.is_open()) {
+        std::cerr << "Failed to open output file: " << outputFile << std::endl;
+        return;
+    }
+
+    for (const auto &[filename, posX, posY] : orderedMaps) {
+        outFile << filename << " " << posX << " " << posY << "\n";
+    }
+
+    outFile.close();
+    std::cout << "Tile map order saved to " << outputFile << std::endl;
+}
 //NOTE: Not working with tileMaps with the same name
+//TODO: Generer les maps avec une seed - (La 1ere doit tjrs etre plate et va rester dans resources) - Charger les maps avec le Manager (Les maps doivent etre supprimées a la fin)
