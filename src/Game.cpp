@@ -3,24 +3,26 @@
 #include "Ground.h"
 #include <iostream>
 #include "TileMapManager.h"
+#include "NoiseBasedGenerator.h"
+#include "RuleBasedGenerator.h"
 #include "TileMap.h"
 #include <sstream>
 
 Game::Game() : showGamepadFlag(true) {
     this->initWindow();
+    this->initMap();
     this->initObstacles();
     this->initPlayer();
     checkGamepad();
 
     //TEST IA
     //this->trainModel();
-    this->testModel();
+    //this->testModel();
 }
 
 Game::~Game() {
     delete this->player;
     delete this->tileMapManager;
-    delete this->generator;
     for (auto obstacle : this->obstacles) {
         delete obstacle;
     }
@@ -119,7 +121,7 @@ void Game::testModel() {
     this->tileMapModel->predict(datasetDirectory);
 }
 
-void Game::createTriangle(bool gamepadConnected) {
+void Game::createTriangle(bool gamepadConnected) { //TODO: Modify with message
     triangle.setPointCount(3);
     triangle.setPoint(0, sf::Vector2f(75.f, 10.f));
     triangle.setPoint(1, sf::Vector2f(100.f, 60.f));
@@ -141,15 +143,22 @@ void Game::initPlayer() {
 }
 
 void Game::initObstacles() {
-    this->generator = new TileMapGenerator();
-    /*
-    for (int i = 0; i < 50; i++) {
-        std::vector<std::vector<int>> tileMap = this->generator->generateTileMap(16, 12);
-        std::stringstream filename;
-        filename << "resources/generated_map" << i << ".txt";
-        this->generator->saveTileMapToFile(tileMap, filename.str());
-    }*/
-
     tileMapManager = new TileMapManager();
-    tileMapManager->loadTileMaps("resources/tile_generated_map_order4.txt");
+    tileMapManager->loadTileMaps("resources/tile_map_order.txt");
 }
+
+void Game::initMap() {
+    RuleBasedGenerator* rbGenerator = new RuleBasedGenerator();
+    NoiseBasedGenerator* nbGenerator = new NoiseBasedGenerator();
+
+    TileMapGenerator* generator = nbGenerator;  
+
+    generator->generateBatch(50, 16, 12, "resources/generated_map");
+
+    delete rbGenerator;
+    delete nbGenerator;
+
+    //TODO:get the best maps with model
+    //TODO:generate the map order
+}
+

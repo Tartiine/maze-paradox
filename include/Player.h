@@ -59,6 +59,4 @@ private:
 
 };
 
-//TODO: Add getters and setters
-
 #endif // PLAYER_H

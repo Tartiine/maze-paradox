@@ -42,7 +42,8 @@ private:
 
     void initWindow();
     void initObstacles(); 
-    void initPlayer();   
+    void initPlayer();  
+    void initMap();
     void renderPlayer();
     void renderObstacles(bool debug);
     void updatePlayer(float deltaTime);
