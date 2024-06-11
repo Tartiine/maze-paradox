@@ -10,6 +10,7 @@
 
 Game::Game() : showGamepadFlag(true) {
     this->initWindow();
+    this->initRenderTexture();
     this->initMap();
     this->initObstacles();
     this->initPlayer();
@@ -30,7 +31,7 @@ Game::~Game() {
 }
 
 void Game::collisionPlayer() {
-    this->player->checkWindowBorders(this->window);
+    this->player->checkWindowBorders(this->renderTexture);
 
     std::vector<TileMap*> renderedTileMaps = tileMapManager->getRenderedTileMaps();
 
@@ -60,6 +61,20 @@ void Game::update(float deltaTime) {
             this->window.close();
         } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
             this->window.close();
+        } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F) {
+            this->window.close();
+            if (this->isFullscreenOn) {
+                this->scale = 2;
+                window.setMouseCursorVisible(true);
+                this->initWindow();
+            } else {
+                window.setMouseCursorVisible(false);
+                this->initWindowFullscreen();  
+            }
+        } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::G) {
+            scale = (scale % 3) + 1;
+            this->window.close();
+            this->initWindow();
         }
     }
 
@@ -68,28 +83,38 @@ void Game::update(float deltaTime) {
     this->tileMapManager->update(deltaTime, this->player, this->window);
 }
 
-void Game::renderPlayer() {
-    this->player->render(this->window);
+
+void Game::renderPlayer(){
+    this->player->render(this->renderTexture);
 }
 
 void Game::renderObstacles(bool debug) {
-    tileMapManager->render(this->window, debug);
+    tileMapManager->render(this->renderTexture, debug);
 }
 
 void Game::render() {
-    this->window.clear(sf::Color::Blue);
+    this->renderTexture.clear(sf::Color::Blue);  //Maybe clear with a black color ?
 
     // Drawing components
+    this->renderObstacles(false);
     this->renderObstacles(false);
     this->renderPlayer();
 
     if (showGamepadFlag && infoClock.getElapsedTime().asSeconds() < 3) {
-        this->window.draw(triangle);
+        this->renderTexture.draw(triangle);
     } else {
         showGamepadFlag = false;
     }
 
-    this->window.display();
+    renderTexture.display();
+
+    sf::Sprite renderSprite(renderTexture.getTexture());
+    renderSprite.setScale(this->scale, this->scale);
+    renderSprite.setPosition(this->fullscreenHorizontalOffset, this->fullscreenVerticalOffset);
+    
+    this->window.clear();
+    this->window.draw(renderSprite);
+    this->window.display();  
 }
 
 const sf::RenderWindow& Game::getWindow() const {
@@ -127,12 +152,30 @@ void Game::createTriangle(bool gamepadConnected) { //TODO: Modify with message
 }
 
 void Game::initWindow() {
-    this->window.create(sf::VideoMode(800, 600), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
-    this->window.setFramerateLimit(60);
+    this->window.create(sf::VideoMode(this->resolution.x * this->scale, this->resolution.y * this->scale), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
+    this->window.setFramerateLimit(240);
+    this->isFullscreenOn = false;
+    this->fullscreenHorizontalOffset = 0;
+    this->fullscreenVerticalOffset = 0;
+}
+
+void Game::initWindowFullscreen() {
+    sf::VideoMode fullScreen = sf::VideoMode::getFullscreenModes()[0];
+
+    this->window.create(fullScreen, "SFML Platformer", sf::Style::Fullscreen);
+    this->window.setFramerateLimit(240);
+    this->isFullscreenOn = true;
+    this->scale = std::min(fullScreen.width / this->resolution.x, fullScreen.height / this->resolution.y);
+    this->fullscreenHorizontalOffset = (fullScreen.width - (this->resolution.x * this->scale)) / 2;
+    this->fullscreenVerticalOffset = (fullScreen.height - (this->resolution.y * this->scale)) / 2;
+}
+
+void Game::initRenderTexture() {
+    this->renderTexture.create(this->resolution.x, this->resolution.y);
 }
 
 void Game::initPlayer() {
-    this->player = new Player();
+    this->player = new Player(64, 300);
 }
 
 void Game::initObstacles() {
@@ -142,16 +185,16 @@ void Game::initMap() {
     std::unique_ptr<RuleBasedGenerator> rbGenerator = std::make_unique<RuleBasedGenerator>();
     std::unique_ptr<NoiseBasedGenerator> nbGenerator = std::make_unique<NoiseBasedGenerator>();
 
-    nbGenerator->generateBatch(50, 16, 12, "resources/maps/generated_map");
-    rbGenerator->generateBatch(50, 16, 12, "resources/maps1/generated_map");
+    nbGenerator->generateBatch(16, 40, 23, "resources/maps/generated_map");
+    rbGenerator->generateBatch(16, 40, 23, "resources/maps1/generated_map");
 
-    this->tileMapModel = new TileMapModel(16 * 12, 1);
+    this->tileMapModel = new TileMapModel(40 * 23, 1);
     this->tileMapModel->testModel("resources/maps", "resources/trained_model_nb.net");
     this->tileMapModel->testModel("resources/maps1", "resources/trained_model_rb.net");
 
     tileMapManager = new TileMapManager();
     std::vector<std::string> directories = {"resources/maps", "resources/maps1"};
-    tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", 800, 600);
+    tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", this->resolution.x, this->resolution.y);
     tileMapManager->loadTileMaps("resources/tile_map_order.txt");
 }
 

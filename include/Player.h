@@ -17,7 +17,10 @@ public:
     };
 
     Player();
+    Player(float x, float y);
     virtual ~Player();
+
+    void setPosition(float x, float y);
 
     sf::FloatRect getHitbox() const override;
     void moveCollision(float x, float y) override;
@@ -27,7 +30,7 @@ public:
     void updateAnimations(float deltaTime);
     void update(float deltaTime);
     void render(sf::RenderTarget& target);
-    void updatePhysics();
+    void updatePhysics(float deltaTime);
     sf::Vector2f getPosition() const;
 
 private:
@@ -42,7 +45,29 @@ private:
     void initAnimations();
     void initPhysics();
 
+    // Inputs
+    bool pressingLeft;
+    bool pressingRight;
+    bool pressingJump;
+    unsigned int jumpReleased;
+
+
+    // Physics
     sf::Vector2f velocity;
+
+    float maxRunningVelocity;
+    float maxFallingVelocity;
+    
+    float acceleration; // on the ground
+    float deceleration;
+
+    float gravity;  // in the air
+    float airBrake;
+
+    float initialJumpVelocity;
+    float variableJumpBoost;
+
+    /*
     float maxVelocity;
     float minVelocity;
     float acceleration;
@@ -56,7 +81,10 @@ private:
     float airBrake; 
     float adjustmentFactor = 10.f;
     bool facingRight = false;
-
+    */
+    
+    
+    // TODO: Ajuster les valeurs à la nouvelle résolution
 };
 
 #endif // PLAYER_H

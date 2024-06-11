@@ -21,7 +21,13 @@ void Collision::resolveCollision(const sf::FloatRect &other) {
     float minOverlapX = fromLeft ? overlapLeft : overlapRight;
     float minOverlapY = fromTop ? overlapTop : overlapBottom;
 
+    this->isOnGround = false;
+
+    this->touchSide = false;
+    this->touchTop = false;
+
     if (fabs(minOverlapX) < fabs(minOverlapY)) {
+        touchSide = true;
         if (fromLeft) {
             this->moveCollision(-minOverlapX, 0);
         } else {
@@ -32,17 +38,23 @@ void Collision::resolveCollision(const sf::FloatRect &other) {
             this->moveCollision(0, -minOverlapY);
             isOnGround = true;
         } else {
-            this->moveCollision(0, minOverlapY); 
+            this->moveCollision(0, minOverlapY);
+            touchTop = true; 
         }
     }
 }
 
-void Collision::checkWindowBorders(const sf::RenderWindow& window) {
+void Collision::checkWindowBorders(const sf::RenderTexture &renderTexture) {
     sf::FloatRect hitbox = getHitbox();
     sf::Vector2f position = sf::Vector2f(hitbox.left, hitbox.top);
     sf::Vector2f size = sf::Vector2f(hitbox.width, hitbox.height);
 
-    sf::View view = window.getView();
+    this->isOnGround = false;
+
+    this->touchSide = false;
+    this->touchTop = false;
+
+    sf::View view = renderTexture.getView();
     sf::FloatRect viewBounds(view.getCenter() - view.getSize() / 2.f, view.getSize());
 
     if (position.x < viewBounds.left) {

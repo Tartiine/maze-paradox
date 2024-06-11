@@ -23,12 +23,22 @@ public:
     const sf::RenderWindow& getWindow() const;
 
 private:
-    sf::RenderWindow window;    
+    sf::RenderWindow window;
+    sf::RenderTexture renderTexture;
+
+    sf::Vector2i resolution {640, 360};
+    unsigned int scale = 2;
+    
     Player* player;
     TileMap* tileMap;
     TileMapManager* tileMapManager;
     TileMapGenerator* generator;
     std::vector<Obstacle*> obstacles;
+    
+    bool isFullscreenOn;
+    int fullscreenHorizontalOffset;
+    int fullscreenVerticalOffset;
+
     std::vector<TileMap*> tileMaps;
     int currentTileMapIndex;
     float playerTilePosition;
@@ -40,6 +50,8 @@ private:
     sf::Clock infoClock;
 
     void initWindow();
+    void initWindowFullscreen();
+    void initRenderTexture();
     void initObstacles(); 
     void initPlayer();  
     void initMap();

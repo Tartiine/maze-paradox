@@ -19,7 +19,7 @@ Platform::~Platform() {
 }
 
 sf::FloatRect Platform::getHitbox() const {
-    sf::Vector2<sf::Vector2f> offset(sf::Vector2f(0, 0), sf::Vector2f(0, 21));
+    sf::Vector2<sf::Vector2f> offset(sf::Vector2f(0, 0), sf::Vector2f(0, 7));
     sf::FloatRect bounds = this->sprite.getGlobalBounds();
     
     sf::FloatRect hitbox(
@@ -45,8 +45,6 @@ void Platform::initTexture() {
 void Platform::initSprite(){
     this->sprite.setTexture(this->textureSheet);
     this->sprite.setTextureRect(sf::IntRect(16,16,32,16));
-
-    this->sprite.setScale(3.0f,3.0f);
     this->sprite.setPosition(0, 0);
 
 }
