@@ -16,6 +16,9 @@ class Collision {
     protected :
         bool isOnGround = false;
 
+        bool touchSide = false;
+        bool touchTop = false;
+
 };
 
 #endif // COLLISION_H
