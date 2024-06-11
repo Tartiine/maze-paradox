@@ -58,21 +58,24 @@ void Collision::checkWindowBorders(const sf::RenderTexture &renderTexture) {
     sf::FloatRect viewBounds(view.getCenter() - view.getSize() / 2.f, view.getSize());
 
     if (position.x < viewBounds.left) {
+        touchSide = true;
         float adjustment = viewBounds.left - position.x;
         moveCollision(adjustment, 0);
     }
     if (position.x + size.x > viewBounds.left + viewBounds.width) {
+        touchSide = true;
         float adjustment = (viewBounds.left + viewBounds.width) - (position.x + size.x);
         moveCollision(adjustment, 0);
     }
     if (position.y < viewBounds.top) {
+        touchTop = true; 
         float adjustment = viewBounds.top - position.y;
         moveCollision(0, adjustment);
     }
     if (position.y + size.y > viewBounds.top + viewBounds.height) {
+        isOnGround = true;
         float adjustment = (viewBounds.top + viewBounds.height) - (position.y + size.y);
         moveCollision(0, adjustment);
-        isOnGround = true;
     }
 
     hitbox = getHitbox();
