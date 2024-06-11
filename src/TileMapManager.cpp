@@ -55,7 +55,7 @@ void TileMapManager::loadTileMap(const TileMapInfo &info) {
     if (tileMaps.find(info.filename) == tileMaps.end()) {
         TileMap* tileMap = new TileMap(16, 12, 50.0f, info.filename);
         tileMap->setPosition(info.position);
-        tileMap->loadMap("resources/maps/" + info.filename);
+        tileMap->loadMap("resources/" + info.filename);
         tileMaps[info.filename] = tileMap;
     }
 }
@@ -211,26 +211,46 @@ void TileMapManager::render(sf::RenderTarget &target, bool debug) {
     }
 }
 
-void TileMapManager::generateTileMapOrder(const std::string &directory, const std::string &outputFile, int tileWidth, int tileHeight) {
-        std::vector<std::string> mapFiles;
+void TileMapManager::generateTileMapOrder(const std::vector<std::string> &directories, const std::string &outputFile, int tileWidth, int tileHeight) {
+std::vector<std::string> mapFiles;
 
-    for (const auto &entry : fs::directory_iterator(directory)) {
-        if (entry.path().extension() == ".txt" && entry.path().filename() != "scores.txt") {
-            mapFiles.push_back(entry.path().filename().string());
+    // Iterate over each directory
+    for (const auto &directory : directories) {
+        for (const auto &entry : fs::directory_iterator(directory)) {
+            if (entry.path().extension() == ".txt" && entry.path().filename() != "scores.txt") {
+                mapFiles.push_back(entry.path().string());
+            }
         }
     }
 
     if (mapFiles.empty()) {
-        std::cerr << "No map files found in directory: " << directory << std::endl;
+        std::cerr << "No map files found in the provided directories" << std::endl;
         return;
     }
 
     std::random_device rd;
     std::mt19937 g(rd());
-    std::shuffle(mapFiles.begin() + 1, mapFiles.end(), g); 
+    std::shuffle(mapFiles.begin(), mapFiles.end(), g);
 
     std::vector<std::tuple<std::string, int, int>> orderedMaps;
-    orderedMaps.emplace_back(mapFiles[0], 0, 0); //TODO: Replace first map with map.txt file
+    bool mapTxtFound = false;
+
+    //FIXME: map.txt should be found in resources folder
+    for (auto it = mapFiles.begin(); it != mapFiles.end(); ++it) {
+        if (fs::path(*it).filename() == "map.txt") {
+            std::string relativePath = fs::relative(*it, "resources").string();
+            orderedMaps.emplace_back(relativePath, 0, 0);
+            mapFiles.erase(it);
+            mapTxtFound = true;
+            break;
+        }
+    }
+
+    if (!mapTxtFound) {
+        std::string relativePath = fs::relative(mapFiles[0], "resources").string();
+        orderedMaps.emplace_back(relativePath, 0, 0);
+        mapFiles.erase(mapFiles.begin());
+    }
 
     int x = 0, y = 0;
     int dx = 0, dy = -1; 
@@ -240,7 +260,7 @@ void TileMapManager::generateTileMapOrder(const std::string &directory, const st
     int segment_passed = 0;
     int direction_changes = 0; 
 
-    for (size_t i = 1; i < mapFiles.size(); ++i) {
+    for (size_t i = 0; i < mapFiles.size(); ++i) {
         if (direction_changes % 2 == 0) {
             steps = segment_length;
         }
@@ -265,7 +285,8 @@ void TileMapManager::generateTileMapOrder(const std::string &directory, const st
 
         x += dx * tileWidth;
         y += dy * tileHeight;
-        orderedMaps.emplace_back(mapFiles[i], x, y);
+        std::string relativePath = fs::relative(mapFiles[i], "resources").string();
+        orderedMaps.emplace_back(relativePath, x, y);
         steps_taken++;
     }
 
@@ -284,3 +305,4 @@ void TileMapManager::generateTileMapOrder(const std::string &directory, const st
 }
 //NOTE: Not working with tileMaps with the same name
 //TODO: Generer les maps avec une seed - (La 1ere doit tjrs etre plate et va rester dans resources) - Charger les maps avec le Manager (Les maps doivent etre supprimées a la fin)
+//TODO: Camera must be faster when falling

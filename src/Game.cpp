@@ -139,19 +139,19 @@ void Game::initObstacles() {
 }
 
 void Game::initMap() {
-    RuleBasedGenerator* rbGenerator = new RuleBasedGenerator();
-    NoiseBasedGenerator* nbGenerator = new NoiseBasedGenerator();
+    std::unique_ptr<RuleBasedGenerator> rbGenerator = std::make_unique<RuleBasedGenerator>();
+    std::unique_ptr<NoiseBasedGenerator> nbGenerator = std::make_unique<NoiseBasedGenerator>();
 
-    TileMapGenerator* generator = nbGenerator;  
+    nbGenerator->generateBatch(50, 16, 12, "resources/maps/generated_map");
+    rbGenerator->generateBatch(50, 16, 12, "resources/maps1/generated_map");
 
-    generator->generateBatch(50, 16, 12, "resources/maps/generated_map");
-
-    delete rbGenerator;
-    delete nbGenerator;
-    this->tileMapModel = new TileMapModel(16*12, 1);
+    this->tileMapModel = new TileMapModel(16 * 12, 1);
     this->tileMapModel->testModel("resources/maps", "resources/trained_model_nb.net");
+    this->tileMapModel->testModel("resources/maps1", "resources/trained_model_rb.net");
+
     tileMapManager = new TileMapManager();
-    tileMapManager->generateTileMapOrder("resources/maps", "resources/tile_map_order.txt", 800, 600);
+    std::vector<std::string> directories = {"resources/maps", "resources/maps1"};
+    tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", 800, 600);
     tileMapManager->loadTileMaps("resources/tile_map_order.txt");
 }
 
