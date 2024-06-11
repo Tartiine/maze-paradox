@@ -14,7 +14,8 @@ public:
     ~TileMapModel();
 
     void train(const string &directory);
-    void predict(const string &directory);
+    vector<tuple<int, string>> predict(const string &directory);
+    void testModel(const string &datasetDirectory, const string &modelFile);
     void saveModel(const string &filename);
     void loadModel(const string &filename);
 

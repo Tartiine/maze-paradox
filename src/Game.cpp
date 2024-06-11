@@ -106,20 +106,13 @@ void Game::checkGamepad() {
     }
     createTriangle(gamepadConnected);
 }
-
+/*
 void Game::trainModel() {
     std::string datasetDirectory = "resources/dataset_train_gp_rb";
     this->tileMapModel = new TileMapModel(16*12, 1);
     this->tileMapModel->train(datasetDirectory);
     this->tileMapModel->saveModel("resources/trained_model_rb.net");
-}
-
-void Game::testModel() {
-    std::string datasetDirectory = "resources/dataset_test_gp_rb";
-    this->tileMapModel = new TileMapModel(16*12, 1);
-    this->tileMapModel->loadModel("resources/trained_model_rb.net");
-    this->tileMapModel->predict(datasetDirectory);
-}
+}*/
 
 void Game::createTriangle(bool gamepadConnected) { //TODO: Modify with message
     triangle.setPointCount(3);
@@ -153,12 +146,17 @@ void Game::initMap() {
 
     TileMapGenerator* generator = nbGenerator;  
 
-    generator->generateBatch(50, 16, 12, "resources/generated_map");
+    generator->generateBatch(50, 16, 12, "resources/maps/generated_map");
 
     delete rbGenerator;
     delete nbGenerator;
-
-    //TODO:get the best maps with model
+    this->tileMapModel = new TileMapModel(16*12, 1);
+    this->tileMapModel->testModel("resources/maps", "resources/trained_model_nb.net");
     //TODO:generate the map order
+    
 }
 
+/*
+void Game::initIA(){
+
+}*/

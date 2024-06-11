@@ -7,7 +7,6 @@
 #include "TileMap.h"
 #include "TileMapManager.h"
 #include "TileMapGenerator.h"
-#include "TileMapGeneratorCA.h"
 #include <vector>
 #include <memory>
 #include "TileMapModel.h"
@@ -49,8 +48,6 @@ private:
     void updatePlayer(float deltaTime);
     void createTriangle(bool gamepadConnected);
     void checkGamepad();
-    void trainModel();
-    void testModel();
 };
 
 #endif // GAME_H

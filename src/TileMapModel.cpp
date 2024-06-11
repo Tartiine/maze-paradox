@@ -75,17 +75,35 @@ vector<int> TileMapModel::convertFromFANNOutput(fann_type *output) {
 }
 
 void TileMapModel::loadData(const string &directory) {
+    tileMaps.clear();
+    scores.clear();
+
     string scorefile = directory + "/scores.txt";
+    bool scoresFileExists = fs::exists(scorefile);
+
     for (const auto &entry : fs::directory_iterator(directory)) {
         if (entry.path().extension() == ".txt" && entry.path().filename() != "scores.txt") {
-            tileMaps.push_back(readTileMap(entry.path().string()));
+            vector<int> tileMap = readTileMap(entry.path().string());
+            tileMaps.push_back(tileMap);
         }
     }
-    ifstream scoreFile(scorefile);
-    int score;
-    while (scoreFile >> score) {
-        scores.push_back(score);
+
+    if (scoresFileExists) {
+        ifstream scoreFile(scorefile);
+        if (!scoreFile.is_open()) {
+            cerr << "Error opening score file: " << scorefile << endl;
+            return;
+        }
+
+        int score;
+        while (scoreFile >> score) {
+            scores.push_back(score);
+        }
+        cout << "Loaded scores from " << scorefile << endl;
+    } else {
+        cout << "No score file found. Proceeding without scores." << endl;
     }
+
     cout << "Loaded data from " << directory << endl;
 }
 
@@ -102,24 +120,63 @@ void TileMapModel::train(const string &directory) {
     cout << "Training complete." << endl;
 }
 
-void TileMapModel::predict(const string &directory) {
+vector<tuple<int, string>> TileMapModel::predict(const string &directory) {
     loadData(directory);
 
     cout << "Testing model..." << endl;
-    int bestScore = 0;
+    vector<tuple<int, string>> predictions; 
     int totalError = 0;
-    for (size_t i = 0; i < tileMaps.size(); ++i) {
-        vector<fann_type> input = convertToFANNInput(tileMaps[i]);
-        fann_type *output = fann_run(ann, input.data());
-        int predictedScore = static_cast<int>(output[0] * 10);
-        if (predictedScore > bestScore){
-            bestScore == predictedScore;
+    bool hasScores = !scores.empty();
+
+    auto tileMapIt = tileMaps.begin();
+    auto entryIt = fs::directory_iterator(directory);
+
+    for (size_t i = 0; i < tileMaps.size(); ++i, ++tileMapIt, ++entryIt) {
+        while (entryIt->path().extension() != ".txt" || entryIt->path().filename() == "scores.txt") {
+            ++entryIt;
         }
-        int actualScore = scores[i];
-        int error = abs(predictedScore - actualScore);
-        totalError += error;
-        cout << "Tile map " << i + 1 << ": Predicted score = " << predictedScore << ", Actual score = " << actualScore << ", Error = " << error << endl;
+        
+        vector<fann_type> input = convertToFANNInput(*tileMapIt);
+
+        fann_type *output = fann_run(ann, input.data());
+
+        int predictedScore = static_cast<int>(output[0] * 10);
+        //cout << output[0] << endl;
+        predictions.emplace_back(predictedScore, entryIt->path().string());
+
+        if (hasScores) {
+            int actualScore = scores[i];
+            int error = abs(predictedScore - actualScore);
+            totalError += error;
+            cout << "Tile map " << i + 1 << ": Predicted score = " << predictedScore << ", Actual score = " << actualScore << ", Error = " << error << endl;
+        } else {
+            //cout << "Tile map " << i + 1 << ": Predicted score = " << predictedScore << endl;
+        }
     }
-    cout << "Average error = " << (double)totalError / tileMaps.size() << endl;
-    cout << "Testing complete." << endl;
+
+    if (hasScores) {
+        cout << "Average error = " << (double)totalError / tileMaps.size() << endl;
+    }
+
+    return predictions;
 }
+
+void TileMapModel::testModel(const string &datasetDirectory, const string &modelFile) {
+    loadModel(modelFile);
+
+    vector<tuple<int, string>> predictions = predict(datasetDirectory);
+
+    sort(predictions.begin(), predictions.end(), [](const auto &a, const auto &b) {
+        return get<0>(a) > get<0>(b);
+    });
+
+    for (size_t i = 0; i < predictions.size(); ++i) {
+        if (i > 20) {
+            //cout << "Deleting file: " << get<1>(predictions[i]) << " with predicted score: " << get<0>(predictions[i]) << endl;
+            fs::remove(get<1>(predictions[i]));
+        }
+    }
+    cout << "Testing and file cleanup complete." << endl;
+}
+
+//FIXME :  predicted scores are wrong

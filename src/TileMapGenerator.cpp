@@ -4,10 +4,22 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <filesystem>
 
 using namespace std;
 
 void TileMapGenerator::saveTileMapToFile(const std::vector<std::vector<int>>& tileMap, const std::string& filename) {
+    namespace fs = std::filesystem;
+    fs::path filePath = filename;
+    fs::path dirPath = filePath.parent_path();
+
+    if (!fs::exists(dirPath)) {
+        if (!fs::create_directories(dirPath)) {
+            cerr << "Failed to create directory: " << dirPath << endl;
+            return;
+        }
+    }
+
     ofstream outFile(filename, ios::out | ios::trunc);
     if (!outFile.is_open()) {
         cerr << "Failed to open file for writing: " << filename << endl;
