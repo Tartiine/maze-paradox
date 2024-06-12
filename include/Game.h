@@ -26,7 +26,7 @@ private:
     sf::RenderWindow window;
     sf::RenderTexture renderTexture;
 
-    sf::Vector2i resolution {640, 360};
+    sf::Vector2i resolution {640, 352};
     unsigned int scale = 2;
     
     Player* player;

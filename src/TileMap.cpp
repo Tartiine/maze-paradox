@@ -37,8 +37,8 @@ std::unique_ptr<Obstacle> TileMap::createTile(int tileType, float x, float y) {
 }
 
 void TileMap::render(sf::RenderTarget &target, bool debug) {
-    for (unsigned i = 0; i < 12; ++i) {
-        for (unsigned j = 0; j < 16; ++j) {
+    for (unsigned i = 0; i < height; ++i) {
+        for (unsigned j = 0; j < width; ++j) {
             if (map[i][j]) {
                 map[i][j]->render(target);
             }

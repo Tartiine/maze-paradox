@@ -80,7 +80,7 @@ void Game::update(float deltaTime) {
 
     this->updatePlayer(deltaTime);
     this->collisionPlayer();
-    this->tileMapManager->update(deltaTime, this->player, this->window);
+    this->tileMapManager->update(deltaTime, this->player, this->renderTexture);
 }
 
 
@@ -96,8 +96,7 @@ void Game::render() {
     this->renderTexture.clear(sf::Color::Blue);  //Maybe clear with a black color ?
 
     // Drawing components
-    this->renderObstacles(false);
-    this->renderObstacles(false);
+    this->renderObstacles(true);
     this->renderPlayer();
 
     if (showGamepadFlag && infoClock.getElapsedTime().asSeconds() < 3) {
@@ -182,19 +181,20 @@ void Game::initObstacles() {
 }
 
 void Game::initMap() {
+    /*
     std::unique_ptr<RuleBasedGenerator> rbGenerator = std::make_unique<RuleBasedGenerator>();
     std::unique_ptr<NoiseBasedGenerator> nbGenerator = std::make_unique<NoiseBasedGenerator>();
 
-    nbGenerator->generateBatch(16, 40, 23, "resources/maps/generated_map");
-    rbGenerator->generateBatch(16, 40, 23, "resources/maps1/generated_map");
+    nbGenerator->generateBatch(25, 40, 22, "resources/maps/generated_map");
+    rbGenerator->generateBatch(25, 40, 22, "resources/maps1/generated_map");
 
-    this->tileMapModel = new TileMapModel(40 * 23, 1);
+    this->tileMapModel = new TileMapModel(40 * 22, 1);
     this->tileMapModel->testModel("resources/maps", "resources/trained_model_nb.net");
     this->tileMapModel->testModel("resources/maps1", "resources/trained_model_rb.net");
-
+    */
     tileMapManager = new TileMapManager();
-    std::vector<std::string> directories = {"resources/maps", "resources/maps1"};
-    tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", this->resolution.x, this->resolution.y);
+    std::vector<std::string> directories = {"resources/maps"};
+    //tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", this->resolution.x, this->resolution.y);
     tileMapManager->loadTileMaps("resources/tile_map_order.txt");
 }
 
