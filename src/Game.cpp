@@ -9,7 +9,7 @@
 #include <sstream>
 
 Game::Game() : showGamepadFlag(true) {
-    this->initWindowFullscreen();
+    this->initWindow();
     this->initRenderTexture();
     this->initMap();
     this->initObstacles();
@@ -62,8 +62,7 @@ void Game::update(float deltaTime) {
         } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
             this->window.close();
         }
-        /*
-                } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F) {
+        else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F) {
             this->window.close();
             if (this->isFullscreenOn) {
                 this->scale = 2;
@@ -78,7 +77,6 @@ void Game::update(float deltaTime) {
             this->window.close();
             this->initWindow();
         }
-        */
     }
 
     this->updatePlayer(deltaTime);
@@ -184,6 +182,7 @@ void Game::initObstacles() {
 }
 
 void Game::initMap() {
+    /*
     std::unique_ptr<RuleBasedGenerator> rbGenerator = std::make_unique<RuleBasedGenerator>();
     std::unique_ptr<NoiseBasedGenerator> nbGenerator = std::make_unique<NoiseBasedGenerator>();
 
@@ -193,10 +192,11 @@ void Game::initMap() {
     this->tileMapModel = new TileMapModel(40 * 22, 1);
     this->tileMapModel->testModel("resources/maps", "resources/trained_model_nb.net");
     this->tileMapModel->testModel("resources/maps1", "resources/trained_model_rb.net");
-    
+    */ 
+
     tileMapManager = new TileMapManager();
     std::vector<std::string> directories = {"resources/maps"};
-    tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", this->resolution.x, this->resolution.y);
+    //tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", this->resolution.x, this->resolution.y);
     tileMapManager->loadTileMaps("resources/tile_map_order.txt");
 }
 

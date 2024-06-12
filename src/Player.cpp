@@ -27,7 +27,7 @@ void Player::setPosition(float x, float y) {
 }
 
 sf::FloatRect Player::getHitbox() const {
-    sf::Vector2<sf::Vector2f> offset(sf::Vector2f(4, 4), sf::Vector2f(5, 0)); // side - top/bottom
+    sf::Vector2<sf::Vector2f> offset(sf::Vector2f(10, 10), sf::Vector2f(18, 0)); // side - top/bottom
     sf::FloatRect bounds = this->sprite.getGlobalBounds();
     
     sf::FloatRect hitbox(
@@ -248,7 +248,7 @@ void Player::initPhysics() {
     this->gravity = 1500.f;
     this->airBrake = 0.8f;
 
-    this->initialJumpVelocity = -500.f;
+    this->initialJumpVelocity = -400.f;
     this->variableJumpBoost = -5.f;
 
     /*
