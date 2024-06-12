@@ -9,7 +9,7 @@
 #include <sstream>
 
 Game::Game() : showGamepadFlag(true) {
-    this->initWindow();
+    this->initWindowFullscreen();
     this->initRenderTexture();
     this->initMap();
     this->initObstacles();
@@ -61,7 +61,9 @@ void Game::update(float deltaTime) {
             this->window.close();
         } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
             this->window.close();
-        } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F) {
+        }
+        /*
+                } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F) {
             this->window.close();
             if (this->isFullscreenOn) {
                 this->scale = 2;
@@ -76,6 +78,7 @@ void Game::update(float deltaTime) {
             this->window.close();
             this->initWindow();
         }
+        */
     }
 
     this->updatePlayer(deltaTime);
