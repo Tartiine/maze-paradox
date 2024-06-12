@@ -195,7 +195,7 @@ void Game::initMap() {
     this->tileMapModel->testModel("resources/maps1", "resources/trained_model_rb.net");
     
     tileMapManager = new TileMapManager();
-    std::vector<std::string> directories = {"resources/maps1"};
+    std::vector<std::string> directories = {"resources/maps"};
     tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", this->resolution.x, this->resolution.y);
     tileMapManager->loadTileMaps("resources/tile_map_order.txt");
 }
