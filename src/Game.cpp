@@ -99,7 +99,7 @@ void Game::render() {
     this->renderTexture.clear(sf::Color::Blue);  //Maybe clear with a black color ?
 
     // Drawing components
-    this->renderObstacles(true);
+    this->renderObstacles(false);
     this->renderPlayer();
 
     if (showGamepadFlag && infoClock.getElapsedTime().asSeconds() < 3) {

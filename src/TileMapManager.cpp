@@ -86,28 +86,19 @@ std::unordered_map<std::string, TileMap*> TileMapManager::getNeighbourTileMaps()
     sf::Vector2f currentPos = currentTileMap->getPosition();
     float tileSize = currentTileMap->getTileSize();
 
-    std::cerr << "Current TileMap Position: (" << currentPos.x << ", " << currentPos.y << "), Tile Size: " << tileSize << std::endl;
-
     for (const auto& tileMapInfo : tileMapOrder) {
         if (tileMaps.find(tileMapInfo.filename) != tileMaps.end()) {
             TileMap* tileMap = tileMaps[tileMapInfo.filename];
             sf::Vector2f pos = tileMap->getPosition();
 
-            std::cerr << "Checking TileMap: " << tileMapInfo.filename << " at Position: (" << pos.x << ", " << pos.y << ")" << std::endl;
             if (pos.x == currentPos.x && pos.y == currentPos.y - currentTileMap->getHeight() * tileSize) {
                 neighbours["up"] = tileMap;
-                std::cerr << "Found 'up' neighbour: " << tileMapInfo.filename << std::endl;
             } else if (pos.x == currentPos.x && pos.y == currentPos.y + currentTileMap->getHeight() * tileSize) {
                 neighbours["down"] = tileMap;
-                std::cerr << "Found 'down' neighbour: " << tileMapInfo.filename << std::endl;
             } else if (pos.x == currentPos.x - currentTileMap->getWidth() * tileSize && pos.y == currentPos.y) {
                 neighbours["left"] = tileMap;
-                std::cerr << "Found 'left' neighbour: " << tileMapInfo.filename << std::endl;
             } else if (pos.x == currentPos.x + currentTileMap->getWidth() * tileSize && pos.y == currentPos.y) {
                 neighbours["right"] = tileMap;
-                std::cerr << "Found 'right' neighbour: " << tileMapInfo.filename << std::endl;
-            } else {
-                std::cerr << "No neighbour match for: " << tileMapInfo.filename << std::endl;
             }
         } else {
             std::cerr << "TileMap not found for filename: " << tileMapInfo.filename << std::endl;
@@ -159,14 +150,12 @@ void TileMapManager::update(float deltaTime, Player *player, sf::RenderTarget &w
     bool isTransitioningY = false;
     if ((neighbours.find("right") != neighbours.end() && (relativePlayerX >= (3 * currentTileMap->getWidth() * currentTileMap->getTileSize()) / 4)) || 
         (neighbours.find("left") != neighbours.end() && (relativePlayerX <= (1 * currentTileMap->getWidth() * currentTileMap->getTileSize()) / 4))) {
-        std::cerr << "Player is near horizontal edge" << std::endl;
         isTransitioningX = true;
         targetCameraX = playerX - (window.getSize().x / 2);
     }
 
     if ((neighbours.find("down") != neighbours.end() && (relativePlayerY >= (3 * currentTileMap->getHeight() * currentTileMap->getTileSize()) / 4)) || 
         (neighbours.find("up") != neighbours.end() && (relativePlayerY <= (1 * currentTileMap->getHeight() * currentTileMap->getTileSize()) / 4))) {
-        std::cerr << "Player is near vertical edge" << std::endl;
         isTransitioningY = true;
         targetCameraY = playerY - (window.getSize().y / 2);
     }

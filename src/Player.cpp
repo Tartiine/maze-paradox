@@ -239,17 +239,17 @@ void Player::initPhysics() {
 
     this->velocity = {0, 0};
     
-    this->maxRunningVelocity = 220.0f;
-    this->maxFallingVelocity = 1000.0f;
+    this->maxRunningVelocity = 220.f;
+    this->maxFallingVelocity = 1000.f;
 
-    this->acceleration = 800.0f;
-    this->deceleration = 2000.0f;
+    this->acceleration = 800.f;
+    this->deceleration = 2000.f;
 
-    this->gravity = 1500.0f;
+    this->gravity = 1500.f;
     this->airBrake = 0.8f;
 
-    this->initialJumpVelocity = -300.0f;
-    this->variableJumpBoost = -5.0f;
+    this->initialJumpVelocity = -500.f;
+    this->variableJumpBoost = -5.f;
 
     /*
     this->maxVelocity = 7.f;
@@ -271,3 +271,4 @@ void Player::initPhysics() {
 }
 
 //TODO: variable height jump
+//TODO: diagonal map in neighbour
