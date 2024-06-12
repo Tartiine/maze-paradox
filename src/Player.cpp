@@ -27,7 +27,7 @@ void Player::setPosition(float x, float y) {
 }
 
 sf::FloatRect Player::getHitbox() const {
-    sf::Vector2<sf::Vector2f> offset(sf::Vector2f(9, 10), sf::Vector2f(12, 4)); // side - top/bottom
+    sf::Vector2<sf::Vector2f> offset(sf::Vector2f(4, 4), sf::Vector2f(5, 0)); // side - top/bottom
     sf::FloatRect bounds = this->sprite.getGlobalBounds();
     
     sf::FloatRect hitbox(
@@ -96,7 +96,7 @@ void Player::updateMovement(float deltaTime) {
 void Player::updateAnimations(float deltaTime) {
     int animationRow = 0; 
     switch(currentState) {
-        case State::Walking: animationRow = 2; break; 
+        case State::Walking: animationRow = 1; break; 
         case State::Jumping: animationRow = 0; break; 
         case State::Crouching: animationRow = 0; break;
         default: animationRow = 0; break;
