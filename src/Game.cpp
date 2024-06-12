@@ -194,10 +194,11 @@ void Game::initMap() {
     this->tileMapModel = new TileMapModel(40 * 22, 1);
     this->tileMapModel->testModel("resources/maps", "resources/trained_model_nb.net");
     this->tileMapModel->testModel("resources/maps1", "resources/trained_model_rb.net");
-    */
+
+
     tileMapManager = new TileMapManager();
     std::vector<std::string> directories = {"resources/maps"};
-    //tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", this->resolution.x, this->resolution.y);
+    tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", this->resolution.x, this->resolution.y);
     tileMapManager->loadTileMaps("resources/tile_map_order.txt");
 }
 

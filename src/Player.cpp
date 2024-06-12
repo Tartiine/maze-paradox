@@ -97,8 +97,8 @@ void Player::updateAnimations(float deltaTime) {
     int animationRow = 0; 
     switch(currentState) {
         case State::Walking: animationRow = 2; break; 
-        case State::Jumping: animationRow = 5; break; 
-        case State::Crouching: animationRow = 7; break;
+        case State::Jumping: animationRow = 0; break; 
+        case State::Crouching: animationRow = 0; break;
         default: animationRow = 0; break;
     }
 
@@ -211,7 +211,7 @@ sf::Vector2f Player::getPosition() const {
 }
 
 void Player::initTexture(){
-    if(!this->textureSheet.loadFromFile("resources/sprites/knight.png")){
+    if(!this->textureSheet.loadFromFile("resources/sprites/Player/g3rar_spritesheet.png")){
         cout << "Error loading player sprite sheet" << endl;
     }
 
@@ -224,10 +224,10 @@ void Player::initSprite(){
 }
 
 void Player::initAnimations() {
-    animations[Idle] = Animation(&textureSheet, sf::Vector2u(4, 1), 0.15f, sf::Vector2u(32,32));       
-    animations[Walking] = Animation(&textureSheet, sf::Vector2u(8, 2), 0.09f, sf::Vector2u(32,32));    
-    animations[Jumping] = Animation(&textureSheet, sf::Vector2u(5, 1), 0.15f, sf::Vector2u(32,32));   
-    animations[Crouching] = Animation(&textureSheet, sf::Vector2u(3, 1), 0.2f, sf::Vector2u(32,32));  
+    animations[Idle] = Animation(&textureSheet, sf::Vector2u(7, 1), 0.15f, sf::Vector2u(32,32));       
+    animations[Walking] = Animation(&textureSheet, sf::Vector2u(6, 1), 0.09f, sf::Vector2u(32,32));    
+    animations[Jumping] = Animation(&textureSheet, sf::Vector2u(7, 1), 0.15f, sf::Vector2u(32,32));   
+    animations[Crouching] = Animation(&textureSheet, sf::Vector2u(7, 1), 0.2f, sf::Vector2u(32,32));  
 }
 
 void Player::initPhysics() {
