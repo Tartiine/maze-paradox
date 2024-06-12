@@ -96,7 +96,7 @@ void Game::renderObstacles(bool debug) {
 }
 
 void Game::render() {
-    this->renderTexture.clear(sf::Color::Blue);  //Maybe clear with a black color ?
+    this->renderTexture.clear(sf::Color(0, 120, 226)); 
 
     // Drawing components
     this->renderObstacles(false);
@@ -184,7 +184,6 @@ void Game::initObstacles() {
 }
 
 void Game::initMap() {
-    /*
     std::unique_ptr<RuleBasedGenerator> rbGenerator = std::make_unique<RuleBasedGenerator>();
     std::unique_ptr<NoiseBasedGenerator> nbGenerator = std::make_unique<NoiseBasedGenerator>();
 
@@ -194,10 +193,10 @@ void Game::initMap() {
     this->tileMapModel = new TileMapModel(40 * 22, 1);
     this->tileMapModel->testModel("resources/maps", "resources/trained_model_nb.net");
     this->tileMapModel->testModel("resources/maps1", "resources/trained_model_rb.net");
-    */
+    
     tileMapManager = new TileMapManager();
-    std::vector<std::string> directories = {"resources/maps"};
-    //tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", this->resolution.x, this->resolution.y);
+    std::vector<std::string> directories = {"resources/maps1"};
+    tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", this->resolution.x, this->resolution.y);
     tileMapManager->loadTileMaps("resources/tile_map_order.txt");
 }
 
