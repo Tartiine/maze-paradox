@@ -9,16 +9,15 @@
 #include <sstream>
 
 Game::Game() : showGamepadFlag(true) {
+    //TEST IA
+    //this->trainModel();
+    
     this->initWindow();
     this->initRenderTexture();
     this->initMap();
     this->initObstacles();
     this->initPlayer();
     checkGamepad();
-
-    //TEST IA
-    //this->trainModel();
-    //this->testModel();
 }
 
 Game::~Game() {
@@ -131,13 +130,19 @@ void Game::checkGamepad() {
     }
     createTriangle(gamepadConnected);
 }
-/*
+
 void Game::trainModel() {
-    std::string datasetDirectory = "resources/dataset_train_gp_rb";
-    this->tileMapModel = new TileMapModel(16*12, 1);
-    this->tileMapModel->train(datasetDirectory);
+    this->tileMapModel = new TileMapModel(40*22, 1);
+    this->tileMapModel->createModel("rb");
+    this->tileMapModel->train("resources/rb_maps");
     this->tileMapModel->saveModel("resources/trained_model_rb.net");
-}*/
+    
+
+    this->tileMapModel = new TileMapModel(40*22, 1);
+    this->tileMapModel->createModel("nb");
+    this->tileMapModel->train("resources/nb_maps");
+    this->tileMapModel->saveModel("resources/trained_model_nb.net");
+}
 
 void Game::createTriangle(bool gamepadConnected) { //TODO: Modify with message
     triangle.setPointCount(3);
@@ -182,21 +187,23 @@ void Game::initObstacles() {
 }
 
 void Game::initMap() {
-    /*
-    std::unique_ptr<RuleBasedGenerator> rbGenerator = std::make_unique<RuleBasedGenerator>();
+    
+    std::unique_ptr<RuleBasedGenerator>
+    rbGenerator = std::make_unique<RuleBasedGenerator>();
     std::unique_ptr<NoiseBasedGenerator> nbGenerator = std::make_unique<NoiseBasedGenerator>();
 
     nbGenerator->generateBatch(25, 40, 22, "resources/maps/generated_map");
     rbGenerator->generateBatch(25, 40, 22, "resources/maps1/generated_map");
 
+    
     this->tileMapModel = new TileMapModel(40 * 22, 1);
     this->tileMapModel->testModel("resources/maps", "resources/trained_model_nb.net");
     this->tileMapModel->testModel("resources/maps1", "resources/trained_model_rb.net");
-    */ 
-
+    
+    
     tileMapManager = new TileMapManager();
-    std::vector<std::string> directories = {"resources/maps"};
-    //tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", this->resolution.x, this->resolution.y);
+    std::vector<std::string> directories = {"resources/maps", "resources/maps1"};
+    tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", this->resolution.x, this->resolution.y);
     tileMapManager->loadTileMaps("resources/tile_map_order.txt");
 }
 
