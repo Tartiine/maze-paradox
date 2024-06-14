@@ -66,7 +66,7 @@ private:
     void updatePlayer(float deltaTime);
     void createTriangle(bool gamepadConnected);
     void checkGamepad();
-
+    void trainModel();
 };
 
 #endif // GAME_H

@@ -13,6 +13,7 @@ public:
     TileMapModel(int input_size, int output_size);
     ~TileMapModel();
 
+    void createModel(const string &type);
     void train(const string &directory);
     vector<tuple<int, string>> predict(const string &directory);
     void testModel(const string &datasetDirectory, const string &modelFile);

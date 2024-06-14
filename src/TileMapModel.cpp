@@ -11,14 +11,24 @@ using namespace std;
 
 TileMapModel::TileMapModel(int input_size, int output_size) 
     : input_size(input_size), output_size(output_size) {
-    //ann = fann_create_standard(3, input_size, 10, output_size);
-    //cout << "Created neural network model." << endl;
 }
 
 TileMapModel::~TileMapModel() {
     fann_destroy(ann);
 }
 
+void TileMapModel::createModel(const string &type) {
+    if (type == "rb") {
+        ann = fann_create_standard(4, input_size, 512, 128, output_size);
+        fann_set_learning_rate(ann, 0.0001);
+    
+    } else if (type == "nb") {
+        ann = fann_create_standard(4, input_size, 512, 128, output_size);
+        fann_set_learning_rate(ann, 0.0001);
+    }
+    
+    cout << "Created neural network model." << endl;
+}
 void TileMapModel::saveModel(const string &filename) {
     int result = fann_save(ann, filename.c_str());
     if (result == -1) {
@@ -108,14 +118,21 @@ void TileMapModel::loadData(const string &directory) {
 }
 
 void TileMapModel::train(const string &directory) {
+    loadData(directory);
+    
     cout << "Training model..." << endl;
     struct fann_train_data *train_data = fann_create_train(tileMaps.size(), input_size, 1);
     for (size_t i = 0; i < tileMaps.size(); ++i) {
         vector<fann_type> input = convertToFANNInput(tileMaps[i]);
         copy(input.begin(), input.end(), train_data->input[i]);
-        train_data->output[i][0] = scores[i] / 10.0; 
+        train_data->output[i][0] = scores[i] / 5.0; 
     }
-    fann_train_on_data(ann, train_data, 1000, 200, 0.01);
+    
+    int max_epochs = 1000;
+    int report_interval = 200;
+    float desired_error = 0.0001;
+
+    fann_train_on_data(ann, train_data, max_epochs, report_interval, desired_error);
     fann_destroy_train(train_data);
     cout << "Training complete." << endl;
 }
@@ -140,8 +157,7 @@ vector<tuple<int, string>> TileMapModel::predict(const string &directory) {
 
         fann_type *output = fann_run(ann, input.data());
 
-        int predictedScore = static_cast<int>(output[0] * 10);
-        //cout << output[0] << endl;
+        float predictedScore = static_cast<float>(output[0] * 5.0);
         predictions.emplace_back(predictedScore, entryIt->path().string());
 
         if (hasScores) {
@@ -150,7 +166,7 @@ vector<tuple<int, string>> TileMapModel::predict(const string &directory) {
             totalError += error;
             cout << "Tile map " << i + 1 << ": Predicted score = " << predictedScore << ", Actual score = " << actualScore << ", Error = " << error << endl;
         } else {
-            //cout << "Tile map " << i + 1 << ": Predicted score = " << predictedScore << endl;
+            cout << "Tile map " << i + 1 << ": Predicted score = " << predictedScore << endl;
         }
     }
 
