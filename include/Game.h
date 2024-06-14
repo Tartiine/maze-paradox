@@ -40,8 +40,6 @@ private:
     int fullscreenVerticalOffset;
 
     std::vector<TileMap*> tileMaps;
-    int currentTileMapIndex;
-    float playerTilePosition;
 
     TileMapModel* tileMapModel;
 
@@ -49,6 +47,14 @@ private:
     bool showGamepadFlag;
     sf::Clock infoClock;
 
+    bool gameStarted;
+    sf::Font startFont;
+    sf::Text startText;
+    sf::Font secondaryFont;
+    sf::Text secondaryText;
+    sf::RectangleShape startBackground;
+
+    void initStartScreen();
     void initWindow();
     void initWindowFullscreen();
     void initRenderTexture();
@@ -60,6 +66,7 @@ private:
     void updatePlayer(float deltaTime);
     void createTriangle(bool gamepadConnected);
     void checkGamepad();
+
 };
 
 #endif // GAME_H

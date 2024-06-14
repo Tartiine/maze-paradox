@@ -6,6 +6,7 @@
 #include "NoiseBasedGenerator.h"
 #include "RuleBasedGenerator.h"
 #include "TileMap.h"
+#include "Animation.h"
 #include <sstream>
 
 Game::Game() : showGamepadFlag(true) {
@@ -15,6 +16,7 @@ Game::Game() : showGamepadFlag(true) {
     this->initObstacles();
     this->initPlayer();
     checkGamepad();
+    this->initStartScreen();
 
     //TEST IA
     //this->trainModel();
@@ -61,6 +63,10 @@ void Game::update(float deltaTime) {
             this->window.close();
         } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
             this->window.close();
+        } else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
+            if (!gameStarted) {
+                gameStarted = true;
+            }
         }
         else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::F) {
             this->window.close();
@@ -79,11 +85,16 @@ void Game::update(float deltaTime) {
         }
     }
 
-    this->updatePlayer(deltaTime);
-    this->collisionPlayer();
-    this->tileMapManager->update(deltaTime, this->player, this->renderTexture);
+    if (gameStarted) {
+        this->updatePlayer(deltaTime);
+        this->collisionPlayer();
+        this->tileMapManager->update(deltaTime, this->player, this->renderTexture);
+        tileMapManager->updateAnimation(deltaTime);
+        if(tileMapManager->checkPortal(player)){
+            window.close();
+        }
+    }
 }
-
 
 void Game::renderPlayer(){
     this->player->render(this->renderTexture);
@@ -94,12 +105,21 @@ void Game::renderObstacles(bool debug) {
 }
 
 void Game::render() {
-    this->renderTexture.clear(sf::Color(0, 120, 226)); 
+    if (!gameStarted) {
+        this->window.clear();
+        this->window.draw(startBackground);
+        this->window.draw(startText);
+        this->window.draw(secondaryText);
+        this->window.display();
+        return;
+    }
 
-    // Drawing components
+    this->renderTexture.clear(sf::Color(0, 120, 226));
+
     this->renderObstacles(false);
     this->renderPlayer();
 
+    tileMapManager->render(this->renderTexture);
     if (showGamepadFlag && infoClock.getElapsedTime().asSeconds() < 3) {
         this->renderTexture.draw(triangle);
     } else {
@@ -131,13 +151,6 @@ void Game::checkGamepad() {
     }
     createTriangle(gamepadConnected);
 }
-/*
-void Game::trainModel() {
-    std::string datasetDirectory = "resources/dataset_train_gp_rb";
-    this->tileMapModel = new TileMapModel(16*12, 1);
-    this->tileMapModel->train(datasetDirectory);
-    this->tileMapModel->saveModel("resources/trained_model_rb.net");
-}*/
 
 void Game::createTriangle(bool gamepadConnected) { //TODO: Modify with message
     triangle.setPointCount(3);
@@ -182,8 +195,7 @@ void Game::initObstacles() {
 }
 
 void Game::initMap() {
-    /*
-    std::unique_ptr<RuleBasedGenerator> rbGenerator = std::make_unique<RuleBasedGenerator>();
+/*     std::unique_ptr<RuleBasedGenerator> rbGenerator = std::make_unique<RuleBasedGenerator>();
     std::unique_ptr<NoiseBasedGenerator> nbGenerator = std::make_unique<NoiseBasedGenerator>();
 
     nbGenerator->generateBatch(25, 40, 22, "resources/maps/generated_map");
@@ -192,15 +204,54 @@ void Game::initMap() {
     this->tileMapModel = new TileMapModel(40 * 22, 1);
     this->tileMapModel->testModel("resources/maps", "resources/trained_model_nb.net");
     this->tileMapModel->testModel("resources/maps1", "resources/trained_model_rb.net");
-    */ 
+ */
 
     tileMapManager = new TileMapManager();
-    std::vector<std::string> directories = {"resources/maps"};
+    std::vector<std::string> directories = {"resources/maps", "resources/maps1"};
     //tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", this->resolution.x, this->resolution.y);
     tileMapManager->loadTileMaps("resources/tile_map_order.txt");
+    tileMapManager->createFinalMap();
+
 }
 
-/*
-void Game::initIA(){
+void Game::initStartScreen() {
 
-}*/
+    if (!startFont.loadFromFile("resources/fonts/SuperSkinnyPixelBricks-3xKL.ttf")) {
+        std::cerr << "Error: Could not load font 'resources/fonts/SuperSkinnyPixelBricks-3xKL.ttf'" << std::endl;
+        this->window.close();
+        return;
+    }
+
+    startText.setFont(startFont);
+    startText.setString("MAZE PARADOX");
+    startText.setCharacterSize(250);
+    startText.setFillColor(sf::Color::White);
+    startText.setStyle(sf::Text::Bold);
+
+    sf::FloatRect textRect = startText.getLocalBounds();
+    startText.setOrigin(textRect.left + textRect.width / 2.0f,
+                        textRect.top + textRect.height / 2.0f);
+    startText.setPosition(this->window.getSize().x / 2.0f - 20, this->window.getSize().y / 2.0f);
+
+    if (!secondaryFont.loadFromFile("resources/fonts/computer-says-no.ttf")) {
+        std::cerr << "Error: Could not load font 'resources/fonts/computer-says-no.ttf'" << std::endl;
+        this->window.close();
+        return;
+    }
+
+    secondaryText.setFont(secondaryFont);
+    secondaryText.setString("Press Enter to Start");
+    secondaryText.setCharacterSize(50);
+    secondaryText.setFillColor(sf::Color::White);
+    secondaryText.setStyle(sf::Text::Regular);
+
+    sf::FloatRect secondaryTextRect = secondaryText.getLocalBounds();
+    secondaryText.setOrigin(secondaryTextRect.left + secondaryTextRect.width / 2.0f,
+                            secondaryTextRect.top + secondaryTextRect.height / 2.0f);
+    secondaryText.setPosition(this->window.getSize().x / 2.0f,
+                              startText.getPosition().y + textRect.height / 2.0f + secondaryTextRect.height / 2.0f + 20.f);
+
+    startBackground.setSize(sf::Vector2f(this->window.getSize().x, this->window.getSize().y));
+    startBackground.setFillColor(sf::Color::Black);
+}
+//TODO: Halo autour du titre 

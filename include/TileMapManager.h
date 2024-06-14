@@ -3,6 +3,7 @@
 
 #include "TileMap.h"
 #include "Player.h"
+#include "Animation.h"
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -26,15 +27,21 @@ public:
     void update(float deltaTime, Player* player,sf::RenderTarget &target);
     void render(sf::RenderTarget &target, bool debug);
     void generateTileMapOrder(const std::vector<std::string> &directories, const std::string &outputFile, int tileWidth, int tileHeight);
-
+    void createFinalMap();
+    void updateAnimation(float deltaTime);
+    void render(sf::RenderTarget& target);
+    bool checkPortal(Player* player);
 private:
     std::unordered_map<std::string, TileMap*> tileMaps;
     std::vector<TileMapInfo> tileMapOrder;
     TileMap* currentTileMap;
     TileMap* nextTileMap;
-    TileMap* previousTileMap;
+    TileMap* previousTileMap; 
     float cameraX, cameraY; //Maybe a vector ??
     void loadTileMap(const TileMapInfo &info);
+    sf::Sprite portalSprite;
+    Animation* portalAnimation;
+    sf::Texture portalTexture;
 };
 
 #endif // TILEMAP_MANAGER_H

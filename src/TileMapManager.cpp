@@ -35,7 +35,7 @@ void TileMapManager::loadTileMaps(const std::string &fileName) {
         std::string mapFile;
         float x, y;
         if (!(ss >> mapFile >> x >> y)) {
-            std::cerr << "Failed to parse line: \"" << line << "\" in tile map order file: " << fileName << std::endl;
+            std::cerr << "Failed to parse line: \"" << line << "\" in tile map order file: " << fileName << std::endl; //TODO: Skip empty lines
             continue;
         }
         tileMapOrder.push_back(TileMapInfo(mapFile, sf::Vector2f(x, y)));
@@ -121,8 +121,8 @@ void TileMapManager::update(float deltaTime, Player *player, sf::RenderTarget &w
 
     std::unordered_map<std::string, TileMap*> neighbours = getNeighbourTileMaps();
     int nextMapX = currentTileMap->getWidth() + (currentTileMap->getPosition().x / currentTileMap->getTileSize());
-    int nextMapY = 2 + currentTileMap->getHeight() + (currentTileMap->getPosition().y / currentTileMap->getTileSize());
-    int previousMapX = 3*(currentTileMap->getPosition().x / currentTileMap->getTileSize())/4;
+    int nextMapY = currentTileMap->getHeight() + (currentTileMap->getPosition().y / currentTileMap->getTileSize());
+    int previousMapX = (currentTileMap->getPosition().x / currentTileMap->getTileSize())-10;
     int previousMapY = 3*(currentTileMap->getPosition().y / currentTileMap->getTileSize())/4;
     if (playerTilePositionX >= nextMapX - 1 && neighbours.find("right") != neighbours.end()) {
         std::cerr << "Switching to right tile map" << std::endl;
@@ -240,14 +240,18 @@ std::vector<std::string> mapFiles;
     bool mapTxtFound = false;
 
     //FIXME: map.txt should be found in resources folder
-    for (auto it = mapFiles.begin(); it != mapFiles.end(); ++it) {
-        if (fs::path(*it).filename() == "map.txt") {
-            std::string relativePath = fs::relative(*it, "resources").string();
-            orderedMaps.emplace_back(relativePath, 0, 0);
-            mapFiles.erase(it);
-            mapTxtFound = true;
-            break;
+    std::string resourcesFolder = "resources";
+    try {
+        for (const auto &entry : fs::directory_iterator(resourcesFolder)) {
+            if (entry.is_regular_file() && entry.path().filename() == "map.txt") {
+                std::string relativePath = fs::relative(entry.path(), resourcesFolder).string();
+                orderedMaps.emplace_back(relativePath, 0, 0);
+                mapTxtFound = true;
+                break;
+            }
         }
+    } catch (const fs::filesystem_error &e) {
+        std::cerr << "Filesystem error: " << e.what() << std::endl;
     }
 
     if (!mapTxtFound) {
@@ -307,6 +311,87 @@ std::vector<std::string> mapFiles;
     outFile.close();
     std::cout << "Tile map order saved to " << outputFile << std::endl;
 }
+
 //NOTE: Not working with tileMaps with the same name
-//TODO: Generer les maps avec une seed - (La 1ere doit tjrs etre plate et va rester dans resources) - Charger les maps avec le Manager (Les maps doivent etre supprimées a la fin)
+//TODO: Generer les maps avec une seed - (Les maps doivent etre supprimées a la fin)
 //TODO: Camera must be faster when falling
+
+void TileMapManager::createFinalMap() {
+    if (tileMapOrder.size() <= 1) {
+        std::cerr << "Not enough tile maps to choose from." << std::endl;
+        return;
+    }
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    std::uniform_int_distribution<> distr(1, tileMapOrder.size() - 1);
+    int randomIndex = distr(gen);
+    std::string chosenMapFile = tileMapOrder[randomIndex].filename;
+
+    TileMap* chosenMap = tileMaps[chosenMapFile];
+    if (!chosenMap) {
+        std::cerr << "Chosen tile map not loaded." << std::endl;
+        return;
+    }
+
+    std::uniform_int_distribution<> xDistr(0, chosenMap->getWidth() - 4);
+    std::uniform_int_distribution<> yDistr(0, chosenMap->getHeight() - 4);
+
+    int tileX = -1, tileY = -1;
+    bool spotFound = false;
+
+    for (int i = 0; i < 100; ++i) {
+        int x = xDistr(gen);
+        int y = yDistr(gen);
+
+        if (chosenMap->getTile(x, y) == 0 &&
+            chosenMap->getTile(x + 1, y) == 0 &&
+            chosenMap->getTile(x, y + 1) == 0 &&
+            chosenMap->getTile(x + 1, y + 1) == 0) {
+            tileX = x+1;
+            tileY = y;
+            spotFound = true;
+            break;
+        }
+    }
+
+    if (!spotFound) {
+        std::cerr << "Failed to find a suitable spot for the portal." << std::endl;
+        return;
+    }
+
+    if (!portalTexture.loadFromFile("resources/sprites/BluePortal.png")) {
+        std::cerr << "Failed to load portal texture." << std::endl;
+        return;
+    }
+
+    portalSprite.setTexture(portalTexture);
+    portalSprite.setTextureRect(sf::IntRect(0,0,32,32));
+    portalSprite.setPosition(static_cast<float>(tileX * chosenMap->getTileSize() + chosenMap->getPosition().x),
+                             static_cast<float>(tileY * chosenMap->getTileSize() + chosenMap->getPosition().y));
+    //std::cout << "Portal placed at (" << tileX << ", " << tileY << ") in map " << chosenMapFile << std::endl;
+
+    portalAnimation = new Animation(&portalTexture, sf::Vector2u(9, 1), 0.15f, sf::Vector2u(32, 32));
+}
+
+void TileMapManager::updateAnimation(float deltaTime) {
+    if (portalAnimation) {
+        portalAnimation->update(0, deltaTime); 
+        portalSprite.setTextureRect(portalAnimation->uvRect);
+    }
+}
+
+void TileMapManager::render(sf::RenderTarget& target) {
+    target.draw(portalSprite);
+}
+
+bool TileMapManager::checkPortal(Player* player) {
+    if (player->isColliding(portalSprite.getGlobalBounds())) { //FIXME: Replace with collision detection
+        std::cout << "Player has touched the portal." << std::endl;
+        return true;
+    }
+    return false;
+}
+
+//FIXME: Move and clean portal logic

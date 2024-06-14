@@ -22,9 +22,9 @@ vector<vector<int>> RuleBasedGenerator::generateTileMap(unsigned width, unsigned
         random_device rd;
         mt19937 gen(rd());
         uniform_int_distribution<> dis(0, 99);
-        const unsigned maxTiles = 40;
-        const float minDist = 4.f;
-        const float maxDist = 90.f;
+        const unsigned maxTiles = 50;
+        const float minDist = 3.f;
+        const float maxDist = 100.f;
         unsigned tileCount = 0;
 
         auto distance = [](int x1, int y1, int x2, int y2) {
@@ -54,7 +54,7 @@ vector<vector<int>> RuleBasedGenerator::generateTileMap(unsigned width, unsigned
 
         vector<pair<int, int>> tilePositions;
 
-        for (unsigned i = 0; i < height - 1; ++i) {
+        for (unsigned i = 1; i < height - 1; ++i) {
             for (unsigned j = 0; j < width && tileCount < maxTiles; ++j) {
                 bool canPlace = true;
                 bool mustPlace = false;

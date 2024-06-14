@@ -67,24 +67,6 @@ private:
     float initialJumpVelocity;
     float variableJumpBoost;
 
-    /*
-    float maxVelocity;
-    float minVelocity;
-    float acceleration;
-    float deceleration;
-    float gravity;
-    float maxVelocityY;
-    float jumpHeight;
-    bool keyPressed = false;
-    float jumpVelocity;  
-    float airControl;    
-    float airBrake; 
-    float adjustmentFactor = 10.f;
-    bool facingRight = false;
-    */
-    
-    
-    // TODO: Ajuster les valeurs à la nouvelle résolution
 };
 
 #endif // PLAYER_H
