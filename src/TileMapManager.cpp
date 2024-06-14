@@ -99,6 +99,14 @@ std::unordered_map<std::string, TileMap*> TileMapManager::getNeighbourTileMaps()
                 neighbours["left"] = tileMap;
             } else if (pos.x == currentPos.x + currentTileMap->getWidth() * tileSize && pos.y == currentPos.y) {
                 neighbours["right"] = tileMap;
+            } else if (pos.x == currentPos.x + currentTileMap->getWidth() * tileSize && pos.y == currentPos.y - currentTileMap->getHeight() * tileSize) {
+                neighbours["diagonal_right_up"] = tileMap;
+            } else if (pos.x == currentPos.x + currentTileMap->getWidth() * tileSize && pos.y == currentPos.y + currentTileMap->getHeight() * tileSize) {
+                neighbours["diagonal_right_down"] = tileMap;
+            } else if (pos.x == currentPos.x - currentTileMap->getWidth() * tileSize && pos.y == currentPos.y - currentTileMap->getHeight() * tileSize) {
+                neighbours["diagonal_left_up"] = tileMap;
+            } else if (pos.x == currentPos.x - currentTileMap->getWidth() * tileSize && pos.y == currentPos.y + currentTileMap->getHeight() * tileSize) {
+                neighbours["diagonal_left_down"] = tileMap;
             }
         } else {
             std::cerr << "TileMap not found for filename: " << tileMapInfo.filename << std::endl;
@@ -209,6 +217,7 @@ void TileMapManager::render(sf::RenderTarget &target, bool debug) {
     for (const auto& pair : neighbours) {
         pair.second->render(target, debug);
     }
+    
 
     if (previousTileMap && previousTileMap != currentTileMap) {
         previousTileMap->render(target, debug);

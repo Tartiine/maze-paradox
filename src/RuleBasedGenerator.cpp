@@ -22,7 +22,7 @@ vector<vector<int>> RuleBasedGenerator::generateTileMap(unsigned width, unsigned
         random_device rd;
         mt19937 gen(rd());
         uniform_int_distribution<> dis(0, 99);
-        const unsigned maxTiles = 50;
+        const unsigned maxTiles = 55;
         const float minDist = 3.f;
         const float maxDist = 100.f;
         unsigned tileCount = 0;

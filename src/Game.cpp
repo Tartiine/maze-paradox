@@ -251,7 +251,6 @@ void Game::initStartScreen() {
     startText.setOrigin(textRect.left + textRect.width / 2.0f,
                         textRect.top + textRect.height / 2.0f);
     startText.setPosition(this->window.getSize().x / 2.0f - 20, this->window.getSize().y / 2.0f);
-
     if (!secondaryFont.loadFromFile("resources/fonts/computer-says-no.ttf")) {
         std::cerr << "Error: Could not load font 'resources/fonts/computer-says-no.ttf'" << std::endl;
         this->window.close();
@@ -270,7 +269,10 @@ void Game::initStartScreen() {
     secondaryText.setPosition(this->window.getSize().x / 2.0f,
                               startText.getPosition().y + textRect.height / 2.0f + secondaryTextRect.height / 2.0f + 20.f);
 
-    startBackground.setSize(sf::Vector2f(this->window.getSize().x, this->window.getSize().y));
+    startBackground.setSize(sf::Vector2f(this->window.getSize().x, this->window.getSize().y)); 
     startBackground.setFillColor(sf::Color::Black);
 }
 //TODO: Halo autour du titre 
+//TODO: Mini map
+//TODO: Boucle de gauche a droite
+//TODO: fix trembling effects
