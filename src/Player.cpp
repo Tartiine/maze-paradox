@@ -269,6 +269,3 @@ void Player::initPhysics() {
     this->airBrake = 0.5f;
     */ 
 }
-
-//TODO: variable height jump
-//TODO: diagonal map in neighbour

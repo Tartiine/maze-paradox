@@ -271,8 +271,6 @@ void Game::initStartScreen() {
 
     startBackground.setSize(sf::Vector2f(this->window.getSize().x, this->window.getSize().y)); 
     startBackground.setFillColor(sf::Color::Black);
-}
-//TODO: Halo autour du titre 
-//TODO: Mini map
-//TODO: Boucle de gauche a droite
-//TODO: fix trembling effects
+} 
+
+//FIXME: fix trembling effects on border maps

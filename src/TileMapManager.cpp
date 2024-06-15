@@ -248,7 +248,6 @@ std::vector<std::string> mapFiles;
     std::vector<std::tuple<std::string, int, int>> orderedMaps;
     bool mapTxtFound = false;
 
-    //FIXME: map.txt should be found in resources folder
     std::string resourcesFolder = "resources";
     try {
         for (const auto &entry : fs::directory_iterator(resourcesFolder)) {
@@ -396,7 +395,7 @@ void TileMapManager::render(sf::RenderTarget& target) {
 }
 
 bool TileMapManager::checkPortal(Player* player) {
-    if (player->isColliding(portalSprite.getGlobalBounds())) { //FIXME: Replace with collision detection
+    if (player->isColliding(portalSprite.getGlobalBounds())) {
         std::cout << "Player has touched the portal." << std::endl;
         return true;
     }

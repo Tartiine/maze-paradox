@@ -3,8 +3,6 @@
 #include <sstream>
 #include <iostream>
 
-//TODO: delete useless name
-
 TileMap::TileMap(unsigned width, unsigned height, float tileSize, const std::string& name)
     : width(width), height(height), tileSize(tileSize), name(name), position(0.f, 0.f) {
     initMap();

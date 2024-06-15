@@ -195,4 +195,4 @@ void TileMapModel::testModel(const string &datasetDirectory, const string &model
     cout << "Testing and file cleanup complete." << endl;
 }
 
-//FIXME :  predicted scores are wrong
+//FIXME :  modify with tensorflow
