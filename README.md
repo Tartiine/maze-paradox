@@ -34,3 +34,4 @@ What you need to install the software:
 ## 🎉 Acknowledgments
 
 - Hat tip to anyone whose code was used
+- Special thanks to [Maxime Devanne](https://github.com/maxwell1503) for his guidance and support.
