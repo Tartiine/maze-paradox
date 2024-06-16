@@ -5,6 +5,7 @@
 
 class Collision {
     public:
+        virtual ~Collision() = default;
 
         virtual sf::FloatRect getHitbox() const = 0;
         virtual void moveCollision(float x, float y) = 0;
@@ -15,7 +16,6 @@ class Collision {
         
     protected :
         bool isOnGround = false;
-
         bool touchSide = false;
         bool touchTop = false;
 

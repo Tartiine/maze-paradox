@@ -5,9 +5,8 @@
 #include <algorithm>
 #include <filesystem>
 
-namespace fs = std::filesystem;
-
 using namespace std;
+namespace fs = filesystem;
 
 TileMapModel::TileMapModel(int input_size, int output_size) 
     : input_size(input_size), output_size(output_size) {

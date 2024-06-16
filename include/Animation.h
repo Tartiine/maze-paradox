@@ -2,11 +2,10 @@
 #define ANIMATION_H
 
 #include <SFML/Graphics.hpp>
-#include <vector>
 
 class Animation {
 public:
-    Animation() : switchTime(0.0f), totalTime(0.0f), currentImage(0, 0) {}
+    Animation();
     Animation(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2u frameSize);
     ~Animation();
 

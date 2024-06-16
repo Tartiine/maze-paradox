@@ -1,7 +1,6 @@
 #include "Animation.h"
-#include <iostream>
 
-using namespace std;
+Animation::Animation() : switchTime(0.0f), totalTime(0.0f), currentImage(0, 0), uvRect() {}
 
 Animation::Animation(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2u frameSize) {
     this->imageCount = imageCount;

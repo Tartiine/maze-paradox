@@ -9,14 +9,12 @@
 #include "Animation.h"
 #include <sstream>
 
+using namespace std;
+
 Game::Game() : showGamepadFlag(true) {
-    //TEST IA
-    //this->trainModel();
-    
     this->initWindow();
     this->initRenderTexture();
     this->initMap();
-    this->initObstacles();
     this->initPlayer();
     checkGamepad();
     this->initStartScreen();
@@ -27,20 +25,15 @@ Game::Game() : showGamepadFlag(true) {
 }
 
 Game::~Game() {
-    delete this->player;
-    delete this->tileMapManager;
-    for (auto obstacle : this->obstacles) {
-        delete obstacle;
-    }
     this->obstacles.clear();
 }
 
 void Game::collisionPlayer() {
     this->player->checkWindowBorders(this->renderTexture);
 
-    std::vector<TileMap*> renderedTileMaps = tileMapManager->getRenderedTileMaps();
+    auto renderedTileMaps = tileMapManager->getRenderedTileMaps();
 
-    for (TileMap* tileMap : renderedTileMaps) {
+    for (auto& tileMap : renderedTileMaps) {
         for (unsigned i = 0; i < tileMap->getHeight(); ++i) {
             for (unsigned j = 0; j < tileMap->getWidth(); ++j) {
                 auto& obstacle = tileMap->getTile(i, j);
@@ -91,9 +84,9 @@ void Game::update(float deltaTime) {
     if (gameStarted) {
         this->updatePlayer(deltaTime);
         this->collisionPlayer();
-        this->tileMapManager->update(deltaTime, this->player, this->renderTexture);
+        this->tileMapManager->update(deltaTime, this->player.get(), this->renderTexture);
         tileMapManager->updateAnimation(deltaTime);
-        if(tileMapManager->checkPortal(player)){
+        if (tileMapManager->checkPortal(this->player.get())) {
             window.close();
         }
     }
@@ -156,17 +149,17 @@ void Game::checkGamepad() {
 }
 
 void Game::trainModel() {
-    this->tileMapModel = new TileMapModel(40*22, 1);
+    this->tileMapModel = make_unique<TileMapModel>(40*22, 1);
     this->tileMapModel->createModel("rb");
     this->tileMapModel->train("resources/rb_maps");
     this->tileMapModel->saveModel("resources/trained_model_rb.net");
-    
 
-    this->tileMapModel = new TileMapModel(40*22, 1);
+    this->tileMapModel = make_unique<TileMapModel>(40*22, 1);
     this->tileMapModel->createModel("nb");
     this->tileMapModel->train("resources/nb_maps");
     this->tileMapModel->saveModel("resources/trained_model_nb.net");
 }
+
 
 void Game::createTriangle(bool gamepadConnected) { //TODO: Modify with message
     triangle.setPointCount(3);
@@ -181,7 +174,7 @@ void Game::createTriangle(bool gamepadConnected) { //TODO: Modify with message
 }
 
 void Game::initWindow() {
-    this->window.create(sf::VideoMode(this->resolution.x * this->scale, this->resolution.y * this->scale), "SFML Platformer", sf::Style::Close | sf::Style::Titlebar);
+    this->window.create(sf::VideoMode(this->resolution.x * this->scale, this->resolution.y * this->scale), "Maze Paradox", sf::Style::Close | sf::Style::Titlebar);
     this->window.setFramerateLimit(240);
     this->isFullscreenOn = false;
     this->fullscreenHorizontalOffset = 0;
@@ -194,7 +187,7 @@ void Game::initWindowFullscreen() {
     this->window.create(fullScreen, "SFML Platformer", sf::Style::Fullscreen);
     this->window.setFramerateLimit(240);
     this->isFullscreenOn = true;
-    this->scale = std::min(fullScreen.width / this->resolution.x, fullScreen.height / this->resolution.y);
+    this->scale = min(fullScreen.width / this->resolution.x, fullScreen.height / this->resolution.y);
     this->fullscreenHorizontalOffset = (fullScreen.width - (this->resolution.x * this->scale)) / 2;
     this->fullscreenVerticalOffset = (fullScreen.height - (this->resolution.y * this->scale)) / 2;
 }
@@ -204,29 +197,24 @@ void Game::initRenderTexture() {
 }
 
 void Game::initPlayer() {
-    this->player = new Player(64, 300);
-}
-
-void Game::initObstacles() {
+    this->player = make_unique<Player>(64, 300);
 }
 
 void Game::initMap() {
-    
-    std::unique_ptr<RuleBasedGenerator>
-    rbGenerator = std::make_unique<RuleBasedGenerator>();
-    std::unique_ptr<NoiseBasedGenerator> nbGenerator = std::make_unique<NoiseBasedGenerator>();
+    auto rbGenerator = make_unique<RuleBasedGenerator>();
+    auto nbGenerator = make_unique<NoiseBasedGenerator>();
 
     nbGenerator->generateBatch(25, 40, 22, "resources/maps/generated_map");
     rbGenerator->generateBatch(25, 40, 22, "resources/maps1/generated_map");
 
     
-    this->tileMapModel = new TileMapModel(40 * 22, 1);
+    this->tileMapModel = make_unique<TileMapModel>(40 * 22, 1);
     this->tileMapModel->testModel("resources/maps", "resources/trained_model_nb.net");
     this->tileMapModel->testModel("resources/maps1", "resources/trained_model_rb.net");
     
     
-    tileMapManager = new TileMapManager();
-    std::vector<std::string> directories = {"resources/maps", "resources/maps1"};
+    tileMapManager = make_unique<TileMapManager>();
+    vector<string> directories = {"resources/maps", "resources/maps1"};
     tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", this->resolution.x, this->resolution.y);
     tileMapManager->loadTileMaps("resources/tile_map_order.txt");
     tileMapManager->createFinalMap();
@@ -236,7 +224,7 @@ void Game::initMap() {
 void Game::initStartScreen() {
 
     if (!startFont.loadFromFile("resources/fonts/SuperSkinnyPixelBricks-3xKL.ttf")) {
-        std::cerr << "Error: Could not load font 'resources/fonts/SuperSkinnyPixelBricks-3xKL.ttf'" << std::endl;
+        cerr << "Error: Could not load font 'resources/fonts/SuperSkinnyPixelBricks-3xKL.ttf'" << endl;
         this->window.close();
         return;
     }
@@ -252,7 +240,7 @@ void Game::initStartScreen() {
                         textRect.top + textRect.height / 2.0f);
     startText.setPosition(this->window.getSize().x / 2.0f - 20, this->window.getSize().y / 2.0f);
     if (!secondaryFont.loadFromFile("resources/fonts/computer-says-no.ttf")) {
-        std::cerr << "Error: Could not load font 'resources/fonts/computer-says-no.ttf'" << std::endl;
+        cerr << "Error: Could not load font 'resources/fonts/computer-says-no.ttf'" << endl;
         this->window.close();
         return;
     }
@@ -274,3 +262,4 @@ void Game::initStartScreen() {
 } 
 
 //FIXME: fix trembling effects on border maps
+//TODO: Update method for startScreen

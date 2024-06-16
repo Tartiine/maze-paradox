@@ -1,7 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <SFML/Graphics.hpp>
 #include <unordered_map>
 #include "Animation.h"
 #include "Collision.h"
@@ -25,7 +24,6 @@ public:
     sf::FloatRect getHitbox() const override;
     void moveCollision(float x, float y) override;
 
-    void move(const float dir_x, const float dir_y, float deltaTime);
     void updateMovement(float deltaTime);
     void updateAnimations(float deltaTime);
     void update(float deltaTime);

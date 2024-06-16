@@ -2,33 +2,31 @@
 #include <iostream>
 #include <cmath>
 
-using namespace std;
-
 Player::Player(){
-    this->initTexture();
-    this->initSprite();
-    this->initAnimations();
-    this->initPhysics();
+    initTexture();
+    initSprite();
+    initAnimations();
+    initPhysics();
 }
 
 Player::Player(float x, float y) {
-    this->initTexture();
-    this->initSprite();
-    this->initAnimations();
-    this->initPhysics();
-    this->setPosition(x,y);
+    initTexture();
+    initSprite();
+    initAnimations();
+    initPhysics();
+    setPosition(x,y);
 }
 
 Player::~Player(){
 }
 
 void Player::setPosition(float x, float y) {
-    this->sprite.setPosition(x, y);
+    sprite.setPosition(x, y);
 }
 
 sf::FloatRect Player::getHitbox() const {
     sf::Vector2<sf::Vector2f> offset(sf::Vector2f(10, 10), sf::Vector2f(18, 0)); // side - top/bottom
-    sf::FloatRect bounds = this->sprite.getGlobalBounds();
+    sf::FloatRect bounds = sprite.getGlobalBounds();
     
     sf::FloatRect hitbox(
         bounds.left + offset.x.x,
@@ -41,55 +39,36 @@ sf::FloatRect Player::getHitbox() const {
 }
 
 void Player::moveCollision(float x, float y) {
-    this->sprite.move(x, y);
-}
-
-void Player::move(const float dir_x, const float dir_y, float deltaTime){
-        /*
-        this->velocity.x += dir_x * this->acceleration * deltaTime;
-        this->velocity.y += dir_y * this->acceleration * deltaTime;
-        if(abs(this->velocity.x) > this->maxVelocity) {
-            this->velocity.x = this->maxVelocity * ((this->velocity.x < 0.f) ? -1.f : 1.f);
-        }
-
-        if (dir_x < 0.f) { 
-            this->sprite.setScale(-abs(this->sprite.getScale().x), this->sprite.getScale().y); 
-            this->sprite.setOrigin(this->sprite.getLocalBounds().width, 0); 
-        } else if (dir_x > 0.f) { 
-            this->sprite.setScale(abs(this->sprite.getScale().x), this->sprite.getScale().y); 
-            this->sprite.setOrigin(0, 0);
-        }
-        */
-
+    sprite.move(x, y);
 }
 
 void Player::updateMovement(float deltaTime) {
     float DEAD_ZONE = 15.0f;
 
-    this->currentState = State::Idle;
+    currentState = State::Idle;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q) ||
         sf::Joystick::getAxisPosition(0, sf::Joystick::X) < -DEAD_ZONE ||
         sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) < -DEAD_ZONE) { // Left
-        this->pressingLeft = true;
-        this->currentState = State::Walking;
+        pressingLeft = true;
+        currentState = State::Walking;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) ||
                sf::Joystick::getAxisPosition(0, sf::Joystick::X) > DEAD_ZONE ||
                sf::Joystick::getAxisPosition(0, sf::Joystick::PovX) > DEAD_ZONE) { // Right
-        this->pressingRight = true;
-        this->currentState = State::Walking;
+        pressingRight = true;
+        currentState = State::Walking;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z) ||
         sf::Joystick::isButtonPressed(0, 0) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) { // Jump
-        this->jumpReleased++;
-        if (!this->pressingJump) {
-            this->pressingJump = true;
-            this->currentState = State::Jumping;
+        jumpReleased++;
+        if (!pressingJump) {
+            pressingJump = true;
+            currentState = State::Jumping;
         }
     } else {
-        this->pressingJump = false;
-        this->jumpReleased = 0;
+        pressingJump = false;
+        jumpReleased = 0;
     }
 }
 
@@ -103,124 +82,105 @@ void Player::updateAnimations(float deltaTime) {
     }
 
     animations[currentState].update(animationRow, deltaTime); 
-    this->sprite.setTextureRect(animations[currentState].uvRect);
+    sprite.setTextureRect(animations[currentState].uvRect);
 }
 
 void Player::update(float deltaTime) {
-    this->updateMovement(deltaTime);
+    updateMovement(deltaTime);
 
-    this->updateAnimations(deltaTime); 
+    updateAnimations(deltaTime); 
 
-    this->updatePhysics(deltaTime);
+    updatePhysics(deltaTime);
 }
 
 
 void Player::render(sf::RenderTarget & target){
-    target.draw(this->sprite);
+    target.draw(sprite);
 }
 
 void Player::updatePhysics(float deltaTime) {
-    if (this->pressingLeft) {
-        if (this->velocity.x <= 0) {
-            this->velocity.x -= this->acceleration * deltaTime;
+    if (pressingLeft) {
+        if (velocity.x <= 0) {
+            velocity.x -= acceleration * deltaTime;
         } else {
-            this->velocity.x -= this->deceleration * deltaTime;
+            velocity.x -= deceleration * deltaTime;
         }
 
-        if (this->velocity.x < -this->maxRunningVelocity) {
-            this->velocity.x = -this->maxRunningVelocity;
+        if (velocity.x < -maxRunningVelocity) {
+            velocity.x = -maxRunningVelocity;
         }
 
-        this->sprite.setScale(-abs(this->sprite.getScale().x), this->sprite.getScale().y); 
-        this->sprite.setOrigin(this->sprite.getLocalBounds().width, 0);
+        sprite.setScale(-abs(sprite.getScale().x), sprite.getScale().y); 
+        sprite.setOrigin(sprite.getLocalBounds().width, 0);
 
-    } else if (this->pressingRight) {
-        if (this->velocity.x >= 0) {
-            this->velocity.x += this->acceleration * deltaTime;
+    } else if (pressingRight) {
+        if (velocity.x >= 0) {
+            velocity.x += acceleration * deltaTime;
         } else {
-            this->velocity.x += this->deceleration * deltaTime;
+            velocity.x += deceleration * deltaTime;
         }
 
-        if (this->velocity.x > this->maxRunningVelocity) {
-            this->velocity.x = this->maxRunningVelocity;
+        if (velocity.x > maxRunningVelocity) {
+            velocity.x = maxRunningVelocity;
         }
 
-        this->sprite.setScale(abs(this->sprite.getScale().x), this->sprite.getScale().y); 
-        this->sprite.setOrigin(0, 0);
+        sprite.setScale(abs(sprite.getScale().x), sprite.getScale().y); 
+        sprite.setOrigin(0, 0);
 
     } else {
-        if (this->velocity.x > 0) {
-            this->velocity.x -= this->deceleration * deltaTime;
-            if (this->velocity.x < 0) {
-                this->velocity.x = 0;
+        if (velocity.x > 0) {
+            velocity.x -= deceleration * deltaTime;
+            if (velocity.x < 0) {
+                velocity.x = 0;
             }
-        } else if (this->velocity.x < 0) {
-            this->velocity.x += this->deceleration * deltaTime;
-            if (this->velocity.x > 0) {
-                this->velocity.x = 0;
+        } else if (velocity.x < 0) {
+            velocity.x += deceleration * deltaTime;
+            if (velocity.x > 0) {
+                velocity.x = 0;
             }
         }
     }
 
-    this->velocity.y += gravity * deltaTime;
+    velocity.y += gravity * deltaTime;
 
-    if (this->velocity.y > this->maxFallingVelocity) {
-        this->velocity.y = this->maxFallingVelocity;
+    if (velocity.y > maxFallingVelocity) {
+        velocity.y = maxFallingVelocity;
     }
 
-    if (this->isOnGround || this->touchTop) {
-        this->velocity.y = 0;
+    if (isOnGround || touchTop) {
+        velocity.y = 0;
     }
 
-    if (this->touchSide) {
-        this->velocity.x = 0;
+    if (touchSide) {
+        velocity.x = 0;
     }
 
-    if (this->pressingJump && this->isOnGround && this->jumpReleased < 3) {
-        this->velocity.y = this->initialJumpVelocity;
+    if (pressingJump && isOnGround && jumpReleased < 3) {
+        velocity.y = initialJumpVelocity;
     }
 
-    this->pressingLeft = false;
-    this->pressingRight = false;
+    pressingLeft = false;
+    pressingRight = false;
 
     
-    this->sprite.move(this->velocity.x * deltaTime, this->velocity.y * deltaTime);
+    sprite.move(velocity.x * deltaTime, velocity.y * deltaTime);
     
-    /*
-    //Gravity
-    if(!isOnGround) {
-        this->velocity.y += 1.0 * this->gravity;
-    }else{
-        this->velocity *= this->deceleration;
-    }
-
-    if(abs(this->velocity.x) > this->maxVelocityY) {
-        this->velocity.y = this->maxVelocityY * ((this->velocity.y < 0.f) ? -1.f : 1.f);
-    }
- 
-    if(abs(this->velocity.x) < this->minVelocity)
-        this->velocity.x = 0.f;
-    if(abs(this->velocity.y) < this->minVelocity)
-        this->velocity.y = 0.f;
-    this->sprite.move(this->velocity);
-    */
 }
 
 sf::Vector2f Player::getPosition() const {
     return sprite.getPosition();
 }
 
-void Player::initTexture(){
-    if(!this->textureSheet.loadFromFile("resources/sprites/Player/g3rar_spritesheet.png")){
-        cout << "Error loading player sprite sheet" << endl;
+void Player::initTexture() {
+    if (!textureSheet.loadFromFile("resources/sprites/Player/g3rar_spritesheet.png")) {
+        std::cerr << "Error loading player sprite sheet" << std::endl;
     }
-
 }
 
 void Player::initSprite(){
-    this->sprite.setTexture(this->textureSheet);
-    this->sprite.setTextureRect(sf::IntRect(0,0,32,32));
-    this->sprite.setPosition(0, 0);
+    sprite.setTexture(textureSheet);
+    sprite.setTextureRect(sf::IntRect(0,0,32,32));
+    sprite.setPosition(0, 0);
 }
 
 void Player::initAnimations() {
@@ -231,41 +191,23 @@ void Player::initAnimations() {
 }
 
 void Player::initPhysics() {
-    this->pressingLeft = false;
-    this->pressingRight = false;
-    this->pressingJump = false;
-    this->jumpReleased = 0;
+    pressingLeft = false;
+    pressingRight = false;
+    pressingJump = false;
+    jumpReleased = 0;
     
 
-    this->velocity = {0, 0};
+    velocity = {0, 0};
     
-    this->maxRunningVelocity = 220.f;
-    this->maxFallingVelocity = 1000.f;
+    maxRunningVelocity = 220.f;
+    maxFallingVelocity = 1000.f;
 
-    this->acceleration = 800.f;
-    this->deceleration = 2000.f;
+    acceleration = 800.f;
+    deceleration = 2000.f;
 
-    this->gravity = 1500.f;
-    this->airBrake = 0.8f;
+    gravity = 1500.f;
+    airBrake = 0.8f;
 
-    this->initialJumpVelocity = -400.f;
-    this->variableJumpBoost = -5.f;
-
-    /*
-    this->maxVelocity = 7.f;
-    this->minVelocity = 1.f;
-    this->acceleration = 120.f;
-    this->deceleration = 0.7f;
-    this->gravity = 2.f;
-    this->maxVelocityY = 10.f;
-    this->jumpHeight = 120.f;
-    this->jumpVelocity = 0.0f;
-    
-    this->pressingLeft = false;
-    this->pressingRight = false;
-    this->pressingJump = false;
-    
-    this->airControl = 200.0f; 
-    this->airBrake = 0.5f;
-    */ 
+    initialJumpVelocity = -400.f;
+    variableJumpBoost = -5.f;
 }

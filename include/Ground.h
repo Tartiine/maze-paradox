@@ -8,7 +8,7 @@ class Ground : public Obstacle {
     public:
         Ground();
         Ground(float x, float y);
-        virtual ~Ground();
+        virtual ~Ground() override;
 
         sf::FloatRect getHitbox() const override;
         void moveCollision(float x, float y) override;

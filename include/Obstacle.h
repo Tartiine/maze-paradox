@@ -5,6 +5,7 @@
 
 class Obstacle : public Collision {
     public:
+        virtual ~Obstacle() = default;
         void setPosition(float x, float y);
         void render(sf::RenderTarget & target);
 

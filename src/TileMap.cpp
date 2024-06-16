@@ -3,12 +3,14 @@
 #include <sstream>
 #include <iostream>
 
-TileMap::TileMap(unsigned width, unsigned height, float tileSize, const std::string& name)
+using namespace std;
+
+TileMap::TileMap(unsigned width, unsigned height, float tileSize, const string& name)
     : width(width), height(height), tileSize(tileSize), name(name), position(0.f, 0.f) {
     initMap();
 }
 
-const std::string& TileMap::getName() const {
+const string& TileMap::getName() const {
     return name;
 }
 
@@ -19,14 +21,14 @@ void TileMap::initMap() {
     }
 }
 
-std::unique_ptr<Obstacle> TileMap::createTile(int tileType, float x, float y) {
-    std::unique_ptr<Obstacle> tile = nullptr;
+unique_ptr<Obstacle> TileMap::createTile(int tileType, float x, float y) {
+    unique_ptr<Obstacle> tile = nullptr;
     switch (tileType) {
         case 1:
-            tile = std::make_unique<Platform>(x, y);
+            tile = make_unique<Platform>(x, y);
             break;
         case 2:
-            tile = std::make_unique<Ground>(x, y);
+            tile = make_unique<Ground>(x, y);
             break;
         default:
             break;
@@ -57,17 +59,17 @@ void TileMap::render(sf::RenderTarget &target, bool debug) {
     }
 }
 
-void TileMap::loadMap(const std::string &fileName) {
-    std::ifstream inFile(fileName);
+void TileMap::loadMap(const string &fileName) {
+    ifstream inFile(fileName);
     if (!inFile.is_open()) {
-        std::cerr << "Failed to open map file: " << fileName << std::endl;
+        cerr << "Failed to open map file: " << fileName << endl;
         return;
     }
 
-    std::string line;
+    string line;
     for (unsigned i = 0; i < height; ++i) {
-        std::getline(inFile, line);
-        std::istringstream ss(line);
+        getline(inFile, line);
+        istringstream ss(line);
         for (unsigned j = 0; j < width; ++j) {
             int tileType;
             ss >> tileType;
@@ -92,7 +94,7 @@ void TileMap::loadMap(const std::string &fileName) {
     inFile.close();
 }
 
-std::unique_ptr<Obstacle>& TileMap::getTile(unsigned row, unsigned col) {
+unique_ptr<Obstacle>& TileMap::getTile(unsigned row, unsigned col) {
     return map[row][col];
 }
 

@@ -1,7 +1,6 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
-#include <SFML/Graphics.hpp>
 #include "Obstacle.h"
 
 class Platform : public Obstacle {

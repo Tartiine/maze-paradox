@@ -1,6 +1,4 @@
 #include "TileMapGenerator.h"
-#include "RuleBasedGenerator.h"
-#include "NoiseBasedGenerator.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -8,8 +6,8 @@
 
 using namespace std;
 
-void TileMapGenerator::saveTileMapToFile(const std::vector<std::vector<int>>& tileMap, const std::string& filename) {
-    namespace fs = std::filesystem;
+void TileMapGenerator::saveTileMapToFile(const vector<vector<int>>& tileMap, const string& filename) {
+    namespace fs = filesystem;
     fs::path filePath = filename;
     fs::path dirPath = filePath.parent_path();
 
@@ -36,10 +34,10 @@ void TileMapGenerator::saveTileMapToFile(const std::vector<std::vector<int>>& ti
     outFile.close();
 }
 
-void TileMapGenerator::generateBatch(int batchSize, unsigned width, unsigned height, const std::string& filePrefix) {
+void TileMapGenerator::generateBatch(int batchSize, unsigned width, unsigned height, const string& filePrefix) {
     for (int i = 0; i < batchSize; i++) {
-        std::vector<std::vector<int>> tileMap = generateTileMap(width, height);
-        std::stringstream filename;
+        vector<vector<int>> tileMap = generateTileMap(width, height);
+        stringstream filename;
         filename << filePrefix << i << ".txt";
         saveTileMapToFile(tileMap, filename.str());
     }

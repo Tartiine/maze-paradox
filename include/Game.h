@@ -5,11 +5,11 @@
 #include "Player.h"
 #include "Obstacle.h"
 #include "TileMap.h"
+#include "TileMapModel.h"
 #include "TileMapManager.h"
 #include "TileMapGenerator.h"
 #include <vector>
 #include <memory>
-#include "TileMapModel.h"
 
 class Game {
 public:
@@ -29,19 +29,19 @@ private:
     sf::Vector2i resolution {640, 352};
     unsigned int scale = 2;
     
-    Player* player;
-    TileMap* tileMap;
-    TileMapManager* tileMapManager;
-    TileMapGenerator* generator;
-    std::vector<Obstacle*> obstacles;
+    std::unique_ptr<Player> player;
+    std::unique_ptr<TileMap> tileMap;
+    std::unique_ptr<TileMapManager> tileMapManager;
+    std::unique_ptr<TileMapGenerator> generator;
+    std::vector<std::unique_ptr<Obstacle>> obstacles;
     
     bool isFullscreenOn;
     int fullscreenHorizontalOffset;
     int fullscreenVerticalOffset;
 
-    std::vector<TileMap*> tileMaps;
+    std::vector<std::unique_ptr<TileMap>> tileMaps;
 
-    TileMapModel* tileMapModel;
+    std::unique_ptr<TileMapModel> tileMapModel;
 
     sf::ConvexShape triangle;
     bool showGamepadFlag;
@@ -58,7 +58,6 @@ private:
     void initWindow();
     void initWindowFullscreen();
     void initRenderTexture();
-    void initObstacles(); 
     void initPlayer();  
     void initMap();
     void renderPlayer();

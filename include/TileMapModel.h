@@ -6,29 +6,27 @@
 #include <fann.h>
 #include <fann_cpp.h>
 
-using namespace std;
-
 class TileMapModel {
 public:
     TileMapModel(int input_size, int output_size);
     ~TileMapModel();
 
-    void createModel(const string &type);
-    void train(const string &directory);
-    vector<tuple<int, string>> predict(const string &directory);
-    void testModel(const string &datasetDirectory, const string &modelFile);
-    void saveModel(const string &filename);
-    void loadModel(const string &filename);
+    void createModel(const std::string &type);
+    void train(const std::string &directory);
+    std::vector<std::tuple<int, std::string>> predict(const std::string &directory);
+    void testModel(const std::string &datasetDirectory, const std::string &modelFile);
+    void saveModel(const std::string &filename);
+    void loadModel(const std::string &filename);
 
 private:
-    void loadData(const string &directory);
-    vector<int> readTileMap(const string &filename);
-    vector<fann_type> convertToFANNInput(const vector<int> &tileMap);
-    vector<int> convertFromFANNOutput(fann_type *output);
+    void loadData(const std::string &directory);
+    std::vector<int> readTileMap(const std::string &filename);
+    std::vector<fann_type> convertToFANNInput(const std::vector<int> &tileMap);
+    std::vector<int> convertFromFANNOutput(fann_type *output);
 
     struct fann *ann;
-    vector<vector<int>> tileMaps;
-    vector<int> scores;
+    std::vector<std::vector<int>> tileMaps;
+    std::vector<int> scores;
     int input_size;
     int output_size;
 };

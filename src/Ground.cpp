@@ -19,21 +19,22 @@ Ground::~Ground() {
 }
 
 sf::FloatRect Ground::getHitbox() const {
-    sf::Vector2<sf::Vector2f> offset(sf::Vector2f(0, 0), sf::Vector2f(0, 0));
+    sf::Vector2f offset(0, 0);
     sf::FloatRect bounds = this->sprite.getGlobalBounds();
     
     sf::FloatRect hitbox(
-        bounds.left + offset.x.x,
-        bounds.top + offset.y.x,
-        bounds.width - (offset.x.x + offset.x.y),
-        bounds.height - (offset.y.x + offset.y.y)
+        bounds.left + offset.x,
+        bounds.top + offset.y,
+        bounds.width - (offset.x * 2),
+        bounds.height - (offset.y * 2)
     );
 
     return hitbox;
 }
 
+
 void Ground::moveCollision(float x, float y) {
-    this->setPosition(x,y);
+    this->sprite.move(x, y); 
 }
 
 void Ground::initTexture() {

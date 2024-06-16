@@ -1,15 +1,15 @@
 #include "RuleBasedGenerator.h"
-#include <fstream>
-#include <cstdlib>
-#include <ctime>
 #include <cmath>
 #include <utility>
-#include <iostream>
 #include <random>
+#include <memory>
 
 using namespace std;
 
 RuleBasedGenerator::RuleBasedGenerator() {
+}
+
+RuleBasedGenerator::~RuleBasedGenerator() {
 }
 
 float RuleBasedGenerator::degreesToRadians(float degrees) {

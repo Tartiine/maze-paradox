@@ -5,13 +5,11 @@
 #include <vector>
 #include <string>
 
-using namespace std;
-
 class RuleBasedGenerator : public TileMapGenerator {
 public:
     RuleBasedGenerator();
-    //TODO: Add destructor
-    vector<vector<int>> generateTileMap(unsigned width, unsigned height);
+    virtual ~RuleBasedGenerator();
+    std::vector<std::vector<int>> generateTileMap(unsigned width, unsigned height);
 
 private : 
     float degreesToRadians(float degrees);
