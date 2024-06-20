@@ -102,6 +102,7 @@ void Game::renderObstacles(bool debug) {
 
 void Game::render() {
     if (!gameStarted) {
+        this->initStartScreen();
         this->window.clear();
         this->window.draw(startBackground);
         this->window.draw(startText);
