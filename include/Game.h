@@ -66,6 +66,8 @@ private:
     void createTriangle(bool gamepadConnected);
     void checkGamepad();
     void trainModel();
+    void showEndMenu();
+    void resetGame();
 };
 
 #endif // GAME_H

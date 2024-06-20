@@ -377,7 +377,8 @@ void TileMapManager::createFinalMap() {
     portalSprite.setTextureRect(sf::IntRect(0,0,32,32));
     portalSprite.setPosition(static_cast<float>(tileX * chosenMap->getTileSize() + chosenMap->getPosition().x),
                              static_cast<float>(tileY * chosenMap->getTileSize() + chosenMap->getPosition().y));
-    //cout << "Portal placed at (" << tileX << ", " << tileY << ") in map " << chosenMapFile << endl;
+    //portalSprite.setPosition(0,300);
+    //cerr << "Portal placed at (" << tileX << ", " << tileY << ") in map " << chosenMapFile << endl;
 
     portalAnimation = make_unique<Animation>(&portalTexture, sf::Vector2u(9, 1), 0.15f, sf::Vector2u(32, 32));
 }
@@ -395,7 +396,7 @@ void TileMapManager::render(sf::RenderTarget& target) {
 
 bool TileMapManager::checkPortal(Player* player) {
     if (player->isColliding(portalSprite.getGlobalBounds())) {
-        cout << "Player has touched the portal." << endl;
+        cerr << "Player has touched the portal." << endl;
         return true;
     }
     return false;

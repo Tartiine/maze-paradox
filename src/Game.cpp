@@ -87,7 +87,7 @@ void Game::update(float deltaTime) {
         this->tileMapManager->update(deltaTime, this->player.get(), this->renderTexture);
         tileMapManager->updateAnimation(deltaTime);
         if (tileMapManager->checkPortal(this->player.get())) {
-            window.close();
+            showEndMenu();
         }
     }
 }
@@ -260,7 +260,56 @@ void Game::initStartScreen() {
 
     startBackground.setSize(sf::Vector2f(this->window.getSize().x, this->window.getSize().y)); 
     startBackground.setFillColor(sf::Color::Black);
-} 
+}
+
+void Game::showEndMenu() {
+    sf::Font font;
+    if (!font.loadFromFile("resources/fonts/computer-says-no.ttf")) {
+        cerr << "Error: Could not load font 'resources/fonts/computer-says-no.ttf'" << endl;
+        this->window.close();
+        return;
+    }
+
+    sf::Text quitText("Press Q to Quit", font, 50);
+    sf::Text replayText("Press R to Replay", font, 50);
+
+    quitText.setFillColor(sf::Color::White);
+    replayText.setFillColor(sf::Color::White);
+
+    sf::FloatRect quitTextRect = quitText.getLocalBounds();
+    quitText.setOrigin(quitTextRect.left + quitTextRect.width / 2.0f, quitTextRect.top + quitTextRect.height / 2.0f);
+    quitText.setPosition(this->window.getSize().x / 2.0f, this->window.getSize().y / 2.0f - 50);
+
+    sf::FloatRect replayTextRect = replayText.getLocalBounds();
+    replayText.setOrigin(replayTextRect.left + replayTextRect.width / 2.0f, replayTextRect.top + replayTextRect.height / 2.0f);
+    replayText.setPosition(this->window.getSize().x / 2.0f, this->window.getSize().y / 2.0f + 50);
+
+    this->window.clear();
+    this->window.draw(quitText);
+    this->window.draw(replayText);
+    this->window.display();
+
+    bool choiceMade = false;
+    while (!choiceMade) {
+        sf::Event event;
+        while (this->window.pollEvent(event)) {
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Q) {
+                    this->window.close();
+                    choiceMade = true;
+                } else if (event.key.code == sf::Keyboard::R) {
+                    this->resetGame(); 
+                    choiceMade = true;
+                }
+            }
+        }
+    }
+}
+
+void Game::resetGame() {
+    this->initPlayer();
+    this->initMap();
+    gameStarted = false;
+}
 
 //FIXME: fix trembling effects on border maps
-//TODO: Update method for startScreen
