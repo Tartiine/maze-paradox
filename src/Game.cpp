@@ -12,16 +12,13 @@
 using namespace std;
 
 Game::Game() : showGamepadFlag(true) {
+    loadFonts();
     this->initWindow();
     this->initRenderTexture();
     this->initMap();
     this->initPlayer();
-    checkGamepad();
     this->initStartScreen();
-
-    //TEST IA
-    //this->trainModel();
-    //this->testModel();
+    checkGamepad();
 }
 
 Game::~Game() {
@@ -116,13 +113,6 @@ void Game::render() {
     this->renderObstacles(false);
     this->renderPlayer();
 
-    tileMapManager->render(this->renderTexture);
-    if (showGamepadFlag && infoClock.getElapsedTime().asSeconds() < 3) {
-        this->renderTexture.draw(triangle);
-    } else {
-        showGamepadFlag = false;
-    }
-
     renderTexture.display();
 
     sf::Sprite renderSprite(renderTexture.getTexture());
@@ -131,6 +121,13 @@ void Game::render() {
     
     this->window.clear();
     this->window.draw(renderSprite);
+
+    if (showGamepadFlag && infoClock.getElapsedTime().asSeconds() < 3) {
+        this->window.draw(gamepadText);
+    } else {
+        showGamepadFlag = false;
+    }
+
     this->window.display();  
 }
 
@@ -146,7 +143,7 @@ void Game::checkGamepad() {
             break;
         }
     }
-    createTriangle(gamepadConnected);
+    createGamepadText(gamepadConnected);
 }
 
 void Game::trainModel() {
@@ -162,16 +159,17 @@ void Game::trainModel() {
 }
 
 
-void Game::createTriangle(bool gamepadConnected) { //TODO: Modify with message
-    triangle.setPointCount(3);
-    triangle.setPoint(0, sf::Vector2f(75.f, 10.f));
-    triangle.setPoint(1, sf::Vector2f(100.f, 60.f));
-    triangle.setPoint(2, sf::Vector2f(50.f, 60.f));
+void Game::createGamepadText(bool gamepadConnected) {
+    gamepadText.setFont(secondaryFont);
     if (gamepadConnected) {
-        triangle.setFillColor(sf::Color::Green);
+        gamepadText.setString("Gamepad Connected");
+        gamepadText.setFillColor(sf::Color::Green);
     } else {
-        triangle.setFillColor(sf::Color::Red);
+        gamepadText.setString("Gamepad Not Connected");
+        gamepadText.setFillColor(sf::Color::Red);
     }
+    gamepadText.setCharacterSize(30);
+    gamepadText.setPosition(10.f, 10.f);
 }
 
 void Game::initWindow() {
@@ -202,6 +200,7 @@ void Game::initPlayer() {
 }
 
 void Game::initMap() {
+    /*
     auto rbGenerator = make_unique<RuleBasedGenerator>();
     auto nbGenerator = make_unique<NoiseBasedGenerator>();
 
@@ -212,7 +211,7 @@ void Game::initMap() {
     this->tileMapModel = make_unique<TileMapModel>(40 * 22, 1);
     this->tileMapModel->testModel("resources/maps", "resources/trained_model_nb.net");
     this->tileMapModel->testModel("resources/maps1", "resources/trained_model_rb.net");
-    
+    */
     
     tileMapManager = make_unique<TileMapManager>();
     vector<string> directories = {"resources/maps", "resources/maps1"};
@@ -222,14 +221,22 @@ void Game::initMap() {
 
 }
 
-void Game::initStartScreen() {
-
+void Game::loadFonts(){
     if (!startFont.loadFromFile("resources/fonts/SuperSkinnyPixelBricks-3xKL.ttf")) {
         cerr << "Error: Could not load font 'resources/fonts/SuperSkinnyPixelBricks-3xKL.ttf'" << endl;
         this->window.close();
         return;
     }
 
+    if (!secondaryFont.loadFromFile("resources/fonts/computer-says-no.ttf")) {
+        cerr << "Error: Could not load font 'resources/fonts/computer-says-no.ttf'" << endl;
+        this->window.close();
+        return;
+    }
+}
+
+void Game::initStartScreen()
+{
     startText.setFont(startFont);
     startText.setString("MAZE PARADOX");
     startText.setCharacterSize(250);
@@ -240,11 +247,6 @@ void Game::initStartScreen() {
     startText.setOrigin(textRect.left + textRect.width / 2.0f,
                         textRect.top + textRect.height / 2.0f);
     startText.setPosition(this->window.getSize().x / 2.0f - 20, this->window.getSize().y / 2.0f);
-    if (!secondaryFont.loadFromFile("resources/fonts/computer-says-no.ttf")) {
-        cerr << "Error: Could not load font 'resources/fonts/computer-says-no.ttf'" << endl;
-        this->window.close();
-        return;
-    }
 
     secondaryText.setFont(secondaryFont);
     secondaryText.setString("Press Enter to Start");
@@ -263,15 +265,8 @@ void Game::initStartScreen() {
 }
 
 void Game::showEndMenu() {
-    sf::Font font;
-    if (!font.loadFromFile("resources/fonts/computer-says-no.ttf")) {
-        cerr << "Error: Could not load font 'resources/fonts/computer-says-no.ttf'" << endl;
-        this->window.close();
-        return;
-    }
-
-    sf::Text quitText("Press Q to Quit", font, 50);
-    sf::Text replayText("Press R to Replay", font, 50);
+    sf::Text quitText("Press Q to Quit", secondaryFont, 50);
+    sf::Text replayText("Press R to Replay", secondaryFont, 50);
 
     quitText.setFillColor(sf::Color::White);
     replayText.setFillColor(sf::Color::White);
@@ -312,4 +307,5 @@ void Game::resetGame() {
     gameStarted = false;
 }
 
+//TODO: Gamepad message when gamepad connected or disconnected
 //FIXME: fix trembling effects on border maps

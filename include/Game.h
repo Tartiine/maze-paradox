@@ -52,8 +52,10 @@ private:
     sf::Text startText;
     sf::Font secondaryFont;
     sf::Text secondaryText;
+    sf::Text gamepadText;
     sf::RectangleShape startBackground;
 
+    void loadFonts();
     void initStartScreen();
     void initWindow();
     void initWindowFullscreen();
@@ -63,7 +65,7 @@ private:
     void renderPlayer();
     void renderObstacles(bool debug);
     void updatePlayer(float deltaTime);
-    void createTriangle(bool gamepadConnected);
+    void createGamepadText(bool gamepadConnected);
     void checkGamepad();
     void trainModel();
     void showEndMenu();
