@@ -112,9 +112,9 @@ void Game::render() {
 
     renderObstacles(false);
     renderPlayer();
-
+    tileMapManager->render(renderTexture);
     renderTexture.display();
-
+    
     sf::Sprite renderSprite(renderTexture.getTexture());
     renderSprite.setScale(scale, scale);
     renderSprite.setPosition(fullscreenHorizontalOffset, fullscreenVerticalOffset);
@@ -212,7 +212,6 @@ void Game::initMap() {
     tileMapModel->testModel("resources/maps", "resources/trained_model_nb.net");
     tileMapModel->testModel("resources/maps1", "resources/trained_model_rb.net");
     */
-    
     tileMapManager = make_unique<TileMapManager>();
     vector<string> directories = {"resources/maps", "resources/maps1"};
     tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", resolution.x, resolution.y);
@@ -309,3 +308,5 @@ void Game::resetGame() {
 
 //TODO: Gamepad message when gamepad connected or disconnected
 //FIXME: fix trembling effects on border maps
+//TODO: fix crash when starting game
+//TODO: change var names in camera manager to make it readable
