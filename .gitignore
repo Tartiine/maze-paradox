@@ -1,3 +1,14 @@
+# CMake build directories
+/build/
+*/build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.ninja
+*.cmake
+*.compilation_database.json
+
 # Prerequisites
 *.d
 
@@ -31,7 +42,16 @@
 *.out
 *.app
 
-# Unwanted files
+# IDE Specific Files
 .vscode/settings.json
 .vscode/c_cpp_properties.json
+.vscode/tasks.json
+.vscode/launch.json
+
+# Other unwanted files
 *.txt
+!CMakeLists.txt
+*.log
+*.tmp
+*.temp
+*.swp
