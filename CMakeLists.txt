@@ -1,14 +1,18 @@
 cmake_minimum_required(VERSION 3.20)
 project(MazeParadox)
 
+execute_process(
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}
+)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 include_directories(./include)
 
-# Find SFML libraries. Adjust the path if necessary.
-find_package(SFML 2.6 COMPONENTS graphics window system audio REQUIRED)
-find_package(FANN REQUIRED)
+
+find_package(SFML 2.5 COMPONENTS graphics window system audio REQUIRED)
+find_library(FANN_LIB NAMES fann HINTS /mingw64/lib /mingw32/lib)
 
 # Add the source files
 set(SOURCES
@@ -37,7 +41,7 @@ target_link_libraries(MazeParadox
     sfml-window
     sfml-system
     sfml-audio
-    fann
+    ${FANN_LIB}  # Use the found fann library
 )
 
 # Copy resources directory to the build directory
