@@ -5,6 +5,11 @@
 #include <vector>
 #include <string>
 
+/**
+ * RuleBasedGenerator class generates maps using an intial noise
+ * and then applying a specific set of rules to create a map.
+ */
+
 class RuleBasedGenerator : public TileMapGenerator {
 public:
     RuleBasedGenerator();

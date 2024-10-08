@@ -5,6 +5,11 @@
 #include <vector>
 #include <memory>
 
+/**
+ * NoiseBasedGenerator class generates maps using an intial noise
+ * and a cellular automata to converge into a map.
+ */
+
 class NoiseBasedGenerator : public TileMapGenerator {
 public:
     NoiseBasedGenerator();

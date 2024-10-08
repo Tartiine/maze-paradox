@@ -3,6 +3,11 @@
 
 #include "Collision.h"
 
+/**
+ * Obstacle class is the base class for every objects the Player can
+ * physically interact with.
+ */
+
 class Obstacle : public Collision {
     public:
         virtual ~Obstacle() = default;

@@ -5,6 +5,11 @@
 #include "Animation.h"
 #include "Collision.h"
 
+/**
+ * Player class that manages all aspects of the player behaviour,
+ * such as movement, physics, rendering and handling inputs.
+ */
+
 class Player : public Collision {
 public:
     enum State {

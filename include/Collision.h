@@ -3,6 +3,11 @@
 
 #include <SFML/Graphics.hpp>
 
+/**
+ * Collision class is an abstract class that allow every inherited children
+ * to detect and resolve collisions between them (such as the Player with an Obstacle).
+ */
+
 class Collision {
     public:
         virtual ~Collision() = default;

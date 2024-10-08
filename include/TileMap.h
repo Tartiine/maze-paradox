@@ -8,6 +8,11 @@
 #include "Platform.h"
 #include "Ground.h"
 
+/**
+ * TimeMap class stores the content of a map using a 2D grid.
+ * Different implementations of Obstacle can be placed in the grid.
+ */
+
 class TileMap {
 public:
     TileMap(unsigned width, unsigned height, float tileSize, const std::string& name);

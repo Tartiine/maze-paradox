@@ -4,6 +4,11 @@
 #include <SFML/Graphics.hpp>
 #include "Obstacle.h"
 
+/**
+ * Ground class represents blocs of ground the Player can run on.
+ * They are also used at the bottom of the map to prevent free fall.
+ */
+
 class Ground : public Obstacle {
     public:
         Ground();

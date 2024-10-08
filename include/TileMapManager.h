@@ -18,6 +18,11 @@ struct TileMapInfo {
         : filename(file), position(pos) {}
 };
 
+/**
+ * TileManager class manages the loading and the rendering of the maps.
+ * It also handles the camera movement in order to follow the Player.
+ */
+
 class TileMapManager {
 public:
     TileMapManager();

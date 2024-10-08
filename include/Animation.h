@@ -3,6 +3,11 @@
 
 #include <SFML/Graphics.hpp>
 
+/**
+ * Animation class that stores the different animation sprites of an object
+ * as well as updating the sprite to display based on a set timestamp.
+ */
+
 class Animation {
 public:
     Animation();

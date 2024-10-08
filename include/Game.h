@@ -11,6 +11,11 @@
 #include <vector>
 #include <memory>
 
+/**
+ * Game class is the main class. It handles every other class and allows them to communicate.
+ * It manages every objects initialization, as well as updating the rendering.
+ */
+
 class Game {
 public:
     Game(); 

@@ -4,6 +4,11 @@
 #include <vector>
 #include <string>
 
+/**
+ * TileMapGenerator class is an abstract class that allows to automatically create maps
+ * as well as saving them into a txt file, and creating batches for the NN learning.
+ */
+
 class TileMapGenerator {
 public:
     virtual std::vector<std::vector<int>> generateTileMap(unsigned width, unsigned height) = 0;

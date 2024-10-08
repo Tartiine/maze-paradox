@@ -3,6 +3,11 @@
 
 #include "Obstacle.h"
 
+/**
+ * Platform class represents blocs of ground that are in the air.
+ * The Player can jump on it and move around a level vertically thanks to this.
+ */
+
 class Platform : public Obstacle {
     public:
         Platform();
