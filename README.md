@@ -1,4 +1,4 @@
-# best-pf-game
+# Maze Paradox
 
 # 🎮 Platformer Game
 
