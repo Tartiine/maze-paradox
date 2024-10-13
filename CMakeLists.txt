@@ -46,32 +46,12 @@ target_link_libraries(MazeParadox
 # Copy resources directory to the build directory
 file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR})
 
-# Copy necessary DLLs (SFML and FANN) for Windows users
-if(WIN32)
-    find_path(SFML_BIN_DIR NAMES sfml-graphics-2.dll HINTS ${SFML_DIR}/../bin)
-    file(GLOB SFML_DLLS "${SFML_BIN_DIR}/*.dll")
-    file(COPY ${SFML_DLLS} DESTINATION ${CMAKE_BINARY_DIR})
-
-    # Copy FANN DLL if found
-    find_path(FANN_BIN_DIR NAMES fann.dll HINTS /mingw64/bin /mingw32/bin)
-    if(FANN_BIN_DIR)
-        file(COPY ${FANN_BIN_DIR}/fann.dll DESTINATION ${CMAKE_BINARY_DIR})
-    endif()
-endif()
-
 # Install target executable
 install(TARGETS MazeParadox DESTINATION bin)
 
 # Install resources folder without nesting another resources folder
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources/ DESTINATION resources)
 
-# Ensure SFML and FANN DLLs are installed
-if(WIN32)
-    install(FILES ${SFML_DLLS} DESTINATION bin)
-    if(FANN_BIN_DIR)
-        install(FILES ${FANN_BIN_DIR}/fann.dll DESTINATION bin)
-    endif()
-endif()
 
 message(STATUS "Setting CPack generator")
 set(CPACK_GENERATOR "ZIP;TGZ")
