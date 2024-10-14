@@ -200,7 +200,6 @@ void Game::initPlayer() {
 }
 
 void Game::initMap() {
-    /*
     auto rbGenerator = make_unique<RuleBasedGenerator>();
     auto nbGenerator = make_unique<NoiseBasedGenerator>();
 
@@ -211,7 +210,7 @@ void Game::initMap() {
     tileMapModel = make_unique<TileMapModel>(40 * 22, 1);
     tileMapModel->testModel("resources/maps", "resources/trained_model_nb.net");
     tileMapModel->testModel("resources/maps1", "resources/trained_model_rb.net");
-    */
+    
     tileMapManager = make_unique<TileMapManager>();
     vector<string> directories = {"resources/maps", "resources/maps1"};
     tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", resolution.x, resolution.y);
