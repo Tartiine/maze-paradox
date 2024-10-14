@@ -6,6 +6,12 @@
 #include <fann.h>
 #include <fann_cpp.h>
 
+/**
+ * TileMapModel class represents the Neural Network Model used to score generated maps.
+ * You can train and test the model with the different methods.
+ * At the moment, it is using FANN with an MLP but will soon be using TensorFlow with a CNN.
+ */
+
 class TileMapModel {
 public:
     TileMapModel(int input_size, int output_size);
