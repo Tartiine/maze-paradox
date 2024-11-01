@@ -3,8 +3,10 @@
 
 #include <vector>
 #include <string>
+#include <tuple>
 #include <fann.h>
 #include <fann_cpp.h>
+#include <cstdint>
 
 /**
  * TileMapModel class represents the Neural Network Model used to score generated maps.
@@ -18,15 +20,16 @@ public:
     ~TileMapModel();
 
     void createModel(const std::string &type);
-    void train(const std::string &directory);
-    std::vector<std::tuple<int, std::string>> predict(const std::string &directory);
-    void testModel(const std::string &datasetDirectory, const std::string &modelFile);
+    void train();
+    std::vector<std::tuple<int, std::string>> predict();
+    std::vector<std::vector<uint8_t>> testModel(const std::string &modelFile);
     void saveModel(const std::string &filename);
     void loadModel(const std::string &filename);
+    std::vector<int> readTileMapFromMemory(const std::vector<uint8_t> &binaryTileMap);
+    void loadDataFromMemory(const std::vector<std::vector<uint8_t>> &tileMaps, const std::vector<int> &scores);
+    void loadDataFromMemory(const std::vector<std::vector<uint8_t>> &tileMaps);
 
 private:
-    void loadData(const std::string &directory);
-    std::vector<int> readTileMap(const std::string &filename);
     std::vector<fann_type> convertToFANNInput(const std::vector<int> &tileMap);
     std::vector<int> convertFromFANNOutput(fann_type *output);
 

@@ -17,8 +17,7 @@ class TileMap {
 public:
     TileMap(unsigned width, unsigned height, float tileSize, const std::string& name);
     void render(sf::RenderTarget &target, bool debug = false);
-    void loadMap(const std::string &fileName);
-
+    void loadMapFromMemory(const std::vector<uint8_t>& binaryData);
     std::unique_ptr<Obstacle>& getTile(unsigned row, unsigned col); 
     unsigned getWidth() const { return width; }  
     unsigned getHeight() const { return height; }  

@@ -3,18 +3,20 @@
 
 #include <vector>
 #include <string>
+#include <cstdint>
 
 /**
  * TileMapGenerator class is an abstract class that allows to automatically create maps
- * as well as saving them into a txt file, and creating batches for the NN learning.
+ * as well as saving them, and creating batches for the NN learning.
  */
 
 class TileMapGenerator {
 public:
     virtual std::vector<std::vector<int>> generateTileMap(unsigned width, unsigned height) = 0;
-    void saveTileMapToFile(const std::vector<std::vector<int>>& tileMap, const std::string& filename);
+    std::vector<uint8_t> saveTileMapToMemory(const std::vector<std::vector<int>>& tileMap);
     virtual ~TileMapGenerator() = default;
-    void generateBatch(int batchSize, unsigned width, unsigned height, const std::string& filePrefix);
+    std::vector<std::vector<uint8_t>> generateBatch(int batchSize, unsigned width, unsigned height);
 };
 
 #endif //TILE_MAP_GENERATOR_H
+

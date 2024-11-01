@@ -59,28 +59,20 @@ void TileMap::render(sf::RenderTarget &target, bool debug) {
     }
 }
 
-void TileMap::loadMap(const string &fileName) {
-    ifstream inFile(fileName);
-    if (!inFile.is_open()) {
-        cerr << "Failed to open map file: " << fileName << endl;
-        return;
-    }
+void TileMap::loadMapFromMemory(const vector<uint8_t>& binaryData) {
+    size_t dataIndex = 0;
 
-    string line;
     for (unsigned i = 0; i < height; ++i) {
-        getline(inFile, line);
-        istringstream ss(line);
         for (unsigned j = 0; j < width; ++j) {
-            int tileType;
-            ss >> tileType;
+            int tileType = binaryData[dataIndex++];  
+
             if (tileType == 1) {
-                if (j + 1 < width) {
-                    int nextTileType;
-                    ss >> nextTileType;
+                if (j + 1 < width && dataIndex < binaryData.size()) {
+                    int nextTileType = binaryData[dataIndex++];
                     if (nextTileType == 1) {
                         map[i][j] = createTile(tileType, position.x + j * tileSize, position.y + i * tileSize);
-                        map[i][j + 1] = nullptr; 
-                        j++; 
+                        map[i][j + 1] = nullptr;
+                        j++;  
                     }
                 }
             } else if (tileType == 2) {
@@ -90,9 +82,8 @@ void TileMap::loadMap(const string &fileName) {
             }
         }
     }
-
-    inFile.close();
 }
+
 
 unique_ptr<Obstacle>& TileMap::getTile(unsigned row, unsigned col) {
     return map[row][col];

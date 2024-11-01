@@ -147,15 +147,19 @@ void Game::checkGamepad() {
 }
 
 void Game::trainModel() {
-    tileMapModel = make_unique<TileMapModel>(40*22, 1);
+    /*
+    tileMapModel = make_unique<TileMapModel>(40 * 22, 1);
     tileMapModel->createModel("rb");
-    tileMapModel->train("resources/rb_maps");
+    tileMapModel->loadDataFromMemory(rbTileMaps, rbScores);
+    tileMapModel->train(); 
     tileMapModel->saveModel("resources/trained_model_rb.net");
 
-    tileMapModel = make_unique<TileMapModel>(40*22, 1);
+    tileMapModel = make_unique<TileMapModel>(40 * 22, 1);
     tileMapModel->createModel("nb");
-    tileMapModel->train("resources/nb_maps");
+    tileMapModel->loadDataFromMemory(nbTileMaps, nbScores);
+    tileMapModel->train(); 
     tileMapModel->saveModel("resources/trained_model_nb.net");
+    */
 }
 
 
@@ -203,20 +207,22 @@ void Game::initMap() {
     auto rbGenerator = make_unique<RuleBasedGenerator>();
     auto nbGenerator = make_unique<NoiseBasedGenerator>();
 
-    nbGenerator->generateBatch(25, 40, 22, "resources/maps/generated_map");
-    rbGenerator->generateBatch(25, 40, 22, "resources/maps1/generated_map");
+    auto rbTileMaps = rbGenerator->generateBatch(25, 40, 22);
+    auto nbTileMaps = nbGenerator->generateBatch(25, 40, 22);
+    //TODO: Add function to save binaries data in files if wanted
 
-    
     tileMapModel = make_unique<TileMapModel>(40 * 22, 1);
-    tileMapModel->testModel("resources/maps", "resources/trained_model_nb.net");
-    tileMapModel->testModel("resources/maps1", "resources/trained_model_rb.net");
-    
-    tileMapManager = make_unique<TileMapManager>();
-    vector<string> directories = {"resources/maps", "resources/maps1"};
-    tileMapManager->generateTileMapOrder(directories, "resources/tile_map_order.txt", resolution.x, resolution.y);
-    tileMapManager->loadTileMaps("resources/tile_map_order.txt");
-    tileMapManager->createFinalMap();
 
+
+    tileMapModel->loadDataFromMemory(rbTileMaps);
+    vector<vector<uint8_t>> filteredRbTileMaps = tileMapModel->testModel("resources/trained_model_rb.net");
+    tileMapModel->loadDataFromMemory(nbTileMaps);
+    vector<vector<uint8_t>> filteredNbTileMaps = tileMapModel->testModel("resources/trained_model_nb.net");
+
+    tileMapManager = std::make_unique<TileMapManager>();
+    tileMapManager->generateTileMapOrder({filteredRbTileMaps, filteredNbTileMaps}, resolution.x, resolution.y);
+    tileMapManager->loadTileMaps({filteredRbTileMaps, filteredNbTileMaps}); 
+    tileMapManager->createFinalMap(); 
 }
 
 void Game::loadFonts(){

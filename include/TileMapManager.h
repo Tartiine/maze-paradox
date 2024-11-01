@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <cstdint>
 #include <SFML/Graphics.hpp>
 
 struct TileMapInfo {
@@ -27,12 +28,12 @@ class TileMapManager {
 public:
     TileMapManager();
     ~TileMapManager();
-    void loadTileMaps(const std::string &fileName);
-    std::vector<TileMap*> getRenderedTileMaps();
+    void loadTileMaps(const std::vector<std::vector<std::vector<uint8_t>>> &tileMapBatches);
+    std::vector<TileMap *> getRenderedTileMaps();
     std::unordered_map<std::string, TileMap*> getNeighbourTileMaps();
     void update(float deltaTime, Player* player, sf::RenderTarget &window);
     void render(sf::RenderTarget &target, bool debug);
-    void generateTileMapOrder(const std::vector<std::string> &directories, const std::string &outputFile, int tileWidth, int tileHeight);
+    void generateTileMapOrder(const std::vector<std::vector<std::vector<uint8_t>>> &tileMapBatches, int tileWidth, int tileHeight);
     void createFinalMap();
     void updateAnimation(float deltaTime);
     void render(sf::RenderTarget& target);
@@ -45,7 +46,7 @@ private:
     TileMap* nextTileMap;
     TileMap* previousTileMap;
     float cameraX, cameraY;
-    void loadTileMap(const TileMapInfo &info);
+    void loadTileMap(const TileMapInfo &info, const std::vector<uint8_t> &binaryData);
     sf::Sprite portalSprite;
     std::unique_ptr<Animation> portalAnimation;
     sf::Texture portalTexture;

@@ -21,43 +21,43 @@ TileMapManager::~TileMapManager() {
     tileMaps.clear();
 }
 
-void TileMapManager::loadTileMaps(const string &fileName) {
-    ifstream inFile(fileName);
-    if (!inFile.is_open()) {
-        cerr << "Failed to open tile map order file: " << fileName << endl;
-        return;
-    }
+void TileMapManager::loadTileMaps(const vector<vector<vector<uint8_t>>>& tileMapBatches) {
+    tileMaps.clear(); 
 
-    string line;
-    while (getline(inFile, line)) {
-        istringstream ss(line);
-        string mapFile;
-        float x, y;
-        if (!(ss >> mapFile >> x >> y)) {
-            cerr << "Failed to parse line: \"" << line << "\" in tile map order file: " << fileName << endl; //TODO: Skip empty lines
-            continue;
+    cout << "Starting loadTileMaps with tileMapOrder size: " << tileMapOrder.size() << endl;
+
+    for (size_t i = 0; i < tileMapOrder.size(); ++i) {
+        const auto& info = tileMapOrder[i];  
+        size_t batchIdx = i / tileMapBatches[0].size();
+        size_t mapIdx = i % tileMapBatches[0].size();
+
+        if (batchIdx < tileMapBatches.size() && mapIdx < tileMapBatches[batchIdx].size()) {
+            loadTileMap(info, tileMapBatches[batchIdx][mapIdx]);
         }
-        tileMapOrder.push_back(TileMapInfo(mapFile, sf::Vector2f(x, y)));
     }
-
-    inFile.close();
 
     if (!tileMapOrder.empty()) {
-        for (const auto& tileMapInfo : tileMapOrder) {
-            loadTileMap(tileMapInfo);
-        }
         currentTileMap = tileMaps[tileMapOrder.front().filename].get();
+        if (currentTileMap) {
+            cout << "Set currentTileMap to: " << tileMapOrder.front().filename << endl;
+        } else {
+            cerr << "Failed to set currentTileMap; map not found or is nullptr." << endl;
+        }
+    } else {
+        cerr << "tileMapOrder is empty; no maps to set as currentTileMap." << endl;
     }
 }
 
-void TileMapManager::loadTileMap(const TileMapInfo &info) { 
+
+void TileMapManager::loadTileMap(const TileMapInfo &info, const vector<uint8_t>& binaryData) { 
     if (tileMaps.find(info.filename) == tileMaps.end()) {
         auto tileMap = make_unique<TileMap>(40, 22, 16.f, info.filename);
         tileMap->setPosition(info.position);
-        tileMap->loadMap("resources/" + info.filename);
+        tileMap->loadMapFromMemory(binaryData); 
         tileMaps[info.filename] = move(tileMap);
     }
 }
+
 
 vector<TileMap*> TileMapManager::getRenderedTileMaps() {
     vector<TileMap*> renderedTileMaps;
@@ -223,101 +223,41 @@ void TileMapManager::render(sf::RenderTarget &target, bool debug) {
     }
 }
 
-void TileMapManager::generateTileMapOrder(const vector<string> &directories, const string &outputFile, int tileWidth, int tileHeight) {
-vector<string> mapFiles;
-
-
-    for (const auto &directory : directories) {
-        for (const auto &entry : fs::directory_iterator(directory)) {
-            if (entry.path().extension() == ".txt" && entry.path().filename() != "scores.txt") {
-                mapFiles.push_back(entry.path().string());
-            }
-        }
-    }
-
-    if (mapFiles.empty()) {
-        cerr << "No map files found in the provided directories" << endl;
-        return;
-    }
-
-    random_device rd;
-    mt19937 g(rd());
-    shuffle(mapFiles.begin(), mapFiles.end(), g);
-
-    vector<tuple<string, int, int>> orderedMaps;
-    bool mapTxtFound = false;
-
-    string resourcesFolder = "resources";
-    try {
-        for (const auto &entry : fs::directory_iterator(resourcesFolder)) {
-            if (entry.is_regular_file() && entry.path().filename() == "map.txt") {
-                string relativePath = fs::relative(entry.path(), resourcesFolder).string();
-                orderedMaps.emplace_back(relativePath, 0, 0);
-                mapTxtFound = true;
-                break;
-            }
-        }
-    } catch (const fs::filesystem_error &e) {
-        cerr << "Filesystem error: " << e.what() << endl;
-    }
-
-    if (!mapTxtFound) {
-        string relativePath = fs::relative(mapFiles[0], "resources").string();
-        orderedMaps.emplace_back(relativePath, 0, 0);
-        mapFiles.erase(mapFiles.begin());
-    }
-
+void TileMapManager::generateTileMapOrder(const vector<vector<vector<uint8_t>>>& tileMapBatches, int tileWidth, int tileHeight) {
+    tileMapOrder.clear();
+    //TODO: Add flat map for the start
     int x = 0, y = 0;
-    int dx = 0, dy = -1; 
-    int steps = 1; 
-    int steps_taken = 0;
+    int dx = 0, dy = -1;
+    int steps = 1, steps_taken = 0;
     int segment_length = 1;
-    int segment_passed = 0;
-    int direction_changes = 0; 
+    int direction_changes = 0;
 
-    for (size_t i = 0; i < mapFiles.size(); ++i) {
-        if (direction_changes % 2 == 0) {
-            steps = segment_length;
-        }
+    for (size_t batchIdx = 0; batchIdx < tileMapBatches.size(); ++batchIdx) {
+        for (size_t mapIdx = 0; mapIdx < tileMapBatches[batchIdx].size(); ++mapIdx) {
+            string mapName = "TileMap_" + to_string(batchIdx) + "_" + to_string(mapIdx);
+            TileMapInfo info(mapName, sf::Vector2f(x, y));
+            tileMapOrder.push_back(info);
 
-        if (steps_taken == steps) {
-            if (dx == 0 && dy == -1) { // Up to right
-                dx = 1; dy = 0;
-            } else if (dx == 1 && dy == 0) { // Right to down
-                dx = 0; dy = 1;
-            } else if (dx == 0 && dy == 1) { // Down to left
-                dx = -1; dy = 0;
-            } else if (dx == -1 && dy == 0) { // Left to up
-                dx = 0; dy = -1;
+            if (direction_changes % 2 == 0) steps = segment_length;
+
+            if (steps_taken == steps) {
+                if (dx == 0 && dy == -1) { dx = 1; dy = 0; }
+                else if (dx == 1 && dy == 0) { dx = 0; dy = 1; }
+                else if (dx == 0 && dy == 1) { dx = -1; dy = 0; }
+                else if (dx == -1 && dy == 0) { dx = 0; dy = -1; }
+
+                steps_taken = 0;
+                direction_changes++;
+                if (direction_changes % 2 == 0) segment_length++;
             }
 
-            steps_taken = 0;
-            direction_changes++;
-            if (direction_changes % 2 == 0) {
-                segment_length++;
-            }
+            x += dx * tileWidth;
+            y += dy * tileHeight;
+            steps_taken++;
         }
-
-        x += dx * tileWidth;
-        y += dy * tileHeight;
-        string relativePath = fs::relative(mapFiles[i], "resources").string();
-        orderedMaps.emplace_back(relativePath, x, y);
-        steps_taken++;
     }
-
-    ofstream outFile(outputFile);
-    if (!outFile.is_open()) {
-        cerr << "Failed to open output file: " << outputFile << endl;
-        return;
-    }
-
-    for (const auto &[filename, posX, posY] : orderedMaps) {
-        outFile << filename << " " << posX << " " << posY << "\n";
-    }
-
-    outFile.close();
-    cout << "Tile map order saved to " << outputFile << endl;
 }
+
 
 //NOTE: Not working with tileMaps with the same name
 //TODO: Generer les maps avec une seed - (Les maps doivent etre supprimées a la fin)
@@ -334,9 +274,8 @@ void TileMapManager::createFinalMap() {
 
     uniform_int_distribution<> distr(1, tileMapOrder.size() - 1);
     int randomIndex = distr(gen);
-    string chosenMapFile = tileMapOrder[randomIndex].filename;
-
-    TileMap* chosenMap = tileMaps[chosenMapFile].get();
+    TileMap* chosenMap = tileMaps[tileMapOrder[randomIndex].filename].get();
+    
     if (!chosenMap) {
         cerr << "Chosen tile map not loaded." << endl;
         return;
@@ -356,7 +295,7 @@ void TileMapManager::createFinalMap() {
             chosenMap->getTile(x + 1, y) == 0 &&
             chosenMap->getTile(x, y + 1) == 0 &&
             chosenMap->getTile(x + 1, y + 1) == 0) {
-            tileX = x+1;
+            tileX = x + 1;
             tileY = y;
             spotFound = true;
             break;
@@ -374,11 +313,9 @@ void TileMapManager::createFinalMap() {
     }
 
     portalSprite.setTexture(portalTexture);
-    portalSprite.setTextureRect(sf::IntRect(0,0,32,32));
+    portalSprite.setTextureRect(sf::IntRect(0, 0, 32, 32));
     portalSprite.setPosition(static_cast<float>(tileX * chosenMap->getTileSize() + chosenMap->getPosition().x),
                              static_cast<float>(tileY * chosenMap->getTileSize() + chosenMap->getPosition().y));
-    //portalSprite.setPosition(0,300);
-    //cerr << "Portal placed at (" << tileX << ", " << tileY << ") in map " << chosenMapFile << endl;
 
     portalAnimation = make_unique<Animation>(&portalTexture, sf::Vector2u(9, 1), 0.15f, sf::Vector2u(32, 32));
 }
@@ -403,3 +340,4 @@ bool TileMapManager::checkPortal(Player* player) {
 }
 
 //FIXME: Move and clean portal logic
+//TODO: Add function to save tileMaps to files if wanted

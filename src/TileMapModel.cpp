@@ -4,6 +4,7 @@
 #include <iostream>
 #include <algorithm>
 #include <filesystem>
+#include <numeric>
 
 using namespace std;
 namespace fs = filesystem;
@@ -46,23 +47,35 @@ void TileMapModel::loadModel(const string &filename) {
     }
 }
 
-vector<int> TileMapModel::readTileMap(const string &filename) {
-    ifstream file(filename);
-    if (!file.is_open()) {
-        cerr << "Error opening file: " << filename << endl;
-        return {};
-    }
-
+// Read tilemap from binary data in memory
+vector<int> TileMapModel::readTileMapFromMemory(const vector<uint8_t> &binaryTileMap) {
     vector<int> tileMap;
-    string line;
-    while (getline(file, line)) {
-        stringstream ss(line);
-        int value;
-        while (ss >> value) {
-            tileMap.push_back(value);
-        }
+    for (uint8_t tile : binaryTileMap) {
+        tileMap.push_back(static_cast<int>(tile));
     }
     return tileMap;
+}
+
+// Load data from memory with scores
+void TileMapModel::loadDataFromMemory(const vector<vector<uint8_t>> &tileMapsInMemory, const vector<int> &scoresData) {
+    tileMaps.clear();
+    scores = scoresData;
+
+    for (const auto &binaryTileMap : tileMapsInMemory) {
+        tileMaps.push_back(readTileMapFromMemory(binaryTileMap));
+    }
+    cout << "Loaded data from memory with scores." << endl;
+}
+
+
+void TileMapModel::loadDataFromMemory(const vector<vector<uint8_t>> &tileMapsInMemory) {
+    tileMaps.clear();
+    scores.clear(); 
+
+    for (const auto &binaryTileMap : tileMapsInMemory) {
+        tileMaps.push_back(readTileMapFromMemory(binaryTileMap));
+    }
+    cout << "Loaded data from memory without scores." << endl;
 }
 
 vector<fann_type> TileMapModel::convertToFANNInput(const vector<int> &tileMap) {
@@ -83,41 +96,7 @@ vector<int> TileMapModel::convertFromFANNOutput(fann_type *output) {
     return tileMap;
 }
 
-void TileMapModel::loadData(const string &directory) {
-    tileMaps.clear();
-    scores.clear();
-
-    string scorefile = directory + "/scores.txt";
-    bool scoresFileExists = fs::exists(scorefile);
-
-    for (const auto &entry : fs::directory_iterator(directory)) {
-        if (entry.path().extension() == ".txt" && entry.path().filename() != "scores.txt") {
-            vector<int> tileMap = readTileMap(entry.path().string());
-            tileMaps.push_back(tileMap);
-        }
-    }
-
-    if (scoresFileExists) {
-        ifstream scoreFile(scorefile);
-        if (!scoreFile.is_open()) {
-            cerr << "Error opening score file: " << scorefile << endl;
-            return;
-        }
-
-        int score;
-        while (scoreFile >> score) {
-            scores.push_back(score);
-        }
-        cout << "Loaded scores from " << scorefile << endl;
-    } else {
-        cout << "No score file found. Proceeding without scores." << endl;
-    }
-
-    cout << "Loaded data from " << directory << endl;
-}
-
-void TileMapModel::train(const string &directory) {
-    loadData(directory);
+void TileMapModel::train() {
     
     cout << "Training model..." << endl;
     struct fann_train_data *train_data = fann_create_train(tileMaps.size(), input_size, 1);
@@ -136,36 +115,28 @@ void TileMapModel::train(const string &directory) {
     cout << "Training complete." << endl;
 }
 
-vector<tuple<int, string>> TileMapModel::predict(const string &directory) {
-    loadData(directory);
-
+vector<tuple<int, string>> TileMapModel::predict() {
     cout << "Testing model..." << endl;
     vector<tuple<int, string>> predictions; 
     int totalError = 0;
     bool hasScores = !scores.empty();
 
-    auto tileMapIt = tileMaps.begin();
-    auto entryIt = fs::directory_iterator(directory);
 
-    for (size_t i = 0; i < tileMaps.size(); ++i, ++tileMapIt, ++entryIt) {
-        while (entryIt->path().extension() != ".txt" || entryIt->path().filename() == "scores.txt") {
-            ++entryIt;
-        }
-        
-        vector<fann_type> input = convertToFANNInput(*tileMapIt);
-
+    for (size_t i = 0; i < tileMaps.size(); ++i) {
+        vector<fann_type> input = convertToFANNInput(tileMaps[i]);
         fann_type *output = fann_run(ann, input.data());
 
-        float predictedScore = static_cast<float>(output[0] * 5.0);
-        predictions.emplace_back(predictedScore, entryIt->path().string());
+        float predictedScore = output[0] * 5.0;
+        predictions.emplace_back(predictedScore, "TileMap_" + to_string(i));
 
         if (hasScores) {
             int actualScore = scores[i];
             int error = abs(predictedScore - actualScore);
             totalError += error;
-            cout << "Tile map " << i + 1 << ": Predicted score = " << predictedScore << ", Actual score = " << actualScore << ", Error = " << error << endl;
+            cout << "Tile map " << i + 1 << ": Predicted score = " << predictedScore
+                      << ", Actual score = " << actualScore << ", Error = " << error << endl;
         } else {
-            cout << "Tile map " << i + 1 << ": Predicted score = " << predictedScore << endl;
+            //cout << "Tile map " << i + 1 << ": Predicted score = " << predictedScore << endl;
         }
     }
 
@@ -176,22 +147,30 @@ vector<tuple<int, string>> TileMapModel::predict(const string &directory) {
     return predictions;
 }
 
-void TileMapModel::testModel(const string &datasetDirectory, const string &modelFile) {
+vector<vector<uint8_t>> TileMapModel::testModel(const string &modelFile) {
     loadModel(modelFile);
+    vector<tuple<int, string>> predictions = predict();
 
-    vector<tuple<int, string>> predictions = predict(datasetDirectory);
-
-    sort(predictions.begin(), predictions.end(), [](const auto &a, const auto &b) {
-        return get<0>(a) > get<0>(b);
+    vector<size_t> indices(predictions.size());
+    iota(indices.begin(), indices.end(), 0);
+    sort(indices.begin(), indices.end(), [&](size_t a, size_t b) {
+        return get<0>(predictions[a]) > get<0>(predictions[b]);
     });
 
-    for (size_t i = 0; i < predictions.size(); ++i) {
-        if (i > 20) {
-            //cout << "Deleting file: " << get<1>(predictions[i]) << " with predicted score: " << get<0>(predictions[i]) << endl;
-            fs::remove(get<1>(predictions[i]));
-        }
+    if (indices.size() > 20) {
+        indices.resize(20);
     }
-    cout << "Testing and file cleanup complete." << endl;
+
+    vector<vector<uint8_t>> filteredTileMaps;
+    for (size_t idx : indices) {
+        vector<int>& intTileMap = tileMaps[idx];  // Access the int tile map
+        vector<uint8_t> uint8TileMap(intTileMap.begin(), intTileMap.end());  // Convert to uint8_t
+        filteredTileMaps.push_back(uint8TileMap);  // Add to filtered results
+    }
+
+    cout << "Testing complete. Filtered top 20 tile maps." << endl;
+
+    return filteredTileMaps;
 }
 
 //FIXME :  modify with tensorflow
