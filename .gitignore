@@ -1,0 +1,13 @@
+# Ignore build output directories and temporary files
+/build/
+*.o
+*.out
+*.exe
+
+# Ignore Visual Studio Code settings
+.vscode/
+
+# Ignore temporary files
+*.log
+*.tmp
+*.swp
