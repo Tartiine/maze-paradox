@@ -25,7 +25,9 @@ public:
     std::vector<std::vector<uint8_t>> testModel(const std::string &modelFile);
     void saveModel(const std::string &filename);
     void loadModel(const std::string &filename);
+    std::vector<int> readTileMapFromFile(const std::string &filename);
     std::vector<int> readTileMapFromMemory(const std::vector<uint8_t> &binaryTileMap);
+    void loadDataFromFile(const std::string & directory);
     void loadDataFromMemory(const std::vector<std::vector<uint8_t>> &tileMaps, const std::vector<int> &scores);
     void loadDataFromMemory(const std::vector<std::vector<uint8_t>> &tileMaps);
 

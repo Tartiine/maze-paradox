@@ -207,16 +207,16 @@ void Game::initMap() {
     auto rbGenerator = make_unique<RuleBasedGenerator>();
     auto nbGenerator = make_unique<NoiseBasedGenerator>();
 
-    auto rbTileMaps = rbGenerator->generateBatch(25, 40, 22);
-    auto nbTileMaps = nbGenerator->generateBatch(25, 40, 22);
-    //TODO: Add function to save binaries data in files if wanted
+    auto rbTileMaps = rbGenerator->generateBatch(25, 40, 22, true); //  false to generate batch and save in files
+    auto nbTileMaps = nbGenerator->generateBatch(25, 40, 22, true);
 
     tileMapModel = make_unique<TileMapModel>(40 * 22, 1);
 
-
     tileMapModel->loadDataFromMemory(rbTileMaps);
+    // tileMapModel->loadDataFromFile("resources/maps/batch_0");
     vector<vector<uint8_t>> filteredRbTileMaps = tileMapModel->testModel("resources/trained_model_rb.net");
     tileMapModel->loadDataFromMemory(nbTileMaps);
+    // tileMapModel->loadDataFromFile("resources/maps/batch_1");
     vector<vector<uint8_t>> filteredNbTileMaps = tileMapModel->testModel("resources/trained_model_nb.net");
 
     tileMapManager = std::make_unique<TileMapManager>();

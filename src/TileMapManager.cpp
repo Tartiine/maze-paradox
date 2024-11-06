@@ -24,8 +24,6 @@ TileMapManager::~TileMapManager() {
 void TileMapManager::loadTileMaps(const vector<vector<vector<uint8_t>>>& tileMapBatches) {
     tileMaps.clear(); 
 
-    cout << "Starting loadTileMaps with tileMapOrder size: " << tileMapOrder.size() << endl;
-
     for (size_t i = 0; i < tileMapOrder.size(); ++i) {
         const auto& info = tileMapOrder[i];  
         size_t batchIdx = i / tileMapBatches[0].size();
@@ -340,4 +338,3 @@ bool TileMapManager::checkPortal(Player* player) {
 }
 
 //FIXME: Move and clean portal logic
-//TODO: Add function to save tileMaps to files if wanted
