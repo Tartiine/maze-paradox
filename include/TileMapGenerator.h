@@ -16,6 +16,7 @@ public:
     std::vector<uint8_t> saveTileMapToMemory(const std::vector<std::vector<int>>& tileMap);
     void saveTileMapToFile(const std::vector<std::vector<int>> &tileMap, const std::string &filename);
     std::vector<std::vector<uint8_t>> generateBatch(int batchSize, unsigned width, unsigned height, bool inMemory);
+    std::vector<std::vector<uint8_t>> generateStart();
     virtual ~TileMapGenerator() = default;
 private :
     static int uniqueBatchCounter;

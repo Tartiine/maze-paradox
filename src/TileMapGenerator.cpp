@@ -67,3 +67,15 @@ vector<vector<uint8_t>> TileMapGenerator::generateBatch(int batchSize, unsigned 
     uniqueBatchCounter++;
     return tileMapsInMemory;
 }
+
+vector<vector<uint8_t>> TileMapGenerator::generateStart() {
+    vector<vector<int>> startingTileMapInt(22, vector<int>(40, 0));  
+    for (int col = 0; col < 40; ++col) {
+        startingTileMapInt[21][col] = 1;  
+    }
+
+    vector<uint8_t> binaryStartingTileMap = saveTileMapToMemory(startingTileMapInt);
+
+    return {binaryStartingTileMap};
+}
+

@@ -211,9 +211,9 @@ vector<vector<uint8_t>> TileMapModel::testModel(const string &modelFile) {
 
     vector<vector<uint8_t>> filteredTileMaps;
     for (size_t idx : indices) {
-        vector<int>& intTileMap = tileMaps[idx];  // Access the int tile map
-        vector<uint8_t> uint8TileMap(intTileMap.begin(), intTileMap.end());  // Convert to uint8_t
-        filteredTileMaps.push_back(uint8TileMap);  // Add to filtered results
+        vector<int>& intTileMap = tileMaps[idx];  
+        vector<uint8_t> uint8TileMap(intTileMap.begin(), intTileMap.end());  
+        filteredTileMaps.push_back(uint8TileMap);  
     }
 
     cout << "Testing complete. Filtered top 20 tile maps." << endl;

@@ -24,13 +24,21 @@ TileMapManager::~TileMapManager() {
 void TileMapManager::loadTileMaps(const vector<vector<vector<uint8_t>>>& tileMapBatches) {
     tileMaps.clear(); 
 
-    for (size_t i = 0; i < tileMapOrder.size(); ++i) {
-        const auto& info = tileMapOrder[i];  
-        size_t batchIdx = i / tileMapBatches[0].size();
-        size_t mapIdx = i % tileMapBatches[0].size();
+    size_t batchIdx = 0, mapIdx = 0;
 
+    for (const auto& info : tileMapOrder) {
+        // Validate indices and load the correct tile map
         if (batchIdx < tileMapBatches.size() && mapIdx < tileMapBatches[batchIdx].size()) {
             loadTileMap(info, tileMapBatches[batchIdx][mapIdx]);
+        } else {
+            cerr << "Invalid batchIdx or mapIdx: " << batchIdx << ", " << mapIdx << endl;
+        }
+
+        // Update indices
+        mapIdx++;
+        if (mapIdx >= tileMapBatches[batchIdx].size()) {
+            mapIdx = 0;
+            batchIdx++;
         }
     }
 
@@ -223,7 +231,7 @@ void TileMapManager::render(sf::RenderTarget &target, bool debug) {
 
 void TileMapManager::generateTileMapOrder(const vector<vector<vector<uint8_t>>>& tileMapBatches, int tileWidth, int tileHeight) {
     tileMapOrder.clear();
-    //TODO: Add flat map for the start
+
     int x = 0, y = 0;
     int dx = 0, dy = -1;
     int steps = 1, steps_taken = 0;
@@ -254,6 +262,7 @@ void TileMapManager::generateTileMapOrder(const vector<vector<vector<uint8_t>>>&
             steps_taken++;
         }
     }
+    loadTileMaps(tileMapBatches);
 }
 
 
