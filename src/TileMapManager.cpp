@@ -22,23 +22,16 @@ TileMapManager::~TileMapManager() {
 }
 
 void TileMapManager::loadTileMaps(const vector<vector<vector<uint8_t>>>& tileMapBatches) {
-    tileMaps.clear(); 
-
-    size_t batchIdx = 0, mapIdx = 0;
+    tileMaps.clear();
 
     for (const auto& info : tileMapOrder) {
-        // Validate indices and load the correct tile map
+        size_t batchIdx = 0, mapIdx = 0;
+        std::sscanf(info.filename.c_str(), "TileMap_%zu_%zu", &batchIdx, &mapIdx);
+
         if (batchIdx < tileMapBatches.size() && mapIdx < tileMapBatches[batchIdx].size()) {
             loadTileMap(info, tileMapBatches[batchIdx][mapIdx]);
         } else {
-            cerr << "Invalid batchIdx or mapIdx: " << batchIdx << ", " << mapIdx << endl;
-        }
-
-        // Update indices
-        mapIdx++;
-        if (mapIdx >= tileMapBatches[batchIdx].size()) {
-            mapIdx = 0;
-            batchIdx++;
+            cerr << "Invalid batchIdx or mapIdx: " << batchIdx << ", " << mapIdx << " from " << info.filename << endl;
         }
     }
 
@@ -238,32 +231,58 @@ void TileMapManager::generateTileMapOrder(const vector<vector<vector<uint8_t>>>&
     int segment_length = 1;
     int direction_changes = 0;
 
-    for (size_t batchIdx = 0; batchIdx < tileMapBatches.size(); ++batchIdx) {
+    string mapName = "TileMap_0_0";
+    tileMapOrder.emplace_back(mapName, sf::Vector2f(x, y));
+
+    if (direction_changes % 2 == 0) steps = segment_length;
+    if (steps_taken == steps) {
+        if (dx == 0 && dy == -1) { dx = 1; dy = 0; }
+        else if (dx == 1 && dy == 0) { dx = 0; dy = 1; }
+        else if (dx == 0 && dy == 1) { dx = -1; dy = 0; }
+        else if (dx == -1 && dy == 0) { dx = 0; dy = -1; }
+
+        steps_taken = 0;
+        direction_changes++;
+        if (direction_changes % 2 == 0) segment_length++;
+    }
+    x += dx * tileWidth;
+    y += dy * tileHeight;
+    steps_taken++;
+
+    vector<TileMapInfo> shuffledMaps;
+    for (size_t batchIdx = 1; batchIdx < tileMapBatches.size(); ++batchIdx) {
         for (size_t mapIdx = 0; mapIdx < tileMapBatches[batchIdx].size(); ++mapIdx) {
-            string mapName = "TileMap_" + to_string(batchIdx) + "_" + to_string(mapIdx);
-            TileMapInfo info(mapName, sf::Vector2f(x, y));
-            tileMapOrder.push_back(info);
-
-            if (direction_changes % 2 == 0) steps = segment_length;
-
-            if (steps_taken == steps) {
-                if (dx == 0 && dy == -1) { dx = 1; dy = 0; }
-                else if (dx == 1 && dy == 0) { dx = 0; dy = 1; }
-                else if (dx == 0 && dy == 1) { dx = -1; dy = 0; }
-                else if (dx == -1 && dy == 0) { dx = 0; dy = -1; }
-
-                steps_taken = 0;
-                direction_changes++;
-                if (direction_changes % 2 == 0) segment_length++;
-            }
-
-            x += dx * tileWidth;
-            y += dy * tileHeight;
-            steps_taken++;
+            mapName = "TileMap_" + to_string(batchIdx) + "_" + to_string(mapIdx);
+            shuffledMaps.emplace_back(mapName, sf::Vector2f(0, 0));  
         }
     }
+
+    std::default_random_engine rng(std::random_device{}());
+    std::shuffle(shuffledMaps.begin(), shuffledMaps.end(), rng);
+
+    for (auto& info : shuffledMaps) {
+        info.position = sf::Vector2f(x, y);
+        tileMapOrder.push_back(info);
+
+        if (direction_changes % 2 == 0) steps = segment_length;
+        if (steps_taken == steps) {
+            if (dx == 0 && dy == -1) { dx = 1; dy = 0; }
+            else if (dx == 1 && dy == 0) { dx = 0; dy = 1; }
+            else if (dx == 0 && dy == 1) { dx = -1; dy = 0; }
+            else if (dx == -1 && dy == 0) { dx = 0; dy = -1; }
+
+            steps_taken = 0;
+            direction_changes++;
+            if (direction_changes % 2 == 0) segment_length++;
+        }
+        x += dx * tileWidth;
+        y += dy * tileHeight;
+        steps_taken++;
+    }
+
     loadTileMaps(tileMapBatches);
 }
+
 
 
 //NOTE: Not working with tileMaps with the same name
