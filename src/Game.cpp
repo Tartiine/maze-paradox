@@ -19,6 +19,7 @@ Game::Game() : showGamepadFlag(true) {
     initPlayer();
     initStartScreen();
     checkGamepad();
+    debug();
 }
 
 Game::~Game() {
@@ -309,6 +310,13 @@ void Game::resetGame() {
     initPlayer();
     initMap();
     gameStarted = false;
+}
+
+
+void Game::debug() {
+    auto tf = make_unique<Tensorflow>();
+
+    tf->test();
 }
 
 //TODO: Gamepad message when gamepad connected or disconnected
