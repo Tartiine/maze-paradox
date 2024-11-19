@@ -4,14 +4,15 @@
 #include <string>
 #include <iostream>
 #include "Node.h"  
+#include <functional>
 
 
 class TaskNode : public Node {
 private:
     std::string name;
-    bool (*taskFunction)();
+    std::function<NodeStatus()> taskFunction;
 public:
-    TaskNode(const std::string& taskName, bool (*func)());
+    TaskNode(const std::string& taskName, std::function<NodeStatus()> func);
     NodeStatus tick() override;
 };
 

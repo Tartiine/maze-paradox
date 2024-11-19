@@ -6,10 +6,10 @@
 
 class BehaviorTree {
 private:
-    std::unique_ptr<Node> rootNode;
+    std::unique_ptr<Node> rootNode;  
 
 public:
-    BehaviorTree(std::unique_ptr<Node> root);
+    explicit BehaviorTree(std::unique_ptr<Node> rootNode);  
     void setRoot(std::unique_ptr<Node> root);
     void run();
 };

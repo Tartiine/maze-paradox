@@ -99,6 +99,8 @@ void Player::render(sf::RenderTarget & target){
 }
 
 void Player::updatePhysics(float deltaTime) {
+    jumpOccurred = false; 
+
     if (pressingLeft) {
         if (velocity.x <= 0) {
             velocity.x -= acceleration * deltaTime;
@@ -157,6 +159,7 @@ void Player::updatePhysics(float deltaTime) {
 
     if (pressingJump && isOnGround && jumpReleased < 3) {
         velocity.y = initialJumpVelocity;
+        jumpOccurred = true;
     }
 
     pressingLeft = false;
@@ -169,6 +172,17 @@ void Player::updatePhysics(float deltaTime) {
 
 sf::Vector2f Player::getPosition() const {
     return sprite.getPosition();
+}
+
+bool Player::hasJumped() {
+    if (jumpOccurred) {
+        return true;
+    }
+    return false;
+}
+
+void Player::changePhysics() {
+    initialJumpVelocity = -300.f;
 }
 
 void Player::initTexture() {

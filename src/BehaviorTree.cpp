@@ -2,7 +2,8 @@
 
 using namespace std;
 
-BehaviorTree::BehaviorTree(unique_ptr<Node> root)  : rootNode(move(root)) {}
+BehaviorTree::BehaviorTree(unique_ptr<Node> rootNode)
+    : rootNode(move(rootNode)) {}
 
 void BehaviorTree::setRoot(unique_ptr<Node> root){
     rootNode = move(root);

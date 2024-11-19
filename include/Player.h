@@ -36,6 +36,9 @@ public:
     void updatePhysics(float deltaTime);
     sf::Vector2f getPosition() const;
 
+    bool hasJumped(); 
+    void changePhysics();
+
 private:
     sf::Sprite sprite;
     sf::Texture textureSheet;
@@ -53,7 +56,7 @@ private:
     bool pressingRight;
     bool pressingJump;
     unsigned int jumpReleased;
-
+    bool jumpOccurred;
 
     // Physics
     sf::Vector2f velocity;

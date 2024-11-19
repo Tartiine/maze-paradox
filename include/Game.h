@@ -8,6 +8,7 @@
 #include "TileMapModel.h"
 #include "TileMapManager.h"
 #include "TileMapGenerator.h"
+#include "EnemyAI.h"
 #include <vector>
 #include <memory>
 
@@ -35,6 +36,7 @@ private:
     unsigned int scale = 2;
     
     std::unique_ptr<Player> player;
+    std::unique_ptr<EnemyAI> enemyAI;
     std::unique_ptr<TileMap> tileMap;
     std::unique_ptr<TileMapManager> tileMapManager;
     std::unique_ptr<TileMapGenerator> generator;
@@ -65,7 +67,8 @@ private:
     void initWindow();
     void initWindowFullscreen();
     void initRenderTexture();
-    void initPlayer();  
+    void initPlayer();
+    void initAI();
     void initMap();
     void renderPlayer();
     void renderObstacles(bool debug);

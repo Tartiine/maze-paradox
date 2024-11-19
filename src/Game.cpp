@@ -17,6 +17,7 @@ Game::Game() : showGamepadFlag(true) {
     initRenderTexture();
     initMap();
     initPlayer();
+    initAI();
     initStartScreen();
     checkGamepad();
 }
@@ -80,6 +81,7 @@ void Game::update(float deltaTime) {
 
     if (gameStarted) {
         updatePlayer(deltaTime);
+        enemyAI->update(deltaTime);
         collisionPlayer();
         tileMapManager->update(deltaTime, player.get(), renderTexture);
         tileMapManager->updateAnimation(deltaTime);
@@ -203,6 +205,10 @@ void Game::initPlayer() {
     player = make_unique<Player>(64, 300);
 }
 
+void Game::initAI() {
+    enemyAI = make_unique<EnemyAI>(*player); 
+}
+
 void Game::initMap() {
     auto rbGenerator = make_unique<RuleBasedGenerator>();
     auto nbGenerator = make_unique<NoiseBasedGenerator>();
@@ -308,6 +314,7 @@ void Game::showEndMenu() {
 
 void Game::resetGame() {
     initPlayer();
+    initAI();
     initMap();
     gameStarted = false;
 }

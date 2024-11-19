@@ -29,6 +29,12 @@ set(SOURCES
     src/NoiseBasedGenerator.cpp
     src/TileMapModel.cpp
     src/TileMapManager.cpp
+    src/BehaviorTree.cpp
+    src/EnemyAI.cpp
+    src/TaskNode.cpp
+    src/CompositeNode.cpp
+    src/SelectorNode.cpp
+    src/SequenceNode.cpp
 )
 
 # Create the executable
