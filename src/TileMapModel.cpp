@@ -1,4 +1,125 @@
 #include "TileMapModel.h"
+
+TileMapModel::TileMapModel(int _height, int _width, const string &filename) :  height(_height), width(_width), model(filename) {
+}
+
+TileMapModel::~TileMapModel() {
+}
+
+cppflow::tensor TileMapModel::convertToCppflowInput() const {
+    std::vector<float> input;
+
+    int batch_size = tileMaps.size();
+    for (int i = 0; i < batch_size; ++i) {
+        const std::vector<int>& tileMap = tileMaps[i];
+
+        int min_val = *std::min_element(tileMap.begin(), tileMap.end());
+        int max_val = *std::max_element(tileMap.begin(), tileMap.end());
+
+        for (int val : tileMap) {
+            float normalized = (max_val != min_val) ? static_cast<float>(val - min_val) / (max_val - min_val) : 0.0f;
+            input.push_back(normalized);
+        }
+    }
+
+    return cppflow::tensor(input, {batch_size, height, width, 1});
+}
+
+
+// Read tilemap from binary data in memory
+vector<int> TileMapModel::readTileMapFromMemory(const vector<uint8_t> &binaryTileMap) {
+    vector<int> tileMap;
+    for (uint8_t tile : binaryTileMap) {
+        tileMap.push_back(static_cast<int>(tile));
+    }
+    return tileMap;
+}
+
+// Load data from memory with scores
+void TileMapModel::loadDataFromMemory(const vector<vector<uint8_t>> &tileMapsInMemory, const vector<int> &scoresData) {
+    tileMaps.clear();
+    scores = scoresData;
+
+    for (const auto &binaryTileMap : tileMapsInMemory) {
+        tileMaps.push_back(readTileMapFromMemory(binaryTileMap));
+    }
+    cout << "Loaded data from memory with scores." << endl;
+}
+
+void TileMapModel::loadDataFromMemory(const vector<vector<uint8_t>> &tileMapsInMemory) {
+    tileMaps.clear();
+    scores.clear(); 
+
+    for (const auto &binaryTileMap : tileMapsInMemory) {
+        tileMaps.push_back(readTileMapFromMemory(binaryTileMap));
+    }
+    cout << "Loaded data from memory without scores." << endl;
+}
+
+vector<tuple<int, string>> TileMapModel::predict() {
+    cout << "Testing model..." << endl;
+    vector<tuple<int, string>> predictions; 
+    int totalError = 0;
+    bool hasScores = !scores.empty();
+
+    auto input_tensor = convertToCppflowInput();
+    auto output_tensors = model(
+        {{"serving_default_conv2d_4_input:0", input_tensor}},  // Correct input tensor name
+        {"StatefulPartitionedCall:0"}                           // Correct output tensor name
+    );
+
+    vector<float> results = output_tensors[0].get_data<float>();
+
+    for (size_t i = 0; i < tileMaps.size(); ++i) {
+        auto predictedScore = results[i] * 5;
+        predictions.emplace_back(predictedScore, "TileMap_" + to_string(i));
+
+        if (hasScores) {
+            int actualScore = scores[i];
+            int error = abs(predictedScore - actualScore);
+            totalError += error;
+            cout << "Tile map " << i + 1 << ": Predicted score = " << predictedScore
+                      << ", Actual score = " << actualScore << ", Error = " << error << endl;
+        } else {
+            //cout << "Tile map " << i + 1 << ": Predicted score = " << predictedScore << endl;
+        }
+    }
+
+    if (hasScores) {
+        cout << "Average error = " << (double)totalError / tileMaps.size() << endl;
+    }
+
+    return predictions;
+}
+
+vector<vector<uint8_t>> TileMapModel::testModel() {
+    vector<tuple<int, string>> predictions = predict();
+
+    vector<size_t> indices(predictions.size());
+    iota(indices.begin(), indices.end(), 0);
+    sort(indices.begin(), indices.end(), [&](size_t a, size_t b) {
+        return get<0>(predictions[a]) > get<0>(predictions[b]);
+    });
+
+    if (indices.size() > 20) {
+        indices.resize(20);
+    }
+
+    vector<vector<uint8_t>> filteredTileMaps;
+    for (size_t idx : indices) {
+        vector<int>& intTileMap = tileMaps[idx];  // Access the int tile map
+        vector<uint8_t> uint8TileMap(intTileMap.begin(), intTileMap.end());  // Convert to uint8_t
+        filteredTileMaps.push_back(uint8TileMap);  // Add to filtered results
+    }
+
+    cout << "Testing complete. Filtered top 20 tile maps." << endl;
+
+    return filteredTileMaps;
+}
+
+// OLD CODE - FANN + MLP Model
+
+/*
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -172,5 +293,6 @@ vector<vector<uint8_t>> TileMapModel::testModel(const string &modelFile) {
 
     return filteredTileMaps;
 }
+*/
 
 //FIXME :  modify with tensorflow

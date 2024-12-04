@@ -3,14 +3,17 @@
 
 #include <string>
 #include <cppflow/cppflow.h>
+#include <vector>
 
 class Tensorflow {
 public:
-    Tensorflow();
+    Tensorflow(const std::string &filename);
     ~Tensorflow();
 
     int test();
-    void loadModel(const std::string &filename);
+
+private:
+    cppflow::model model;
 };
 
 #endif // TENSORFLOW_H

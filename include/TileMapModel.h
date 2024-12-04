@@ -3,10 +3,11 @@
 
 #include <vector>
 #include <string>
-#include <tuple>
-#include <fann.h>
-#include <fann_cpp.h>
-#include <cstdint>
+#include <cppflow/cppflow.h>
+#include <algorithm>
+#include <numeric>
+
+using namespace std;
 
 /**
  * TileMapModel class represents the Neural Network Model used to score generated maps.
@@ -15,6 +16,38 @@
  */
 
 class TileMapModel {
+public:
+    TileMapModel(int _height, int _width, const string &filename);
+    ~TileMapModel();
+    
+    vector<int> readTileMapFromMemory(const vector<uint8_t> &binaryTileMap);
+    void loadDataFromMemory(const vector<vector<uint8_t>> &tileMaps, const vector<int> &scores);
+    void loadDataFromMemory(const vector<vector<uint8_t>> &tileMaps);
+
+    vector<tuple<int, string>> predict();
+    vector<vector<uint8_t>> testModel();
+
+private:
+    cppflow::tensor convertToCppflowInput() const;
+
+    int height;
+    int width;
+    cppflow::model model;
+    vector<int> scores;
+    vector<vector<int>> tileMaps;
+
+// OLD CODE - FANN + MLP Model
+
+/*
+#include <vector>
+#include <string>
+#include <tuple>
+#include <fann.h>
+#include <fann_cpp.h>
+#include <cstdint>
+*/
+
+/*
 public:
     TileMapModel(int input_size, int output_size);
     ~TileMapModel();
@@ -38,6 +71,8 @@ private:
     std::vector<int> scores;
     int input_size;
     int output_size;
+*/
+
 };
 
 #endif // TILEMAPMODEL_H

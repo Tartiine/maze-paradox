@@ -12,6 +12,7 @@
 using namespace std;
 
 Game::Game() : showGamepadFlag(true) {
+    debug();
     loadFonts();
     initWindow();
     initRenderTexture();
@@ -19,7 +20,6 @@ Game::Game() : showGamepadFlag(true) {
     initPlayer();
     initStartScreen();
     checkGamepad();
-    debug();
 }
 
 Game::~Game() {
@@ -212,13 +212,13 @@ void Game::initMap() {
     auto nbTileMaps = nbGenerator->generateBatch(25, 40, 22);
     //TODO: Add function to save binaries data in files if wanted
 
-    tileMapModel = make_unique<TileMapModel>(40 * 22, 1);
-
-
+    tileMapModel = make_unique<TileMapModel>(22, 40, "resources\\trained_model_rb");
     tileMapModel->loadDataFromMemory(rbTileMaps);
-    vector<vector<uint8_t>> filteredRbTileMaps = tileMapModel->testModel("resources/trained_model_rb.net");
+    vector<vector<uint8_t>> filteredRbTileMaps = tileMapModel->testModel();
+
+    tileMapModel = make_unique<TileMapModel>(22, 40, "resources\\trained_model_nb");
     tileMapModel->loadDataFromMemory(nbTileMaps);
-    vector<vector<uint8_t>> filteredNbTileMaps = tileMapModel->testModel("resources/trained_model_nb.net");
+    vector<vector<uint8_t>> filteredNbTileMaps = tileMapModel->testModel();
 
     tileMapManager = std::make_unique<TileMapManager>();
     tileMapManager->generateTileMapOrder({filteredRbTileMaps, filteredNbTileMaps}, resolution.x, resolution.y);
@@ -314,7 +314,7 @@ void Game::resetGame() {
 
 
 void Game::debug() {
-    auto tf = make_unique<Tensorflow>();
+    auto tf = make_unique<Tensorflow>("resources\\trained_model_nb");
 
     tf->test();
 }
