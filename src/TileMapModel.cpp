@@ -64,14 +64,15 @@ vector<tuple<int, string>> TileMapModel::predict() {
 
     auto input_tensor = convertToCppflowInput();
     auto output_tensors = model(
-        {{"serving_default_conv2d_4_input:0", input_tensor}},  // Correct input tensor name
+        {{"serving_default_input_layer_input:0", input_tensor}},  // Correct input tensor name
         {"StatefulPartitionedCall:0"}                           // Correct output tensor name
     );
 
     vector<float> results = output_tensors[0].get_data<float>();
 
     for (size_t i = 0; i < tileMaps.size(); ++i) {
-        auto predictedScore = results[i] * 5;
+        auto predictedScore = results[i];
+        cout << "Tile map " << i + 1 << ": Predicted score = " << predictedScore << endl;
         predictions.emplace_back(predictedScore, "TileMap_" + to_string(i));
 
         if (hasScores) {

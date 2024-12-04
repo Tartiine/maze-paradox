@@ -12,7 +12,6 @@
 using namespace std;
 
 Game::Game() : showGamepadFlag(true) {
-    debug();
     loadFonts();
     initWindow();
     initRenderTexture();
@@ -310,13 +309,6 @@ void Game::resetGame() {
     initPlayer();
     initMap();
     gameStarted = false;
-}
-
-
-void Game::debug() {
-    auto tf = make_unique<Tensorflow>("resources\\trained_model_nb");
-
-    tf->test();
 }
 
 //TODO: Gamepad message when gamepad connected or disconnected

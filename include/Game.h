@@ -8,7 +8,6 @@
 #include "TileMapModel.h"
 #include "TileMapManager.h"
 #include "TileMapGenerator.h"
-#include "Tensorflow.h"
 #include <vector>
 #include <memory>
 
@@ -76,8 +75,6 @@ private:
     void trainModel();
     void showEndMenu();
     void resetGame();
-
-    void debug();
 };
 
 #endif // GAME_H
