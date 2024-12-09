@@ -207,9 +207,9 @@ void Game::initMap() {
     auto rbGenerator = make_unique<RuleBasedGenerator>();
     auto nbGenerator = make_unique<NoiseBasedGenerator>();
 
-    auto rbTileMaps = rbGenerator->generateBatch(25, 40, 22);
-    auto nbTileMaps = nbGenerator->generateBatch(25, 40, 22);
-    //TODO: Add function to save binaries data in files if wanted
+    auto rbTileMaps = rbGenerator->generateBatch(25, 40, 22, true); //  false to generate batch and save in files
+    auto nbTileMaps = nbGenerator->generateBatch(25, 40, 22, true);
+    auto startingTileMap = rbGenerator->generateStart();
 
     tileMapModel = make_unique<TileMapModel>(22, 40, "resources\\trained_model_rb");
     tileMapModel->loadDataFromMemory(rbTileMaps);
@@ -220,8 +220,7 @@ void Game::initMap() {
     vector<vector<uint8_t>> filteredNbTileMaps = tileMapModel->testModel();
 
     tileMapManager = std::make_unique<TileMapManager>();
-    tileMapManager->generateTileMapOrder({filteredRbTileMaps, filteredNbTileMaps}, resolution.x, resolution.y);
-    tileMapManager->loadTileMaps({filteredRbTileMaps, filteredNbTileMaps}); 
+    tileMapManager->generateTileMapOrder({startingTileMap, filteredRbTileMaps, filteredNbTileMaps}, resolution.x, resolution.y);
     tileMapManager->createFinalMap(); 
 }
 

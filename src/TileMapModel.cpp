@@ -169,7 +169,22 @@ void TileMapModel::loadModel(const string &filename) {
     }
 }
 
-// Read tilemap from binary data in memory
+vector<int> TileMapModel::readTileMapFromFile(const string &filename) {
+    ifstream file(filename, ios::binary);
+    if (!file.is_open()) {
+        cerr << "Error opening file: " << filename << endl;
+        return {};
+    }
+
+    vector<int> tileMap;
+    uint8_t tile;
+    while (file.read(reinterpret_cast<char*>(&tile), sizeof(tile))) {
+        tileMap.push_back(static_cast<int>(tile));
+    }
+    file.close();
+    return tileMap;
+}
+
 vector<int> TileMapModel::readTileMapFromMemory(const vector<uint8_t> &binaryTileMap) {
     vector<int> tileMap;
     for (uint8_t tile : binaryTileMap) {
@@ -178,7 +193,40 @@ vector<int> TileMapModel::readTileMapFromMemory(const vector<uint8_t> &binaryTil
     return tileMap;
 }
 
-// Load data from memory with scores
+void TileMapModel::loadDataFromFile(const string &directory) {
+    tileMaps.clear();
+    scores.clear();
+
+    string scorefile = directory + "/scores.txt";
+    bool scoresFileExists = fs::exists(scorefile);
+
+    for (const auto &entry : fs::directory_iterator(directory)) {
+        if (entry.path().extension() == ".bin") { 
+            vector<int> tileMap = readTileMapFromFile(entry.path().string());
+            tileMaps.push_back(tileMap);
+        }
+    }
+
+    if (scoresFileExists) {
+        ifstream scoreFile(scorefile);
+        if (!scoreFile.is_open()) {
+            cerr << "Error opening score file: " << scorefile << endl;
+            return;
+        }
+
+        int score;
+        while (scoreFile >> score) {
+            scores.push_back(score);
+        }
+        scoreFile.close();
+        cout << "Loaded scores from " << scorefile << endl;
+    } else {
+        cout << "No score file found. Proceeding without scores." << endl;
+    }
+
+    cout << "Loaded data from " << directory << endl;
+}
+
 void TileMapModel::loadDataFromMemory(const vector<vector<uint8_t>> &tileMapsInMemory, const vector<int> &scoresData) {
     tileMaps.clear();
     scores = scoresData;
@@ -285,9 +333,9 @@ vector<vector<uint8_t>> TileMapModel::testModel(const string &modelFile) {
 
     vector<vector<uint8_t>> filteredTileMaps;
     for (size_t idx : indices) {
-        vector<int>& intTileMap = tileMaps[idx];  // Access the int tile map
-        vector<uint8_t> uint8TileMap(intTileMap.begin(), intTileMap.end());  // Convert to uint8_t
-        filteredTileMaps.push_back(uint8TileMap);  // Add to filtered results
+        vector<int>& intTileMap = tileMaps[idx];  
+        vector<uint8_t> uint8TileMap(intTileMap.begin(), intTileMap.end());  
+        filteredTileMaps.push_back(uint8TileMap);  
     }
 
     cout << "Testing complete. Filtered top 20 tile maps." << endl;

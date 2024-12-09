@@ -14,8 +14,12 @@ class TileMapGenerator {
 public:
     virtual std::vector<std::vector<int>> generateTileMap(unsigned width, unsigned height) = 0;
     std::vector<uint8_t> saveTileMapToMemory(const std::vector<std::vector<int>>& tileMap);
+    void saveTileMapToFile(const std::vector<std::vector<int>> &tileMap, const std::string &filename);
+    std::vector<std::vector<uint8_t>> generateBatch(int batchSize, unsigned width, unsigned height, bool inMemory);
+    std::vector<std::vector<uint8_t>> generateStart();
     virtual ~TileMapGenerator() = default;
-    std::vector<std::vector<uint8_t>> generateBatch(int batchSize, unsigned width, unsigned height);
+private :
+    static int uniqueBatchCounter;
 };
 
 #endif //TILE_MAP_GENERATOR_H
