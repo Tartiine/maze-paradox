@@ -37,7 +37,8 @@ public:
     sf::Vector2f getPosition() const;
 
     bool hasJumped(); 
-    void changePhysics();
+    void changePhysics(float duration);
+    void updatePhysicsEffect(float deltaTime);
 
 private:
     sf::Sprite sprite;
@@ -73,6 +74,8 @@ private:
     float initialJumpVelocity;
     float variableJumpBoost;
 
+    float physicsEffectRemainingTime = 0.0f;
+    bool physicsChanged = false;
 };
 
 #endif // PLAYER_H

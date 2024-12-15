@@ -12,11 +12,11 @@
 using namespace std;
 
 Game::Game() : showGamepadFlag(true) {
-    loadFonts();
     initWindow();
+    loadFonts();
     initRenderTexture();
-    initMap();
     initPlayer();
+    initMap();
     initAI();
     initStartScreen();
     checkGamepad();
@@ -189,7 +189,7 @@ void Game::initWindow() {
 void Game::initWindowFullscreen() {
     sf::VideoMode fullScreen = sf::VideoMode::getFullscreenModes()[0];
 
-    window.create(fullScreen, "SFML Platformer", sf::Style::Fullscreen);
+    window.create(fullScreen, "Maze Paradox", sf::Style::Fullscreen);
     window.setFramerateLimit(240);
     isFullscreenOn = true;
     scale = min(fullScreen.width / resolution.x, fullScreen.height / resolution.y);
@@ -206,7 +206,7 @@ void Game::initPlayer() {
 }
 
 void Game::initAI() {
-    enemyAI = make_unique<EnemyAI>(*player); 
+    enemyAI = make_unique<EnemyAI>(*player,*tileMapManager); 
 }
 
 void Game::initMap() {
@@ -321,5 +321,5 @@ void Game::resetGame() {
 
 //TODO: Gamepad message when gamepad connected or disconnected
 //FIXME: fix trembling effects on border maps
-//TODO: fix crash when starting game
 //TODO: change var names in camera manager to make it readable
+//FIXME: Limit reset entry to not reload the game multiple times

@@ -316,8 +316,9 @@ void TileMapManager::createFinalMap() {
     for (int i = 0; i < 100; ++i) {
         int x = xDistr(gen);
         int y = yDistr(gen);
-
-        if (chosenMap->getTile(x, y) == 0 &&
+        if (x >= 0 && y >= 0 &&
+            x + 1 < chosenMap->getHeight() && y + 1 < chosenMap->getWidth() &&
+            chosenMap->getTile(x, y) == 0 &&
             chosenMap->getTile(x + 1, y) == 0 &&
             chosenMap->getTile(x, y + 1) == 0 &&
             chosenMap->getTile(x + 1, y + 1) == 0) {
@@ -366,3 +367,60 @@ bool TileMapManager::checkPortal(Player* player) {
 }
 
 //FIXME: Move and clean portal logic
+
+void TileMapManager::deletePlatform(sf::Vector2f playerPosition) {
+    if (!currentTileMap) {
+        std::cerr << "No current tile map to delete a platform from.\n";
+        return;
+    }
+
+    sf::Vector2f mapPos = currentTileMap->getPosition();
+    float tileSize = currentTileMap->getTileSize();
+    unsigned mapWidth = currentTileMap->getWidth();
+    unsigned mapHeight = currentTileMap->getHeight();
+
+    int playerTileX = static_cast<int>((playerPosition.x - mapPos.x) / tileSize);
+    int playerTileY = static_cast<int>((playerPosition.y - mapPos.y) / tileSize);
+
+    if (playerTileX < 0 || playerTileY < 0 || playerTileX >= mapWidth || playerTileY >= mapHeight) {
+        std::cerr << "Player tile out of bounds: (" << playerTileX << ", " << playerTileY << ")\n";
+        return;
+    }
+
+    constexpr int radius = 3;
+    std::vector<std::pair<int, int>> candidateTiles;
+
+    for (int y = playerTileY - radius; y <= playerTileY + radius; ++y) {
+        for (int x = playerTileX - radius; x <= playerTileX + radius; ++x) {
+            if (x < 0 || y < 0 || x >= static_cast<int>(mapWidth) || y >= static_cast<int>(mapHeight)) {
+                continue; // Skip out-of-bounds tiles
+            }
+
+            if (!currentTileMap->getTile(x, y)) {
+                continue; // Skip empty tiles
+            }
+
+            sf::FloatRect tileBounds(
+                mapPos.x + x * tileSize, mapPos.y + y * tileSize, tileSize, tileSize);
+
+            if (portalSprite.getGlobalBounds().intersects(tileBounds)) {
+                std::cerr << "Skipping tile at (" << x << ", " << y << ") - intersects portal.\n";
+                continue;
+            }
+
+            candidateTiles.emplace_back(x, y);
+        }
+    }
+
+    if (candidateTiles.empty()) {
+        std::cerr << "No valid candidate tiles found near the player.\n";
+        return;
+    }
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distr(0, candidateTiles.size() - 1);
+
+    auto [tileX, tileY] = candidateTiles[distr(gen)];
+    currentTileMap->deleteTile(tileX, tileY);
+}

@@ -38,6 +38,7 @@ public:
     void updateAnimation(float deltaTime);
     void render(sf::RenderTarget& target);
     bool checkPortal(Player* player);
+    void deletePlatform(sf::Vector2f playerPosition);
 
 private:
     std::unordered_map<std::string, std::unique_ptr<TileMap>> tileMaps;

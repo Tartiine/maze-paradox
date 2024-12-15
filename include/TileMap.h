@@ -24,7 +24,8 @@ public:
     unsigned getTileSize() const { return tileSize; }  
     sf::Vector2f getPosition() const { return position; }
     void setPosition(const sf::Vector2f& newPosition);
-    const std::string& getName() const;
+    void deleteTile(unsigned row, unsigned col);
+    const std::string &getName() const;
 
 private:
     std::vector<std::vector<std::unique_ptr<Obstacle>>> map;

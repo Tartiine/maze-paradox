@@ -180,9 +180,30 @@ bool Player::hasJumped() {
     }
     return false;
 }
+//TODO: gros sprite 
 
-void Player::changePhysics() {
+void Player::changePhysics(float duration) {
+    if (!physicsChanged) {
+        physicsChanged = true;
+    }
     initialJumpVelocity = -300.f;
+
+    physicsEffectRemainingTime = duration;
+
+    std::cout << "Physics changed: initialJumpVelocity = " << initialJumpVelocity << "\n";
+}
+
+void Player::updatePhysicsEffect(float deltaTime) {
+    if (physicsChanged) {
+        physicsEffectRemainingTime -= deltaTime;
+
+        if (physicsEffectRemainingTime <= 0.0f) {
+            initialJumpVelocity = -400.f;
+            physicsChanged = false;
+
+            std::cout << "Physics reset: initialJumpVelocity = " << initialJumpVelocity << "\n";
+        }
+    }
 }
 
 void Player::initTexture() {
