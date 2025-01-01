@@ -4,6 +4,7 @@
 #include "TileMap.h"
 #include "Player.h"
 #include "Animation.h"
+#include "LightEffect.h"
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -43,6 +44,7 @@ public:
 private:
     std::unordered_map<std::string, std::unique_ptr<TileMap>> tileMaps;
     std::vector<TileMapInfo> tileMapOrder;
+    std::vector<LightEffect> lightEffects;
     TileMap* currentTileMap;
     TileMap* nextTileMap;
     TileMap* previousTileMap;
@@ -51,6 +53,9 @@ private:
     sf::Sprite portalSprite;
     std::unique_ptr<Animation> portalAnimation;
     sf::Texture portalTexture;
+    float deletionTimer = 0.0f; 
+    bool pendingDeletion = false; 
+    int tileXToDelete = -1, tileYToDelete = -1; 
 };
 
 #endif // TILEMAP_MANAGER_H

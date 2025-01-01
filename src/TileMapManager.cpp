@@ -120,6 +120,25 @@ void TileMapManager::update(float deltaTime, Player* player, sf::RenderTarget &w
         return;
     }
 
+    for (auto it = lightEffects.begin(); it != lightEffects.end(); ) {
+        it->update(deltaTime);
+        if (it->isExpired()) {
+            it = lightEffects.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    if (pendingDeletion) {
+        deletionTimer -= deltaTime;
+
+        if (deletionTimer <= 0.0f) {
+            currentTileMap->deleteTile(tileXToDelete, tileYToDelete);
+            pendingDeletion = false; 
+            std::cout << "Platform deleted at (" << tileXToDelete << ", " << tileYToDelete << ")\n";
+        }
+    }
+
     float playerX = player->getPosition().x;
     float playerY = player->getPosition().y;
     float playerTilePositionX = playerX / currentTileMap->getTileSize();
@@ -211,6 +230,10 @@ void TileMapManager::render(sf::RenderTarget &target, bool debug) {
 
     currentTileMap->render(target, debug);
 
+    for (const auto& lightEffect : lightEffects) {
+        lightEffect.render(target);
+    }
+    
     unordered_map<string, TileMap*> neighbours = getNeighbourTileMaps();
     for (const auto& pair : neighbours) {
         pair.second->render(target, debug);
@@ -392,7 +415,7 @@ void TileMapManager::deletePlatform(sf::Vector2f playerPosition) {
 
     for (int y = playerTileY - radius; y <= playerTileY + radius; ++y) {
         for (int x = playerTileX - radius; x <= playerTileX + radius; ++x) {
-            if (x < 0 || y < 0 || x >= static_cast<int>(mapWidth) || y >= static_cast<int>(mapHeight)) {
+            if (x < 0 || y < 0 || x >= static_cast<int>(mapHeight) || y >= static_cast<int>(mapWidth)) {
                 continue; // Skip out-of-bounds tiles
             }
 
@@ -422,5 +445,13 @@ void TileMapManager::deletePlatform(sf::Vector2f playerPosition) {
     std::uniform_int_distribution<> distr(0, candidateTiles.size() - 1);
 
     auto [tileX, tileY] = candidateTiles[distr(gen)];
-    currentTileMap->deleteTile(tileX, tileY);
+    pendingDeletion = true;
+    deletionTimer = 0.7f; 
+    tileXToDelete = tileX;
+    tileYToDelete = tileY;
+
+    sf::Vector2f tilePosition = currentTileMap->getPosition() + sf::Vector2f(tileY * tileSize + tileSize / 2, tileX * tileSize + tileSize / 2);
+    lightEffects.emplace_back(tilePosition, tileSize / 2, 0.6f); 
 }
+
+//TODO: Move some logic to a cameraManager class

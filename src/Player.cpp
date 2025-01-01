@@ -94,9 +94,22 @@ void Player::update(float deltaTime) {
 }
 
 
-void Player::render(sf::RenderTarget & target){
+void Player::render(sf::RenderTarget& target) {
+    sf::Vector2f originalScale = sprite.getScale();
+
+    if (physicsChanged) {
+        sprite.setScale(originalScale.x * 1.2f, originalScale.y);
+    }
+
+
     target.draw(sprite);
+
+    if (physicsChanged) {
+        sprite.setScale(originalScale);
+    }
 }
+
+
 
 void Player::updatePhysics(float deltaTime) {
     jumpOccurred = false; 
@@ -180,17 +193,15 @@ bool Player::hasJumped() {
     }
     return false;
 }
-//TODO: gros sprite 
 
 void Player::changePhysics(float duration) {
     if (!physicsChanged) {
         physicsChanged = true;
+        physicsEffectRemainingTime = duration;
+        initialJumpVelocity = -300.f;
+
+        std::cout << "Physics changed: initialJumpVelocity = " << initialJumpVelocity << "\n";
     }
-    initialJumpVelocity = -300.f;
-
-    physicsEffectRemainingTime = duration;
-
-    std::cout << "Physics changed: initialJumpVelocity = " << initialJumpVelocity << "\n";
 }
 
 void Player::updatePhysicsEffect(float deltaTime) {

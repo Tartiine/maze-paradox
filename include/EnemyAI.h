@@ -37,6 +37,11 @@ private:
     NodeStatus ChangePlayerPhysics();
     NodeStatus Wait(float);
     NodeStatus DeletePlatform();
+    NodeStatus proximityThresholdReached();
+    NodeStatus WarnPlayer();
+    NodeStatus PlayerEscaped();
+    NodeStatus AI_Retreats();
+    NodeStatus AggressiveMode();
 };
 
 #endif //ENEMYAI_H

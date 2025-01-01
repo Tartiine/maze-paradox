@@ -44,7 +44,9 @@ private:
     sf::Sprite sprite;
     sf::Texture textureSheet;
     State currentState = State::Idle;
-
+    sf::Vector2f originalScale;
+    sf::Vector2f originalPosition;
+    
     std::unordered_map<State, Animation> animations;
 
     void initTexture();

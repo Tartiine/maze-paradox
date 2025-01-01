@@ -40,6 +40,3 @@ private:
 };
 
 #endif // TILEMAP_H
-
-
-//TODO: Debug collisions

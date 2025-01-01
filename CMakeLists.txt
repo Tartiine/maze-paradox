@@ -32,6 +32,7 @@ set(SOURCES
     src/CompositeNode.cpp
     src/SelectorNode.cpp
     src/SequenceNode.cpp
+    src/LightEffect.cpp
 )
 
 # Create the executable
