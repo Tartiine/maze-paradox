@@ -26,7 +26,7 @@ void TileMapManager::loadTileMaps(const vector<vector<vector<uint8_t>>>& tileMap
 
     for (const auto& info : tileMapOrder) {
         size_t batchIdx = 0, mapIdx = 0;
-        std::sscanf(info.filename.c_str(), "TileMap_%zu_%zu", &batchIdx, &mapIdx);
+        sscanf(info.filename.c_str(), "TileMap_%zu_%zu", &batchIdx, &mapIdx);
 
         if (batchIdx < tileMapBatches.size() && mapIdx < tileMapBatches[batchIdx].size()) {
             loadTileMap(info, tileMapBatches[batchIdx][mapIdx]);
@@ -135,7 +135,6 @@ void TileMapManager::update(float deltaTime, Player* player, sf::RenderTarget &w
         if (deletionTimer <= 0.0f) {
             currentTileMap->deleteTile(tileXToDelete, tileYToDelete);
             pendingDeletion = false; 
-            std::cout << "Platform deleted at (" << tileXToDelete << ", " << tileYToDelete << ")\n";
         }
     }
 
@@ -280,8 +279,8 @@ void TileMapManager::generateTileMapOrder(const vector<vector<vector<uint8_t>>>&
         }
     }
 
-    std::default_random_engine rng(std::random_device{}());
-    std::shuffle(shuffledMaps.begin(), shuffledMaps.end(), rng);
+    default_random_engine rng(random_device{}());
+    shuffle(shuffledMaps.begin(), shuffledMaps.end(), rng);
 
     for (auto& info : shuffledMaps) {
         info.position = sf::Vector2f(x, y);
@@ -393,7 +392,7 @@ bool TileMapManager::checkPortal(Player* player) {
 
 void TileMapManager::deletePlatform(sf::Vector2f playerPosition) {
     if (!currentTileMap) {
-        std::cerr << "No current tile map to delete a platform from.\n";
+        cerr << "No current tile map to delete a platform from.\n";
         return;
     }
 
@@ -406,12 +405,12 @@ void TileMapManager::deletePlatform(sf::Vector2f playerPosition) {
     int playerTileY = static_cast<int>((playerPosition.y - mapPos.y) / tileSize);
 
     if (playerTileX < 0 || playerTileY < 0 || playerTileX >= mapWidth || playerTileY >= mapHeight) {
-        std::cerr << "Player tile out of bounds: (" << playerTileX << ", " << playerTileY << ")\n";
+        cerr << "Player tile out of bounds: (" << playerTileX << ", " << playerTileY << ")\n";
         return;
     }
 
     constexpr int radius = 3;
-    std::vector<std::pair<int, int>> candidateTiles;
+    vector<pair<int, int>> candidateTiles;
 
     for (int y = playerTileY - radius; y <= playerTileY + radius; ++y) {
         for (int x = playerTileX - radius; x <= playerTileX + radius; ++x) {
@@ -427,7 +426,7 @@ void TileMapManager::deletePlatform(sf::Vector2f playerPosition) {
                 mapPos.x + x * tileSize, mapPos.y + y * tileSize, tileSize, tileSize);
 
             if (portalSprite.getGlobalBounds().intersects(tileBounds)) {
-                std::cerr << "Skipping tile at (" << x << ", " << y << ") - intersects portal.\n";
+                cerr << "Skipping tile at (" << x << ", " << y << ") - intersects portal.\n";
                 continue;
             }
 
@@ -436,13 +435,13 @@ void TileMapManager::deletePlatform(sf::Vector2f playerPosition) {
     }
 
     if (candidateTiles.empty()) {
-        std::cerr << "No valid candidate tiles found near the player.\n";
+        cerr << "No valid candidate tiles found near the player.\n";
         return;
     }
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distr(0, candidateTiles.size() - 1);
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> distr(0, candidateTiles.size() - 1);
 
     auto [tileX, tileY] = candidateTiles[distr(gen)];
     pendingDeletion = true;

@@ -86,10 +86,10 @@ void TileMap::loadMapFromMemory(const vector<uint8_t>& binaryData) {
 
 
 unique_ptr<Obstacle>& TileMap::getTile(unsigned row, unsigned col) {
-    static std::unique_ptr<Obstacle> nullTile = nullptr; 
+    static unique_ptr<Obstacle> nullTile = nullptr; 
 
     if (row >= height || col >= width) {
-        std::cerr << "Invalid tile access at (" << row << ", " << col << ")\n";
+        cerr << "Invalid tile access at (" << row << ", " << col << ")\n";
         return nullTile; 
     }
     return map[row][col];
@@ -101,6 +101,6 @@ void TileMap::setPosition(const sf::Vector2f& newPosition) {
 
 void TileMap::deleteTile(unsigned row, unsigned col) {
     map[row][col] = 0; 
-    std::cout << "Tile deleted at (" << row << ", " << col << ")\n";
+    cout << "Tile deleted at (" << row << ", " << col << ")\n";
 }
 

@@ -105,7 +105,6 @@ NodeStatus EnemyAI::RandTimeTriggerElapsed() {
     randTimer += 0.01f;
 
     if (randTimer >= randTimeTrigger) {
-        cout << "RandTimeTriggerElapsed: Trigger met after " << randTimeTrigger << " seconds\n";
         resetRandTimeTrigger(); 
         return NodeStatus::Success;
     }
@@ -113,7 +112,7 @@ NodeStatus EnemyAI::RandTimeTriggerElapsed() {
     return NodeStatus::Running;
 }
 
-void EnemyAI::resetRandTimeTrigger() { //TODO: Add minimum delay (3 seconds)
+void EnemyAI::resetRandTimeTrigger() { 
     randTimeTrigger = 3.0f + static_cast<float>(rand() % 5); 
     randTimer = 0.0f; 
 }
@@ -131,10 +130,10 @@ NodeStatus EnemyAI::proximityThresholdReached() {
     fakeThreshold = !fakeThreshold; 
 
     if (fakeThreshold) {
-        std::cout << "Mock: Proximity threshold reached (success).\n";
+        cout << "Mock: Proximity threshold reached (success).\n";
         return NodeStatus::Success;
     } else {
-        std::cout << "Mock: Proximity threshold not reached (failure).\n";
+        cout << "Mock: Proximity threshold not reached (failure).\n";
         return NodeStatus::Failure;
     }
 
@@ -145,18 +144,18 @@ NodeStatus EnemyAI::proximityThresholdReached() {
     const float proximityThreshold = 200.0f; 
     
     if (distance <= proximityThreshold) {
-        std::cout << "Proximity threshold reached. Distance: " << distance << "\n";
+        cout << "Proximity threshold reached. Distance: " << distance << "\n";
         return NodeStatus::Success;
     }
 
-    std::cout << "Player is outside proximity threshold. Distance: " << distance << "\n";
+    cout << "Player is outside proximity threshold. Distance: " << distance << "\n";
     return NodeStatus::Failure;
     */
 }
 
 
 NodeStatus EnemyAI::WarnPlayer() {
-    std::cout << "AI warns the player: Stay back!\n";
+    cout << "AI warns the player: Stay back!\n";
 
     //Warning (sound, animation, visual effect)
 
@@ -227,7 +226,7 @@ NodeStatus EnemyAI::AI_Retreats() {
 }
 
 NodeStatus EnemyAI::AggressiveMode() {
-    std::cout << "AI enters aggressive mode!\n";
+    cout << "AI enters aggressive mode!\n";
 
     //enterAggressiveState(); 
 

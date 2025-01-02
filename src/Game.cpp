@@ -227,7 +227,7 @@ void Game::initMap() {
     // tileMapModel->loadDataFromFile("resources/maps/batch_1");
     vector<vector<uint8_t>> filteredNbTileMaps = tileMapModel->testModel("resources/trained_model_nb.net");
 
-    tileMapManager = std::make_unique<TileMapManager>();
+    tileMapManager = make_unique<TileMapManager>();
     tileMapManager->generateTileMapOrder({startingTileMap, filteredRbTileMaps, filteredNbTileMaps}, resolution.x, resolution.y);
     tileMapManager->createFinalMap(); 
 }
