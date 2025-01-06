@@ -11,7 +11,7 @@
 class Animation {
 public:
     Animation();
-    Animation(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2u frameSize);
+    Animation(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2u frameSize, bool reverse = false);
     ~Animation();
 
     void update(int row, float deltaTime);

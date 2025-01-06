@@ -33,6 +33,7 @@ set(SOURCES
     src/SelectorNode.cpp
     src/SequenceNode.cpp
     src/LightEffect.cpp
+    src/HealthComponent.cpp
 )
 
 # Create the executable

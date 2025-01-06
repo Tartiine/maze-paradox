@@ -2,18 +2,20 @@
 #include <iostream>
 #include <cmath>
 
-Player::Player(){
+Player::Player(): health(5){
     initTexture();
     initSprite();
     initAnimations();
     initPhysics();
+    health.initHeart();
 }
 
-Player::Player(float x, float y) {
+Player::Player(float x, float y): health(5){
     initTexture();
     initSprite();
     initAnimations();
     initPhysics();
+    health.initHeart();
     setPosition(x,y);
 }
 
@@ -91,6 +93,8 @@ void Player::update(float deltaTime) {
     updateAnimations(deltaTime); 
 
     updatePhysics(deltaTime);
+
+    health.update(deltaTime);
 }
 
 
@@ -101,8 +105,12 @@ void Player::render(sf::RenderTarget& target) {
         sprite.setScale(originalScale.x * 1.2f, originalScale.y);
     }
 
-
+    sf::View currentView = target.getView();
     target.draw(sprite);
+
+    target.setView(target.getDefaultView());
+    health.renderHearts(target);
+    target.setView(currentView);
 
     if (physicsChanged) {
         sprite.setScale(originalScale);

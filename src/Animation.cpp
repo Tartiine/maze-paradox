@@ -2,11 +2,11 @@
 
 Animation::Animation() : switchTime(0.0f), totalTime(0.0f), currentImage(0, 0), uvRect() {}
 
-Animation::Animation(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2u frameSize) {
+Animation::Animation(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Vector2u frameSize, bool reverse) {
     this->imageCount = imageCount;
     this->switchTime = switchTime;
     totalTime = 0.0f;
-    currentImage.x = 0;
+    currentImage.x = reverse ? imageCount.x - 1 : 0; 
 
     uvRect.width = frameSize.x;
     uvRect.height = frameSize.y;

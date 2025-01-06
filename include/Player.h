@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include "Animation.h"
 #include "Collision.h"
+#include "HealthComponent.h"
 
 /**
  * Player class that manages all aspects of the player behaviour,
@@ -41,6 +42,7 @@ public:
     void updatePhysicsEffect(float deltaTime);
 
 private:
+    HealthComponent health;
     sf::Sprite sprite;
     sf::Texture textureSheet;
     State currentState = State::Idle;
