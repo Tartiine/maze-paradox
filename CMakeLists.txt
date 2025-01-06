@@ -1,51 +1,39 @@
 cmake_minimum_required(VERSION 3.20)
 project(MazeParadox)
 
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-include_directories(./include)
+# Set the CMake prefix path to help locate cppflow
+set(CMAKE_PREFIX_PATH "C:/libs/cppflow")
+
+# Manually specify TensorFlow include and library paths
+set(tensorflow_INCLUDE_DIRS "C:/libs/tensorflow/include")
+set(tensorflow_LIBRARIES "C:/libs/tensorflow/lib/tensorflow.lib")
+
+include_directories(./include ${tensorflow_INCLUDE_DIRS})
 
 find_package(SFML 2.6 COMPONENTS graphics window system audio REQUIRED)
-find_library(FANN_LIB NAMES fann HINTS /mingw64/lib /mingw32/lib)
+find_package(cppflow REQUIRED)
 
 # Add the source files
-set(SOURCES
-    src/main.cpp
-    src/Game.cpp
-    src/Player.cpp
-    src/Animation.cpp
-    src/Platform.cpp
-    src/Collision.cpp
-    src/Obstacle.cpp
-    src/Ground.cpp
-    src/TileMap.cpp
-    src/TileMapGenerator.cpp
-    src/RuleBasedGenerator.cpp
-    src/NoiseBasedGenerator.cpp
-    src/TileMapModel.cpp
-    src/TileMapManager.cpp
-    src/BehaviorTree.cpp
-    src/EnemyAI.cpp
-    src/TaskNode.cpp
-    src/CompositeNode.cpp
-    src/SelectorNode.cpp
-    src/SequenceNode.cpp
-    src/LightEffect.cpp
-    src/HealthComponent.cpp
-)
+file(GLOB SOURCES "src/*.cpp")
 
 # Create the executable
 add_executable(MazeParadox ${SOURCES})
 
+target_include_directories(MazeParadox PUBLIC
+    cppflow::cppflow
+)
+
 # Link the SFML and FANN libraries to the executable
-target_link_libraries(MazeParadox
+target_link_libraries(MazeParadox PUBLIC
     sfml-graphics
     sfml-window
     sfml-system
     sfml-audio
-    ${FANN_LIB}
+    cppflow::cppflow
+    ${tensorflow_LIBRARIES}
 )
 
 # Copy resources directory to the build directory

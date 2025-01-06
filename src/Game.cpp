@@ -217,15 +217,13 @@ void Game::initMap() {
     auto nbTileMaps = nbGenerator->generateBatch(25, 40, 22, true);
     auto startingTileMap = rbGenerator->generateStart();
 
-    tileMapModel = make_unique<TileMapModel>(40 * 22, 1);
-
-    tileMapModel->loadDataFromMemory(startingTileMap); 
+    tileMapModel = make_unique<TileMapModel>(22, 40, "resources\\trained_model_rb");
     tileMapModel->loadDataFromMemory(rbTileMaps);
-    // tileMapModel->loadDataFromFile("resources/maps/batch_0");
-    vector<vector<uint8_t>> filteredRbTileMaps = tileMapModel->testModel("resources/trained_model_rb.net");
+    vector<vector<uint8_t>> filteredRbTileMaps = tileMapModel->testModel();
+
+    tileMapModel = make_unique<TileMapModel>(22, 40, "resources\\trained_model_nb");
     tileMapModel->loadDataFromMemory(nbTileMaps);
-    // tileMapModel->loadDataFromFile("resources/maps/batch_1");
-    vector<vector<uint8_t>> filteredNbTileMaps = tileMapModel->testModel("resources/trained_model_nb.net");
+    vector<vector<uint8_t>> filteredNbTileMaps = tileMapModel->testModel();
 
     tileMapManager = make_unique<TileMapManager>();
     tileMapManager->generateTileMapOrder({startingTileMap, filteredRbTileMaps, filteredNbTileMaps}, resolution.x, resolution.y);

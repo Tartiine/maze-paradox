@@ -1,5 +1,5 @@
-#ifndef LIGHTEFFECT_H
-#define LIGHTEFFECT_H
+#ifndef LIGHT_EFFECT_H
+#define LIGHT_EFFECT_H
 
 #include <SFML/Graphics.hpp>
 
@@ -22,4 +22,4 @@ private:
     float initialDuration;
 };
 
-#endif // LIGHTEFFECT_H
+#endif // LIGHT_EFFECT_H
