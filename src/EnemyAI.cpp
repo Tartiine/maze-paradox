@@ -233,4 +233,20 @@ NodeStatus EnemyAI::AggressiveMode() {
     return NodeStatus::Success;
 }
 
+sf::Vector2f EnemyAI::getPosition() const {
+    return sf::Vector2f(0.0, 0.0);
+}
+
+int EnemyAI::getJumpCount() const {
+    return jumpCount;
+}
+
+float EnemyAI::getJumpTimer() const {
+    return jumpTimer;
+}
+
+bool EnemyAI::isInAggressiveMode() const {
+    return false;
+}
+
 //TODO: indicate to the player where the portal is located

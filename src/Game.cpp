@@ -20,6 +20,7 @@ Game::Game() : showGamepadFlag(true) {
     initAI();
     initStartScreen();
     checkGamepad();
+    initWorldState();
 }
 
 Game::~Game() {
@@ -44,6 +45,12 @@ void Game::collisionPlayer() {
             }
         }
     }
+}
+
+void Game::updateWorldState() {
+    worldState->updateFromPlayer(*player);
+    worldState->updateFromEnemyAI(*enemyAI);
+    worldState->updateFromTileMapManager(*tileMapManager);
 }
 
 void Game::updatePlayer(float deltaTime) {
@@ -85,6 +92,7 @@ void Game::update(float deltaTime) {
         collisionPlayer();
         tileMapManager->update(deltaTime, player.get(), renderTexture);
         tileMapManager->updateAnimation(deltaTime);
+        updateWorldState();
         if (tileMapManager->checkPortal(player.get())) {
             showEndMenu();
         }
@@ -201,6 +209,10 @@ void Game::initRenderTexture() {
     renderTexture.create(resolution.x, resolution.y);
 }
 
+void Game::initWorldState() {
+    worldState = make_unique<WorldState>();
+}
+
 void Game::initPlayer() {
     player = make_unique<Player>(64, 300);
 }
@@ -315,6 +327,10 @@ void Game::resetGame() {
     initAI();
     initMap();
     gameStarted = false;
+}
+
+bool Game::isGameStarted() const {
+    return gameStarted;
 }
 
 //TODO: Gamepad message when gamepad connected or disconnected

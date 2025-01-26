@@ -11,6 +11,7 @@
 #include "EnemyAI.h"
 #include <vector>
 #include <memory>
+#include "WorldState.h"
 
 /**
  * Game class is the main class. It handles every other class and allows them to communicate.
@@ -27,6 +28,7 @@ public:
     void render();        
     
     const sf::RenderWindow& getWindow() const;
+    bool isGameStarted() const;
 
 private:
     sf::RenderWindow window;
@@ -35,6 +37,8 @@ private:
     sf::Vector2i resolution {640, 352};
     unsigned int scale = 2;
     
+    std::unique_ptr<WorldState> worldState;
+
     std::unique_ptr<Player> player;
     std::unique_ptr<EnemyAI> enemyAI;
     std::unique_ptr<TileMap> tileMap;
@@ -78,6 +82,9 @@ private:
     void trainModel();
     void showEndMenu();
     void resetGame();
+
+    void initWorldState();
+    void updateWorldState();
 };
 
 #endif // GAME_H

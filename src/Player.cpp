@@ -195,11 +195,8 @@ sf::Vector2f Player::getPosition() const {
     return sprite.getPosition();
 }
 
-bool Player::hasJumped() {
-    if (jumpOccurred) {
-        return true;
-    }
-    return false;
+bool Player::hasJumped() const {
+    return jumpOccurred;
 }
 
 void Player::changePhysics(float duration) {
@@ -264,4 +261,24 @@ void Player::initPhysics() {
 
     initialJumpVelocity = -400.f;
     variableJumpBoost = -5.f;
+}
+
+sf::Vector2f Player::getVelocity() const {
+    return velocity;
+}
+
+Player::State Player::getCurrentState() const {
+    return currentState;
+}
+
+bool Player::isPhysicsChanged() const {
+    return physicsChanged;
+}
+
+float Player::getPhysicsEffectRemainingTime() const {
+    return physicsEffectRemainingTime;
+}
+
+HealthComponent Player::getHealth() const {
+    return health;
 }

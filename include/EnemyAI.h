@@ -17,6 +17,11 @@ public:
     void update(float dt);
     void updateBehavior(float deltaTime);
 
+    sf::Vector2f getPosition() const;
+    int getJumpCount() const;
+    float getJumpTimer() const;
+    bool isInAggressiveMode() const;
+
 private:
     Player& player;
     TileMapManager& tileMapManager;

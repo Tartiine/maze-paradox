@@ -453,4 +453,8 @@ void TileMapManager::deletePlatform(sf::Vector2f playerPosition) {
     lightEffects.emplace_back(tilePosition, tileSize / 2, 0.6f); 
 }
 
+sf::Vector2i TileMapManager::getTileToDelete() const {
+    return sf::Vector2i(tileXToDelete, tileYToDelete);
+}
+
 //TODO: Move some logic to a cameraManager class

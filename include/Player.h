@@ -37,9 +37,15 @@ public:
     void updatePhysics(float deltaTime);
     sf::Vector2f getPosition() const;
 
-    bool hasJumped(); 
+    bool hasJumped() const; 
     void changePhysics(float duration);
     void updatePhysicsEffect(float deltaTime);
+
+    sf::Vector2f getVelocity() const;
+    HealthComponent getHealth() const;
+    State getCurrentState() const;
+    bool isPhysicsChanged() const;
+    float getPhysicsEffectRemainingTime() const;
 
 private:
     HealthComponent health;

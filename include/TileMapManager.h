@@ -40,6 +40,7 @@ public:
     void render(sf::RenderTarget& target);
     bool checkPortal(Player* player);
     void deletePlatform(sf::Vector2f playerPosition);
+    sf::Vector2i getTileToDelete() const;
 
 private:
     std::unordered_map<std::string, std::unique_ptr<TileMap>> tileMaps;
