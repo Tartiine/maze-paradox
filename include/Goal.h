@@ -6,14 +6,14 @@
 
 using namespace std;
 
-struct Goal {
+class Goal {
     string name;
-    vector<function<bool(const WorldState&)>> conditions;
-    float priority;
 
     // Methods
     Goal(const string& name, float priority);
     void addCondition(function<bool(const WorldState&)> function);
+
+    bool isReached(const WorldState& state) const;
 };
 
 #endif // GOAL_H

@@ -6,16 +6,15 @@
 
 using namespace std;
 
-struct Action {
+class Action {
     string name;
     vector<function<bool(const WorldState&)>> preconditions;
     vector<function<void(WorldState&)>> effects;
-    float cost;
 
     // Methods
     Action(const string& name, float cost);
     void addPreconditions(function<bool(const WorldState&)> function);
-    void addeffects(function<void(WorldState&)> function);
+    void addEffects(function<void(WorldState&)> function);
 
     bool canExecute(const WorldState& state) const;
     void execute(WorldState& state) const;

@@ -1,13 +1,13 @@
 #include "Action.h"
 
-Action::Action(const string& name, float cost) : name(name), preconditions(), effects(), cost(cost) {}
+Action::Action(const string& name, float cost) : name(name), preconditions(), effects() {}
 
 void Action::addPreconditions(function<bool(const WorldState&)> function)
 {
     preconditions.emplace_back(function);
 }
 
-void Action::addeffects(function<void(WorldState&)> function)
+void Action::addEffects(function<void(WorldState&)> function)
 {
     effects.emplace_back(function);
 }
