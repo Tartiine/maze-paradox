@@ -24,8 +24,8 @@ void WorldModel::addState(const string& key, const WorldValue& value) {
     state.emplace(key, value);
 }
 
-vector<Goal> WorldModel::getAllPossibleActions() const {
-    vector<Goal> result;
+vector<Action> WorldModel::getAllPossibleActions() const {
+    vector<Action> result;
     
     for (auto& action : actions) {
         if (action.canApply(*this)) {

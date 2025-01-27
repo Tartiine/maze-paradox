@@ -2,21 +2,27 @@
 #define GOAP_PLANNER_H
 
 #include "Action.h"
+#include "float.h"
 #include <memory>
 
 using namespace std;
 
 class GOAPPlanner {
     public:
-        GOAPPlanner();
+        struct GOAPNode {
+            float worldDiscontentment = FLT_MAX;
+            bool isValid = false;
+            shared_ptr<Action> action;
+        };
+
+        GOAPPlanner(int maxDepth);
         ~GOAPPlanner();
 
         void resetPlanner();
-        Action getPlannedAction(const WorldModel& model);
+        GOAPNode getPlannedAction(int depth, const WorldModel& model);
 
     private:
-        float bestDiscontentment;
-        unique_ptr<Action> bestAction;
+        int maxDepth;
 };
 
 #endif // GOAP_PLANNER_H

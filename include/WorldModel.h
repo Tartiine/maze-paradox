@@ -23,7 +23,7 @@ class WorldModel {
         T getState(const string& key) const;
         void addState(const string& key, const WorldValue& value);
 
-        vector<Goal> getAllPossibleActions() const;
+        vector<Action> getAllPossibleActions() const;
         float getWorldDiscontentment() const;
         
     private:
