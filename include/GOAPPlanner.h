@@ -18,7 +18,6 @@ class GOAPPlanner {
         GOAPPlanner(int maxDepth);
         ~GOAPPlanner();
 
-        void resetPlanner();
         GOAPNode getPlannedAction(int depth, const WorldModel& model);
 
     private:

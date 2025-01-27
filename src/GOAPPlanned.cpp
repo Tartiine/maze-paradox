@@ -3,7 +3,7 @@
 GOAPPlanner::GOAPPlanner(int maxDepth) : maxDepth(maxDepth) {}
 
 GOAPPlanner::GOAPNode GOAPPlanner::getPlannedAction(int depth, const WorldModel& model) {
-    GOAPPlanner::GOAPNode bestNode;
+    GOAPNode bestNode;
 
     vector<Action> possibleActions = model.getAllPossibleActions();
 
@@ -15,7 +15,17 @@ GOAPPlanner::GOAPNode GOAPPlanner::getPlannedAction(int depth, const WorldModel&
                 float discontentment = worldModelCopy.getWorldDiscontentment();
 
                 if (discontentment < bestNode.worldDiscontentment) {
-                    
+                    bestNode.action = make_shared<Action>(action);
+                    bestNode.worldDiscontentment = discontentment;
+                    bestNode.isValid = true;
+                }
+            } else {
+                GOAPNode nextBestNode = getPlannedAction(depth+1, worldModelCopy);
+
+                if (nextBestNode.worldDiscontentment < bestNode.worldDiscontentment) {
+                    bestNode.worldDiscontentment = nextBestNode.worldDiscontentment;
+                    bestNode.action = make_shared<Action>(action);
+                    bestNode.isValid = true;
                 }
             }
         }
