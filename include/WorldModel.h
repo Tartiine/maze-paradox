@@ -7,6 +7,7 @@
 #include "SFML/Graphics.hpp"
 #include "Action.h"
 #include "Goal.h"
+#include "WorldDiscover.h"
 
 using namespace std;
 
@@ -23,6 +24,14 @@ class WorldModel {
         T getState(const string& key) const;
         void addState(const string& key, const WorldValue& value);
 
+        bool has(const string& key) const;
+
+        void addAction(const Action& action);
+        void addGoal(const Goal& goal);
+
+        bool isDiscovered() const;
+        void resetDiscovery();
+
         vector<Action> getAllPossibleActions() const;
         float getWorldDiscontentment() const;
         
@@ -30,6 +39,8 @@ class WorldModel {
         unordered_map<string, WorldValue> state;
         vector<Action> actions;
         vector<Goal> goals;
+        bool isDiscovered;
+
 };
 
 #endif // WORLD_MODEL_H

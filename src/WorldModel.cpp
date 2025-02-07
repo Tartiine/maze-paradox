@@ -20,8 +20,28 @@ T WorldModel::getState(const string& key) const {
     }
 }
 
+bool WorldModel::has(const string& key) const {
+    state.find(key) != state.end();
+}
+
+bool WorldModel::isDiscovered() const {
+    return isDiscovered;
+}
+
+void WorldModel::resetDiscovery() {
+    isDiscovered = false;
+}
+
 void WorldModel::addState(const string& key, const WorldValue& value) {
     state.emplace(key, value);
+}
+
+void WorldModel::addAction(const Action& action) {
+    actions.emplace_back(action);
+}
+
+void WorldModel::addGoal(const Goal& goal) {
+    goals.emplace_back(goal);
 }
 
 vector<Action> WorldModel::getAllPossibleActions() const {
